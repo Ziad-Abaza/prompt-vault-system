@@ -82,6 +82,7 @@ function init_database($pdo) {
         content TEXT NOT NULL,
         category_id INTEGER,
         user_id INTEGER,
+        is_public BOOLEAN DEFAULT FALSE,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
@@ -134,8 +135,18 @@ function migrate_database($pdo) {
             try {
                 $pdo->exec("ALTER TABLE $table ADD COLUMN user_id INTEGER REFERENCES users(id) ON DELETE CASCADE;");
             } catch (PDOException $e) {
-                // Ignore if column already exists (sometimes PRAGMA might be slow or table locked)
+                // Ignore if column already exists
             }
+        }
+    }
+
+    // Add is_public column to prompts table if missing
+    $columns = $pdo->query("PRAGMA table_info(prompts)")->fetchAll(PDO::FETCH_COLUMN, 1);
+    if (!in_array('is_public', $columns)) {
+        try {
+            $pdo->exec("ALTER TABLE prompts ADD COLUMN is_public BOOLEAN DEFAULT FALSE;");
+        } catch (PDOException $e) {
+            // Ignore if column already exists
         }
     }
 }

@@ -13,6 +13,12 @@ $categories = get_categories();
 $tags = get_tags();
 $collections = get_collections();
 
+$page_title = "Prompt Library Dashboard";
+$meta_description = "Manage and organize your AI prompts in a centralized workspace. Browse categories, tags, and collections.";
+$breadcrumbs = [
+    ['name' => 'Library', 'url' => 'index.php']
+];
+
 include 'includes/header.php';
 ?>
 

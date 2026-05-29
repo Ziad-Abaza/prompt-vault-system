@@ -12,6 +12,14 @@ if (!$prompt) {
     redirect('index.php');
 }
 
+$page_title = $prompt['title'];
+$meta_description = substr(strip_tags($prompt['content']), 0, 160);
+$breadcrumbs = [
+    ['name' => 'Library', 'url' => 'index.php'],
+    ['name' => $prompt['category_name'] ?? 'Uncategorized', 'url' => 'index.php?category_id=' . ($prompt['category_id'] ?? '')],
+    ['name' => $prompt['title'], 'url' => 'prompt.php?id=' . $prompt['id']]
+];
+
 include 'includes/header.php';
 ?>
 

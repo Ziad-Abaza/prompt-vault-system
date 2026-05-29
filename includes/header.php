@@ -3,7 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo APP_NAME; ?></title>
+    
+    <?php
+    $final_title = (isset($page_title) ? $page_title . " | " : "") . APP_NAME;
+    $final_desc = $meta_description ?? "Atlas Library - A professional workspace for organizing and managing AI prompts.";
+    $canonical_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    ?>
+    
+    <title><?php echo esc($final_title); ?></title>
+    <meta name="description" content="<?php echo esc($final_desc); ?>">
+    <link rel="canonical" href="<?php echo esc($canonical_url); ?>">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    <?php
+    $schema = [
+        "@context" => "https://schema.org",
+        "@graph" => [
+            [
+                "@type" => "SoftwareApplication",
+                "name" => APP_NAME,
+                "operatingSystem" => "Web",
+                "applicationCategory" => "DeveloperApplication",
+                "description" => "A centralized workspace for organizing, managing, and discovering AI prompts."
+            ]
+        ]
+    ];
+
+    if (isset($breadcrumbs) && is_array($breadcrumbs)) {
+        $breadcrumbList = [
+            "@type" => "BreadcrumbList",
+            "itemListElement" => []
+        ];
+        
+        $current_base = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+        $current_path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/';
+        $full_base = $current_base . $current_path;
+
+        foreach ($breadcrumbs as $i => $bc) {
+            $breadcrumbList['itemListElement'][] = [
+                "@type" => "ListItem",
+                "position" => $i + 1,
+                "name" => $bc['name'],
+                "item" => $full_base . $bc['url']
+            ];
+        }
+        $schema['@graph'][] = $breadcrumbList;
+    }
+
+    echo json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+    ?>
+    </script>
+
     <!-- Tailwind CSS Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -92,6 +143,14 @@
             }
             .btn-danger-link {
                 @apply text-red-500 hover:text-red-700 text-xs font-bold uppercase tracking-widest transition-colors;
+            }
+
+            /* Custom Toggle Switch */
+            input:checked ~ .dot {
+                @apply translate-x-4;
+            }
+            input:checked ~ div:first-of-type {
+                @apply bg-primary-600;
             }
         }
 

@@ -101,11 +101,24 @@ function get_current_username() {
  * Require a user to be logged in, otherwise redirect to login.
  */
 function require_login() {
-    if (!is_logged_in()) {
-        $current_page = basename($_SERVER['PHP_SELF']);
-        if (!in_array($current_page, ['login.php', 'register.php'])) {
-            header("Location: login.php");
-            exit;
+    if (is_logged_in()) {
+        return;
+    }
+
+    $current_page = basename($_SERVER['PHP_SELF']);
+    $public_pages = ['login.php', 'register.php', 'sitemap.php'];
+    
+    if (in_array($current_page, $public_pages)) {
+        return;
+    }
+
+    // Special case for public prompts
+    if ($current_page === 'prompt.php' && isset($_GET['id'])) {
+        if (is_prompt_public($_GET['id'])) {
+            return;
         }
     }
+
+    header("Location: login.php");
+    exit;
 }

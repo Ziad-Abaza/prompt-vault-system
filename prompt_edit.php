@@ -120,6 +120,20 @@ include 'includes/header.php';
                         </div>
                     </div>
                 </div>
+
+                <div class="form-group pt-4">
+                    <label class="flex items-center cursor-pointer group">
+                        <div class="relative">
+                            <input type="checkbox" name="is_public" id="is_public" class="sr-only" <?php echo ($_POST['is_public'] ?? $prompt['is_public'] ?? 0) ? 'checked' : ''; ?>>
+                            <div class="w-10 h-6 bg-slate-200 rounded-full shadow-inner transition-colors group-hover:bg-slate-300 peer-checked:bg-primary-500"></div>
+                            <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-4"></div>
+                        </div>
+                        <div class="ml-4">
+                            <span class="block text-sm font-bold text-slate-900">Public Visibility</span>
+                            <span class="block text-xs text-slate-500 font-medium">Allow search engines and non-logged users to view this prompt.</span>
+                        </div>
+                    </label>
+                </div>
             </div>
         </div>
 

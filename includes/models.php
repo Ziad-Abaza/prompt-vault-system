@@ -160,16 +160,17 @@ function get_prompt($id) {
     $prompt = query("SELECT p.*, c.name as category_name 
                      FROM prompts p 
                      LEFT JOIN categories c ON p.category_id = c.id 
-                     WHERE p.id = ? AND p.user_id = ?", [$id, $user_id])->fetch();
+                     WHERE p.id = ? AND (p.user_id = ? OR p.is_public = 1)", [$id, $user_id])->fetch();
     
     if ($prompt) {
+        $owner_id = $prompt['user_id'];
         $prompt['tags'] = query("SELECT t.* FROM tags t 
                                  JOIN prompt_tags pt ON t.id = pt.tag_id 
-                                 WHERE pt.prompt_id = ? AND t.user_id = ?", [$id, $user_id])->fetchAll();
+                                 WHERE pt.prompt_id = ? AND t.user_id = ?", [$id, $owner_id])->fetchAll();
         
         $prompt['collections'] = query("SELECT cl.* FROM collections cl 
                                         JOIN prompt_collections pc ON cl.id = pc.collection_id 
-                                        WHERE pc.prompt_id = ? AND cl.user_id = ?", [$id, $user_id])->fetchAll();
+                                        WHERE pc.prompt_id = ? AND cl.user_id = ?", [$id, $owner_id])->fetchAll();
     }
 
     return $prompt;
@@ -181,11 +182,12 @@ function create_prompt($data) {
     $user_id = get_current_user_id();
 
     try {
-        query("INSERT INTO prompts (title, content, category_id, user_id) VALUES (?, ?, ?, ?)", [
+        query("INSERT INTO prompts (title, content, category_id, user_id, is_public) VALUES (?, ?, ?, ?, ?)", [
             $data['title'],
             $data['content'],
             $data['category_id'] ?: null,
-            $user_id
+            $user_id,
+            $data['is_public'] ?? 0
         ]);
         $prompt_id = $db->lastInsertId();
 
@@ -229,10 +231,11 @@ function update_prompt($id, $data) {
             throw new Exception("Unauthorized or prompt not found.");
         }
 
-        query("UPDATE prompts SET title = ?, content = ?, category_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?", [
+        query("UPDATE prompts SET title = ?, content = ?, category_id = ?, is_public = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?", [
             $data['title'],
             $data['content'],
             $data['category_id'] ?: null,
+            $data['is_public'] ?? 0,
             $id,
             $user_id
         ]);
@@ -269,4 +272,19 @@ function update_prompt($id, $data) {
 
 function delete_prompt($id) {
     return query("DELETE FROM prompts WHERE id = ? AND user_id = ?", [$id, get_current_user_id()]);
+}
+
+/**
+ * Check if a prompt is public without needing user_id.
+ */
+function is_prompt_public($id) {
+    $prompt = query("SELECT is_public FROM prompts WHERE id = ?", [$id])->fetch();
+    return $prompt && $prompt['is_public'];
+}
+
+/**
+ * Get all public prompts for sitemap.
+ */
+function get_public_prompts() {
+    return query("SELECT id, updated_at FROM prompts WHERE is_public = 1 ORDER BY updated_at DESC")->fetchAll();
 }
