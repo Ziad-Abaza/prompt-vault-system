@@ -4,28 +4,30 @@ require_once 'bootstrap.php';
 include 'includes/header.php';
 ?>
 
-<div class="max-w-2xl mx-auto">
-    <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center">Search Your Prompts</h1>
+<div class="max-w-4xl mx-auto">
+    <div class="mb-12 text-center">
+        <h1 class="text-5xl font-extrabold text-slate-900 tracking-tight mb-4">Search Vault</h1>
+        <p class="text-slate-500 text-xl">Find exactly what you need in seconds.</p>
+    </div>
 
-    <div class="bg-white shadow sm:rounded-lg overflow-hidden border border-gray-200">
-        <div class="px-4 py-8 sm:p-10">
-            <form action="index.php" method="GET" class="space-y-6">
-                <div>
-                    <label for="search" class="block text-sm font-medium text-gray-700">Keyword</label>
-                    <div class="mt-1 relative rounded-md shadow-sm">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </div>
-                        <input type="text" name="search" id="search" class="focus:ring-primary focus:border-primary block w-full pl-10 sm:text-lg border-gray-300 rounded-md py-3" placeholder="Search by title or content...">
+    <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200 overflow-hidden mb-12">
+        <div class="p-8 md:p-12">
+            <form action="index.php" method="GET" class="space-y-8">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+                        <svg class="h-8 w-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
                     </div>
+                    <input type="text" name="search" id="search" autofocus 
+                        class="block w-full pl-16 pr-6 py-6 bg-slate-50 border-transparent rounded-2xl focus:ring-primary-500 focus:bg-white text-2xl font-medium text-slate-900 transition-all placeholder-slate-300" 
+                        placeholder="Keyword, title, or content fragment...">
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="category_id" class="block text-sm font-medium text-gray-700">Category</label>
-                        <select name="category_id" id="category_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm">
+                        <label for="category_id" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Filter by Category</label>
+                        <select name="category_id" id="category_id" class="block w-full px-5 py-4 bg-slate-50 border-slate-100 rounded-xl focus:ring-primary-500 focus:border-primary-500 text-base font-semibold transition-all">
                             <option value="">Any Category</option>
                             <?php foreach (get_categories() as $cat): ?>
                                 <option value="<?php echo $cat['id']; ?>"><?php echo esc($cat['name']); ?></option>
@@ -33,8 +35,8 @@ include 'includes/header.php';
                         </select>
                     </div>
                     <div>
-                        <label for="tag_id" class="block text-sm font-medium text-gray-700">Tag</label>
-                        <select name="tag_id" id="tag_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm">
+                        <label for="tag_id" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Filter by Tag</label>
+                        <select name="tag_id" id="tag_id" class="block w-full px-5 py-4 bg-slate-50 border-slate-100 rounded-xl focus:ring-primary-500 focus:border-primary-500 text-base font-semibold transition-all">
                             <option value="">Any Tag</option>
                             <?php foreach (get_tags() as $tag): ?>
                                 <option value="<?php echo $tag['id']; ?>"><?php echo esc($tag['name']); ?></option>
@@ -43,23 +45,23 @@ include 'includes/header.php';
                     </div>
                 </div>
 
-                <div>
-                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-                        Find Prompts
+                <div class="pt-4">
+                    <button type="submit" class="w-full flex justify-center py-5 px-4 border border-transparent rounded-2xl shadow-lg shadow-primary-600/20 text-xl font-bold text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all transform hover:-translate-y-1">
+                        Search Your Prompts
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="mt-10 text-center">
-        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Quick Links</h3>
-        <div class="mt-4 flex flex-wrap justify-center gap-2">
-            <a href="index.php" class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50">
-                All Prompts
+    <div class="text-center">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Popular Shortcuts</h3>
+        <div class="flex flex-wrap justify-center gap-3">
+            <a href="index.php" class="px-6 py-3 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:border-primary-300 hover:text-primary-600 transition-all shadow-sm">
+                Browse All
             </a>
-            <?php foreach (get_categories() as $cat): ?>
-                <a href="index.php?category_id=<?php echo $cat['id']; ?>" class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50">
+            <?php foreach (array_slice(get_categories(), 0, 5) as $cat): ?>
+                <a href="index.php?category_id=<?php echo $cat['id']; ?>" class="px-6 py-3 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:border-primary-300 hover:text-primary-600 transition-all shadow-sm">
                     <?php echo esc($cat['name']); ?>
                 </a>
             <?php endforeach; ?>

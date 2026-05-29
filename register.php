@@ -27,47 +27,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include 'includes/header.php';
 ?>
 
-<div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-        <div>
-            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Create your vault account</h2>
-            <p class="mt-2 text-center text-sm text-gray-600">
-                Or
-                <a href="login.php" class="font-medium text-primary hover:text-blue-500">
-                    sign in to an existing account
-                </a>
+<div class="max-w-md mx-auto py-12 md:py-24">
+    <div class="text-center mb-10">
+        <div class="w-20 h-20 bg-primary-600 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-primary-600/20">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+            </svg>
+        </div>
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Join the Vault</h1>
+        <p class="text-slate-500 font-medium">Create your private workspace today.</p>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200 overflow-hidden">
+        <div class="p-8 md:p-10">
+            <?php if (isset($error)): ?>
+                <div class="mb-6 p-4 rounded-xl bg-red-50 border border-red-100 text-red-700 text-sm font-bold">
+                    <?php echo esc($error); ?>
+                </div>
+            <?php endif; ?>
+
+            <form action="register.php" method="POST" class="space-y-6">
+                <?php echo csrf_input(); ?>
+                <div>
+                    <label for="username" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Choose Username</label>
+                    <input type="text" name="username" id="username" required autofocus 
+                        class="block w-full px-5 py-4 bg-slate-50 border-slate-100 rounded-2xl focus:ring-primary-500 focus:bg-white text-slate-900 font-semibold transition-all" 
+                        placeholder="yourname">
+                </div>
+                <div class="grid grid-cols-1 gap-6">
+                    <div>
+                        <label for="password" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Password</label>
+                        <input type="password" name="password" id="password" required 
+                            class="block w-full px-5 py-4 bg-slate-50 border-slate-100 rounded-2xl focus:ring-primary-500 focus:bg-white text-slate-900 font-semibold transition-all" 
+                            placeholder="min 6 chars">
+                    </div>
+                    <div>
+                        <label for="confirm_password" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Confirm Password</label>
+                        <input type="password" name="confirm_password" id="confirm_password" required 
+                            class="block w-full px-5 py-4 bg-slate-50 border-slate-100 rounded-2xl focus:ring-primary-500 focus:bg-white text-slate-900 font-semibold transition-all" 
+                            placeholder="match password">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full flex justify-center py-5 px-4 border border-transparent rounded-2xl shadow-lg shadow-primary-600/20 text-lg font-bold text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all">
+                    Register Account
+                </button>
+            </form>
+        </div>
+        
+        <div class="px-8 py-6 bg-slate-50 border-t border-slate-100 text-center">
+            <p class="text-slate-500 text-sm font-medium">
+                Already have an account? <a href="login.php" class="text-primary-600 font-bold hover:text-primary-700">Sign in</a>
             </p>
         </div>
-
-        <?php if (isset($error)): ?>
-            <div class="p-4 rounded-md bg-red-50 text-red-700 text-sm">
-                <?php echo esc($error); ?>
-            </div>
-        <?php endif; ?>
-
-        <form class="mt-8 space-y-6" action="register.php" method="POST">
-            <?php echo csrf_input(); ?>
-            <div class="rounded-md shadow-sm -space-y-px">
-                <div>
-                    <label for="username" class="sr-only">Username</label>
-                    <input id="username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm" placeholder="Username (min 3 chars)">
-                </div>
-                <div>
-                    <label for="password" class="sr-only">Password</label>
-                    <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm" placeholder="Password (min 6 chars)">
-                </div>
-                <div>
-                    <label for="confirm_password" class="sr-only">Confirm Password</label>
-                    <input id="confirm_password" name="confirm_password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm" placeholder="Confirm Password">
-                </div>
-            </div>
-
-            <div>
-                <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-                    Register
-                </button>
-            </div>
-        </form>
     </div>
 </div>
 
