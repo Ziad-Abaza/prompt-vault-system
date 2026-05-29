@@ -275,6 +275,82 @@ function delete_prompt($id) {
 }
 
 /**
+ * Seed default categories, tags, and collections for a new user.
+ * 
+ * @param int $user_id
+ */
+function seed_user_onboarding($user_id) {
+    // 1. Categories
+    $categories = [
+        'Coding Prompts', 'Debugging', 'Code Review', 'System Design', 
+        'API Design', 'Database Design', 'Prompt Engineering', 'AI Agents', 
+        'Content Creation', 'Copywriting', 'SEO', 'Marketing', 
+        'Social Media', 'Business Strategy', 'Productivity', 'Automation', 
+        'Image Generation', 'UI/UX Design', 'Education & Learning'
+    ];
+    foreach ($categories as $name) {
+        query("INSERT OR IGNORE INTO categories (name, user_id) VALUES (?, ?)", [$name, $user_id]);
+    }
+
+    // 2. Tags
+    $tags = [
+        // Technical
+        'laravel', 'vue', 'react', 'nodejs', 'api', 'backend', 'frontend', 
+        'database', 'sql', 'performance', 'optimization', 'debugging', 'refactor',
+        // AI & Automation
+        'chatgpt', 'prompt-engineering', 'system-prompt', 'ai-agent', 'llm', 
+        'automation', 'workflow',
+        // Content & SEO
+        'seo', 'copywriting', 'marketing', 'blog', 'email', 'ad-copy', 
+        'storytelling', 'social-media',
+        // Business
+        'startup', 'strategy', 'growth', 'monetization', 'idea', 'planning',
+        // Creative
+        'image-generation', 'midjourney', 'stable-diffusion', 'branding', 
+        'design', 'uiux',
+        // Intent
+        'beginner', 'advanced', 'production-ready', 'template', 'reusable'
+    ];
+    foreach ($tags as $name) {
+        query("INSERT OR IGNORE INTO tags (name, user_id) VALUES (?, ?)", [$name, $user_id]);
+    }
+
+    // 3. Collections
+    $collections = [
+        ['name' => 'Starter Prompts Pack', 'desc' => 'Essential prompts for beginners to get started with AI.'],
+        ['name' => 'AI Beginner Toolkit', 'desc' => 'Foundational tools for new prompt engineers.'],
+        ['name' => 'First Time Setup Prompts', 'desc' => 'Prompts to help configure your initial environment.'],
+        ['name' => 'Backend Engineering Pack', 'desc' => 'Advanced prompts for server-side logic and architecture.'],
+        ['name' => 'Laravel Master Prompts', 'desc' => 'Expert-level prompts for Laravel framework development.'],
+        ['name' => 'API Design Pack', 'desc' => 'Best practices and templates for REST/GraphQL API design.'],
+        ['name' => 'Debugging Toolkit', 'desc' => 'Systematic prompts for troubleshooting and bug fixing.'],
+        ['name' => 'Code Review Pack', 'desc' => 'Automated code review and quality assurance prompts.'],
+        ['name' => 'System Prompt Library', 'desc' => 'High-level persona and behavioral definitions for AI agents.'],
+        ['name' => 'AI Agent Builders', 'desc' => 'Prompts for designing autonomous agent workflows.'],
+        ['name' => 'Multi-Agent Workflows', 'desc' => 'Coordinating complex tasks between multiple AI personas.'],
+        ['name' => 'Automation Agents Pack', 'desc' => 'Prompts focused on task automation and background jobs.'],
+        ['name' => 'SEO Blog Generator Pack', 'desc' => 'Complete workflow for search-optimized content creation.'],
+        ['name' => 'Social Media Growth Pack', 'desc' => 'Engaging prompts for Twitter, LinkedIn, and more.'],
+        ['name' => 'Copywriting Conversion Pack', 'desc' => 'High-converting sales copy and marketing scripts.'],
+        ['name' => 'Email Marketing Pack', 'desc' => 'Drip campaign and newsletter templates.'],
+        ['name' => 'Startup Idea Generator Pack', 'desc' => 'Innovation and brainstorming tools for new ventures.'],
+        ['name' => 'Business Strategy Toolkit', 'desc' => 'Analytical prompts for market positioning and SWOT.'],
+        ['name' => 'SaaS Planning Pack', 'desc' => 'Strategic planning for software-as-a-service products.'],
+        ['name' => 'Monetization Strategies Pack', 'desc' => 'Prompts for revenue model optimization.'],
+        ['name' => 'Image Prompt Pack', 'desc' => 'Professional prompts for DALL-E, Midjourney, and SD.'],
+        ['name' => 'Branding Generator Pack', 'desc' => 'Identity, logo ideas, and brand voice definition.'],
+        ['name' => 'UI/UX Idea Pack', 'desc' => 'User experience flow and interface design brainstorming.'],
+        ['name' => 'Ad Creative Pack', 'desc' => 'Creative concepts for digital advertising campaigns.'],
+        ['name' => 'Daily Planning Prompts', 'desc' => 'Time management and daily objective setting.'],
+        ['name' => 'Workflow Automation Pack', 'desc' => 'Optimizing personal and professional productivity.'],
+        ['name' => 'Personal Productivity AI', 'desc' => 'Tailored prompts for focus and habit tracking.']
+    ];
+    foreach ($collections as $c) {
+        query("INSERT OR IGNORE INTO collections (name, description, user_id) VALUES (?, ?, ?)", [$c['name'], $c['desc'], $user_id]);
+    }
+}
+
+/**
  * Check if a prompt is public without needing user_id.
  */
 function is_prompt_public($id) {

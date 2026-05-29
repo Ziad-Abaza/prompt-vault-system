@@ -23,6 +23,11 @@ function register($username, $password) {
 
     try {
         query("INSERT INTO users (username, password_hash) VALUES (?, ?)", [$username, $password_hash]);
+        $user_id = get_db()->lastInsertId();
+        
+        // Seed default taxonomy for the new user
+        seed_user_onboarding($user_id);
+        
         return true;
     } catch (PDOException $e) {
         // SQLITE_CONSTRAINT_UNIQUE is 19, but PDO might return different codes. 
