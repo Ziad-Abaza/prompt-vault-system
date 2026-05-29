@@ -3,15 +3,34 @@
  * Application Bootstrap
  */
 
-// Error reporting for development (should be disabled in production)
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Load Environment Loader
+require_once __DIR__ . '/includes/env.php';
+Env::load(__DIR__ . '/.env');
+
+// Error reporting configuration
+$debug = Env::get('APP_DEBUG', false);
+if ($debug) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+} else {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+}
 
 // Set timezone
 date_default_timezone_set('UTC');
 
-// Start session if not already started
+// Secure Session Start
 if (session_status() === PHP_SESSION_NONE) {
+    $secure = Env::get('APP_ENV') === 'production';
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => '',
+        'secure' => $secure,
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
     session_start();
 }
 
@@ -29,8 +48,6 @@ verify_csrf_or_die();
 
 /**
  * Redirect to a given URL.
- * 
- * @param string $path
  */
 function redirect($path) {
     header("Location: $path");
@@ -39,9 +56,6 @@ function redirect($path) {
 
 /**
  * Set a flash message in the session.
- * 
- * @param string $message
- * @param string $type success|error|info
  */
 function set_flash($message, $type = 'success') {
     $_SESSION['flash'] = [
@@ -52,8 +66,6 @@ function set_flash($message, $type = 'success') {
 
 /**
  * Get and clear the flash message.
- * 
- * @return array|null
  */
 function get_flash() {
     $flash = $_SESSION['flash'] ?? null;

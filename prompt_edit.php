@@ -12,40 +12,50 @@ if ($id && !$prompt) {
 $categories = get_categories();
 $tags = get_tags();
 $collections = get_collections();
+$errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = [
-        'title' => $_POST['title'] ?? '',
-        'content' => $_POST['content'] ?? '',
-        'category_id' => $_POST['category_id'] ?: null,
-        'tag_ids' => $_POST['tag_ids'] ?? [],
-        'collection_ids' => $_POST['collection_ids'] ?? [],
-    ];
+    $validator = new Validator($_POST);
+    $validator->required('title', 'Please provide a title for your prompt.')
+              ->max('title', 255)
+              ->required('content', 'The prompt content cannot be empty.');
 
-    // Handle new tags (comma separated)
-    if (!empty($_POST['new_tags'])) {
-        $new_tag_names = explode(',', $_POST['new_tags']);
-        $new_tag_ids = get_or_create_tags_by_names($new_tag_names);
-        $data['tag_ids'] = array_merge($data['tag_ids'], $new_tag_ids);
-    }
+    if ($validator->is_valid()) {
+        $data = [
+            'title' => $_POST['title'],
+            'content' => $_POST['content'],
+            'category_id' => $_POST['category_id'] ?: null,
+            'tag_ids' => $_POST['tag_ids'] ?? [],
+            'collection_ids' => $_POST['collection_ids'] ?? [],
+        ];
 
-    try {
-        if ($id) {
-            update_prompt($id, $data);
-            set_flash('Prompt updated successfully.');
-        } else {
-            $id = create_prompt($data);
-            set_flash('Prompt created successfully.');
+        // Handle new tags
+        if (!empty($_POST['new_tags'])) {
+            $new_tag_names = explode(',', $_POST['new_tags']);
+            $new_tag_ids = get_or_create_tags_by_names($new_tag_names);
+            $data['tag_ids'] = array_unique(array_merge($data['tag_ids'], $new_tag_ids));
         }
-        redirect("prompt.php?id=$id");
-    } catch (Exception $e) {
-        $error = $e->getMessage();
+
+        try {
+            if ($id) {
+                update_prompt($id, $data);
+                set_flash('Prompt updated successfully.');
+            } else {
+                $id = create_prompt($data);
+                set_flash('Prompt created successfully.');
+            }
+            redirect("prompt.php?id=$id");
+        } catch (Exception $e) {
+            $errors['form'] = $e->getMessage();
+        }
+    } else {
+        $errors = $validator->get_errors();
     }
 }
 
 // Prepare selected IDs for the form
-$selected_tag_ids = $prompt ? array_column($prompt['tags'], 'id') : [];
-$selected_collection_ids = $prompt ? array_column($prompt['collections'], 'id') : [];
+$selected_tag_ids = $prompt ? array_column($prompt['tags'], 'id') : ($_POST['tag_ids'] ?? []);
+$selected_collection_ids = $prompt ? array_column($prompt['collections'], 'id') : ($_POST['collection_ids'] ?? []);
 
 include 'includes/header.php';
 ?>
@@ -66,75 +76,94 @@ include 'includes/header.php';
         <h1 class="text-4xl font-bold text-slate-900 tracking-tight"><?php echo $id ? 'Refine Prompt' : 'Create New Prompt'; ?></h1>
     </div>
 
-    <?php if (isset($error)): ?>
+    <?php if (isset($errors['form'])): ?>
         <div class="mb-8 p-4 rounded-xl bg-red-50 border border-red-100 text-red-700 text-sm font-medium">
-            <?php echo esc($error); ?>
+            <?php echo esc($errors['form']); ?>
         </div>
     <?php endif; ?>
 
-    <form action="prompt_edit.php<?php echo $id ? '?id=' . $id : ''; ?>" method="POST" class="space-y-10">
+    <form action="prompt_edit.php<?php echo $id ? '?id=' . $id : ''; ?>" method="POST" class="space-y-12">
         <?php echo csrf_input(); ?>
 
-        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="p-8 md:p-10 space-y-8">
-                <!-- Title Field -->
+        <!-- Section 1: Basic Information -->
+        <div class="form-section">
+            <div class="px-8 py-6 border-b border-slate-50 bg-slate-50/50">
+                <h3 class="text-sm font-bold text-slate-900 uppercase tracking-widest">Basic Information</h3>
+            </div>
+            <div class="p-8 space-y-8">
                 <div>
-                    <label for="title" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Prompt Title</label>
-                    <input type="text" name="title" id="title" required value="<?php echo esc($prompt['title'] ?? ''); ?>" 
-                        class="block w-full px-6 py-4 bg-slate-50 border-slate-100 rounded-2xl focus:ring-primary-500 focus:border-primary-500 text-xl font-bold text-slate-900 transition-all" 
-                        placeholder="Give your prompt a descriptive name...">
+                    <label for="title" class="form-label px-1">Prompt Title</label>
+                    <input type="text" name="title" id="title" required value="<?php echo esc($_POST['title'] ?? $prompt['title'] ?? ''); ?>" 
+                        class="form-input text-xl font-bold <?php echo isset($errors['title']) ? 'border-red-300 ring-red-100' : ''; ?>" 
+                        placeholder="e.g. Creative Story Generator">
+                    <?php if (isset($errors['title'])): ?>
+                        <p class="form-error"><?php echo esc($errors['title']); ?></p>
+                    <?php endif; ?>
                 </div>
 
-                <!-- Content Field -->
                 <div>
-                    <label for="content" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Prompt Content</label>
-                    <textarea name="content" id="content" rows="12" required 
-                        class="block w-full px-6 py-6 bg-slate-50 border-slate-100 rounded-2xl focus:ring-primary-500 focus:border-primary-500 font-mono text-slate-800 leading-relaxed transition-all" 
-                        placeholder="Write or paste your prompt content here..."><?php echo esc($prompt['content'] ?? ''); ?></textarea>
+                    <label for="category_id" class="form-label px-1">Category</label>
+                    <select name="category_id" id="category_id" class="form-input">
+                        <option value="">No Category (Uncategorized)</option>
+                        <?php foreach ($categories as $cat): ?>
+                            <option value="<?php echo $cat['id']; ?>" <?php echo (($_POST['category_id'] ?? $prompt['category_id'] ?? '') == $cat['id']) ? 'selected' : ''; ?>>
+                                <?php echo esc($cat['name']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Prompt Content -->
+        <div class="form-section">
+            <div class="px-8 py-6 border-b border-slate-50 bg-slate-50/50 flex justify-between items-center">
+                <h3 class="text-sm font-bold text-slate-900 uppercase tracking-widest">Prompt Content</h3>
+                <span class="text-xs font-bold text-slate-400">Core Data</span>
+            </div>
+            <div class="p-8">
+                <textarea name="content" id="content" rows="15" required 
+                    class="form-input font-mono text-slate-800 leading-relaxed min-h-[400px] resize-y <?php echo isset($errors['content']) ? 'border-red-300 ring-red-100' : ''; ?>" 
+                    placeholder="Write or paste your prompt here..."><?php echo esc($_POST['content'] ?? $prompt['content'] ?? ''); ?></textarea>
+                <?php if (isset($errors['content'])): ?>
+                    <p class="form-error"><?php echo esc($errors['content']); ?></p>
+                <?php endif; ?>
+                <p class="mt-4 text-xs text-slate-400 italic font-medium">Use markers like [VAR_NAME] for easy identification of variables in your prompts.</p>
+            </div>
+        </div>
+
+        <!-- Section 3: Organization & Tags -->
+        <div class="form-section">
+            <div class="px-8 py-6 border-b border-slate-50 bg-slate-50/50">
+                <h3 class="text-sm font-bold text-slate-900 uppercase tracking-widest">Organization & Discovery</h3>
+            </div>
+            <div class="p-8 space-y-10">
+                <div>
+                    <label for="new_tags" class="form-label px-1">Quick Add Tags</label>
+                    <input type="text" name="new_tags" id="new_tags" 
+                        class="form-input" 
+                        placeholder="Type tags separated by commas (e.g. ai, writing, story)">
                 </div>
 
-                <!-- Organization Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-10 pt-4 border-t border-slate-50">
-                    <div>
-                        <label for="category_id" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Category</label>
-                        <select name="category_id" id="category_id" class="block w-full px-4 py-3 bg-slate-50 border-slate-100 rounded-xl focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-all">
-                            <option value="">No Category</option>
-                            <?php foreach ($categories as $cat): ?>
-                                <option value="<?php echo $cat['id']; ?>" <?php echo ($prompt['category_id'] ?? '') == $cat['id'] ? 'selected' : ''; ?>>
-                                    <?php echo esc($cat['name']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="new_tags" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Add New Tags</label>
-                        <input type="text" name="new_tags" id="new_tags" 
-                            class="block w-full px-4 py-3 bg-slate-50 border-slate-100 rounded-xl focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-all" 
-                            placeholder="comma, separated, tags">
-                    </div>
-                </div>
-
-                <!-- Multi-select Areas -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 text-center md:text-left">Select Existing Tags</label>
-                        <div class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 bg-slate-50 rounded-2xl border border-slate-100">
+                        <label class="form-label px-1 text-center md:text-left mb-4">Select Existing Tags</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto p-3 bg-slate-50 rounded-2xl border border-slate-100">
                             <?php foreach ($tags as $tag): ?>
                                 <label class="flex items-center p-3 bg-white rounded-xl border border-slate-100 cursor-pointer hover:border-primary-300 transition-all">
                                     <input type="checkbox" name="tag_ids[]" value="<?php echo $tag['id']; ?>" <?php echo in_array($tag['id'], $selected_tag_ids) ? 'checked' : ''; ?> class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-slate-300 rounded">
-                                    <span class="ml-3 text-xs font-semibold text-slate-700 truncate"><?php echo esc($tag['name']); ?></span>
+                                    <span class="ml-3 text-xs font-bold text-slate-600 truncate">#<?php echo esc($tag['name']); ?></span>
                                 </label>
                             <?php endforeach; ?>
                             <?php if (empty($tags)): ?>
-                                <p class="col-span-full py-4 text-center text-slate-400 text-xs italic">No tags yet.</p>
+                                <p class="col-span-full py-6 text-center text-slate-400 text-xs italic">No tags available.</p>
                             <?php endif; ?>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 text-center md:text-left">Assign to Collections</label>
-                        <div class="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto p-2 bg-slate-50 rounded-2xl border border-slate-100">
+                        <label class="form-label px-1 text-center md:text-left mb-4">Assign to Collections</label>
+                        <div class="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto p-3 bg-slate-50 rounded-2xl border border-slate-100">
                             <?php foreach ($collections as $coll): ?>
                                 <label class="flex items-center p-3 bg-white rounded-xl border border-slate-100 cursor-pointer hover:border-primary-300 transition-all">
                                     <input type="checkbox" name="collection_ids[]" value="<?php echo $coll['id']; ?>" <?php echo in_array($coll['id'], $selected_collection_ids) ? 'checked' : ''; ?> class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-slate-300 rounded">
@@ -144,30 +173,30 @@ include 'includes/header.php';
                                 </label>
                             <?php endforeach; ?>
                             <?php if (empty($collections)): ?>
-                                <p class="col-span-full py-4 text-center text-slate-400 text-xs italic">No collections yet.</p>
+                                <p class="col-span-full py-6 text-center text-slate-400 text-xs italic">No collections available.</p>
                             <?php endif; ?>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Form Actions -->
-            <div class="px-8 py-6 bg-slate-50 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="order-2 md:order-1">
-                    <?php if ($id): ?>
-                        <button type="button" onclick="if(confirm('Delete this prompt permanently?')) document.getElementById('delete-form').submit();" class="text-red-500 hover:text-red-700 text-sm font-bold uppercase tracking-widest">
-                            Delete Prompt
-                        </button>
-                    <?php endif; ?>
-                </div>
-                <div class="flex items-center space-x-4 order-1 md:order-2 w-full md:w-auto">
-                    <a href="<?php echo $id ? 'prompt.php?id=' . $id : 'index.php'; ?>" class="flex-grow md:flex-grow-0 text-center px-8 py-3 text-slate-600 font-bold hover:text-slate-900 transition-colors">
-                        Discard
-                    </a>
-                    <button type="submit" class="flex-grow md:flex-grow-0 px-10 py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 shadow-lg shadow-primary-600/20 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                        <?php echo $id ? 'Save Changes' : 'Publish Prompt'; ?>
+        <!-- Form Actions -->
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 pb-20">
+            <div class="order-2 md:order-1">
+                <?php if ($id): ?>
+                    <button type="button" onclick="if(confirm('Are you absolutely sure you want to delete this prompt? This cannot be undone.')) document.getElementById('delete-form').submit();" class="text-red-500 hover:text-red-700 text-xs font-bold uppercase tracking-widest transition-colors">
+                        Delete Prompt Permanently
                     </button>
-                </div>
+                <?php endif; ?>
+            </div>
+            <div class="flex items-center space-x-4 order-1 md:order-2 w-full md:w-auto">
+                <a href="<?php echo $id ? 'prompt.php?id=' . $id : 'index.php'; ?>" class="btn-secondary flex-grow md:flex-grow-0 text-center">
+                    Discard
+                </a>
+                <button type="submit" class="btn-primary flex-grow md:flex-grow-0">
+                    <?php echo $id ? 'Save Changes' : 'Publish Prompt'; ?>
+                </button>
             </div>
         </div>
     </form>

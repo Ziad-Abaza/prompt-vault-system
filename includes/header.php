@@ -38,14 +38,29 @@
     </script>
     <style>
         [x-cloak] { display: none !important; }
+        .form-input {
+            @apply block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-900;
+        }
+        .form-label {
+            @apply block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2;
+        }
+        .form-section {
+            @apply bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden;
+        }
+        .form-error {
+            @apply text-red-500 text-xs font-semibold mt-1;
+        }
+        .btn-primary {
+            @apply px-8 py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 shadow-lg shadow-primary-600/20 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
+        }
+        .btn-secondary {
+            @apply px-8 py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all;
+        }
         .line-clamp-2 {
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;  
             overflow: hidden;
-        }
-        .prose-mono {
-            font-family: 'JetBrains Mono', monospace;
         }
     </style>
 </head>
