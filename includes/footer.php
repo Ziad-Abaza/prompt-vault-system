@@ -1,16 +1,45 @@
-    </main>
+        </main>
 
-    <footer class="bg-white border-t border-gray-200 py-6">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
-            &copy; <?php echo date('Y'); ?> Prompt Vault System. Portable & Secure.
-        </div>
-    </footer>
+        <footer class="bg-white border-t border-slate-100 py-8">
+            <div class="max-w-6xl mx-auto px-4 md:px-8 text-center">
+                <p class="text-slate-400 text-xs font-medium uppercase tracking-widest">
+                    &copy; <?php echo date('Y'); ?> Prompt Vault System &bull; Private & Secure
+                </p>
+            </div>
+        </footer>
+    </div>
 
-    <!-- Vanilla JS for global functionality (like copy to clipboard) -->
+    <!-- Vanilla JS for global functionality -->
     <script>
-        function copyToClipboard(text) {
+        // Mobile Menu Toggle
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        if (mobileMenuToggle && sidebar) {
+            mobileMenuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth < 768 && !sidebar.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                    sidebar.classList.add('-translate-x-full');
+                }
+            });
+        }
+
+        // Global copy to clipboard with feedback
+        function copyToClipboard(text, btnElement) {
             navigator.clipboard.writeText(text).then(() => {
-                alert('Copied to clipboard!');
+                const originalHtml = btnElement ? btnElement.innerHTML : null;
+                if (btnElement) {
+                    btnElement.innerHTML = '<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                    setTimeout(() => {
+                        btnElement.innerHTML = originalHtml;
+                    }, 2000);
+                } else {
+                    alert('Copied to clipboard!');
+                }
             }).catch(err => {
                 console.error('Failed to copy: ', err);
             });

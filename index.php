@@ -16,135 +16,152 @@ $collections = get_collections();
 include 'includes/header.php';
 ?>
 
-<div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-    <h1 class="text-3xl font-bold text-gray-900">Prompts</h1>
-    <a href="prompt_edit.php" class="mt-4 md:mt-0 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        New Prompt
-    </a>
+<div class="mb-12">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div>
+            <h1 class="text-4xl font-bold text-slate-900 tracking-tight mb-2">Workspace</h1>
+            <p class="text-slate-500 text-lg">Manage and discover your prompt library.</p>
+        </div>
+        <a href="prompt_edit.php" class="inline-flex items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-base font-semibold text-white bg-primary-600 hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Create New Prompt
+        </a>
+    </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-    <!-- Sidebar Filters -->
-    <div class="lg:col-span-1 space-y-6">
-        <form action="index.php" method="GET" class="space-y-4">
-            <div>
-                <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
-                <input type="text" name="search" id="search" value="<?php echo esc($filters['search']); ?>" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm" placeholder="Title or content...">
+<!-- Search and Filter Bar -->
+<div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 mb-10">
+    <form action="index.php" method="GET" class="flex flex-col md:flex-row gap-2">
+        <div class="flex-grow relative">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
             </div>
-            
-            <div>
-                <label for="category_id" class="block text-sm font-medium text-gray-700">Category</label>
-                <select name="category_id" id="category_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm">
-                    <option value="">All Categories</option>
-                    <?php foreach ($categories as $cat): ?>
-                        <option value="<?php echo $cat['id']; ?>" <?php echo $filters['category_id'] == $cat['id'] ? 'selected' : ''; ?>>
-                            <?php echo esc($cat['name']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+            <input type="text" name="search" value="<?php echo esc($filters['search']); ?>" class="block w-full pl-11 pr-4 py-3 border-transparent bg-transparent rounded-xl focus:ring-0 sm:text-sm" placeholder="Search prompts by title or keywords...">
+        </div>
+        
+        <div class="flex gap-2 p-1">
+            <select name="category_id" class="block w-full md:w-48 pl-3 pr-10 py-2 text-sm border-slate-100 bg-slate-50 rounded-lg focus:ring-primary-500 focus:border-primary-500">
+                <option value="">All Categories</option>
+                <?php foreach ($categories as $cat): ?>
+                    <option value="<?php echo $cat['id']; ?>" <?php echo $filters['category_id'] == $cat['id'] ? 'selected' : ''; ?>>
+                        <?php echo esc($cat['name']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
 
-            <div>
-                <label for="tag_id" class="block text-sm font-medium text-gray-700">Tag</label>
-                <select name="tag_id" id="tag_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm">
-                    <option value="">All Tags</option>
-                    <?php foreach ($tags as $tag): ?>
-                        <option value="<?php echo $tag['id']; ?>" <?php echo $filters['tag_id'] == $tag['id'] ? 'selected' : ''; ?>>
-                            <?php echo esc($tag['name']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+            <select name="collection_id" class="block w-full md:w-48 pl-3 pr-10 py-2 text-sm border-slate-100 bg-slate-50 rounded-lg focus:ring-primary-500 focus:border-primary-500">
+                <option value="">All Collections</option>
+                <?php foreach ($collections as $coll): ?>
+                    <option value="<?php echo $coll['id']; ?>" <?php echo $filters['collection_id'] == $coll['id'] ? 'selected' : ''; ?>>
+                        <?php echo esc($coll['name']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
 
-            <div>
-                <label for="collection_id" class="block text-sm font-medium text-gray-700">Collection</label>
-                <select name="collection_id" id="collection_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm">
-                    <option value="">All Collections</option>
-                    <?php foreach ($collections as $coll): ?>
-                        <option value="<?php echo $coll['id']; ?>" <?php echo $filters['collection_id'] == $coll['id'] ? 'selected' : ''; ?>>
-                            <?php echo esc($coll['name']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <div class="flex space-x-2">
-                <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-                    Filter
-                </button>
-                <a href="index.php" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+            <button type="submit" class="px-5 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-800 transition-colors">
+                Apply
+            </button>
+            <?php if (array_filter($filters)): ?>
+                <a href="index.php" class="px-5 py-2 bg-slate-100 text-slate-600 text-sm font-semibold rounded-lg hover:bg-slate-200 transition-colors">
                     Reset
                 </a>
-            </div>
-        </form>
-    </div>
+            <?php endif; ?>
+        </div>
+    </form>
+</div>
 
-    <!-- Prompts List -->
-    <div class="lg:col-span-3">
-        <?php if (empty($prompts)): ?>
-            <div class="bg-white p-12 rounded-lg border-2 border-dashed border-gray-300 text-center">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">No prompts found</h3>
-                <p class="mt-1 text-sm text-gray-500">Try adjusting your filters or create a new prompt.</p>
-                <div class="mt-6">
-                    <a href="prompt_edit.php" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-                        New Prompt
+<!-- Active Filter Chips (if any) -->
+<?php if ($filters['tag_id'] || $filters['category_id'] || $filters['collection_id'] || $filters['search']): ?>
+    <div class="flex flex-wrap gap-2 mb-8">
+        <?php if ($filters['category_id']): ?>
+            <?php $active_cat = array_filter($categories, fn($c) => $c['id'] == $filters['category_id']); ?>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
+                Category: <?php echo esc(reset($active_cat)['name']); ?>
+                <a href="index.php?<?php echo http_build_query(array_merge($filters, ['category_id' => ''])); ?>" class="ml-2 text-primary-400 hover:text-primary-600">&times;</a>
+            </span>
+        <?php endif; ?>
+        
+        <?php if ($filters['tag_id']): ?>
+            <?php $active_tag = array_filter($tags, fn($t) => $t['id'] == $filters['tag_id']); ?>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                Tag: <?php echo esc(reset($active_tag)['name']); ?>
+                <a href="index.php?<?php echo http_build_query(array_merge($filters, ['tag_id' => ''])); ?>" class="ml-2 text-indigo-400 hover:text-indigo-600">&times;</a>
+            </span>
+        <?php endif; ?>
+
+        <?php if ($filters['search']): ?>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-slate-100 text-slate-800">
+                Search: "<?php echo esc($filters['search']); ?>"
+                <a href="index.php?<?php echo http_build_query(array_merge($filters, ['search' => ''])); ?>" class="ml-2 text-slate-400 hover:text-slate-600">&times;</a>
+            </span>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
+
+<!-- Prompts Grid -->
+<?php if (empty($prompts)): ?>
+    <div class="bg-white rounded-3xl p-20 border border-slate-200 text-center shadow-sm">
+        <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="h-10 w-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900 mb-2">No prompts found</h3>
+        <p class="text-slate-500 max-w-sm mx-auto mb-8">Try adjusting your filters or start fresh with a new prompt.</p>
+        <a href="prompt_edit.php" class="inline-flex items-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-colors">
+            Create First Prompt
+        </a>
+    </div>
+<?php else: ?>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <?php foreach ($prompts as $prompt): ?>
+            <div class="group bg-white rounded-2xl border border-slate-200 hover:border-primary-300 hover:shadow-xl hover:shadow-primary-900/5 transition-all duration-300 flex flex-col overflow-hidden">
+                <div class="p-6 flex-grow">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-primary-50 text-primary-700 uppercase tracking-wider">
+                            <?php echo esc($prompt['category_name'] ?? 'Uncategorized'); ?>
+                        </span>
+                        <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="copyToClipboard(<?php echo esc(json_encode($prompt['content'])); ?>, this)" class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="Copy Prompt">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                </svg>
+                            </button>
+                            <a href="prompt_edit.php?id=<?php echo $prompt['id']; ?>" class="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit Prompt">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <a href="prompt.php?id=<?php echo $prompt['id']; ?>" class="block group-hover:text-primary-600 transition-colors">
+                        <h2 class="text-xl font-bold text-slate-900 mb-3 leading-snug"><?php echo esc($prompt['title']); ?></h2>
+                    </a>
+                    
+                    <p class="text-slate-600 text-sm line-clamp-2 leading-relaxed mb-6">
+                        <?php echo esc($prompt['content']); ?>
+                    </p>
+                </div>
+                
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs font-medium text-slate-400">
+                        Updated <?php echo date('M j, Y', strtotime($prompt['updated_at'])); ?>
+                    </span>
+                    <a href="prompt.php?id=<?php echo $prompt['id']; ?>" class="text-xs font-bold text-primary-600 hover:text-primary-800 uppercase tracking-widest flex items-center">
+                        View Prompt
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
                     </a>
                 </div>
             </div>
-        <?php else: ?>
-            <div class="space-y-4">
-                <?php foreach ($prompts as $prompt): ?>
-                    <div class="bg-white shadow overflow-hidden sm:rounded-md border border-gray-200">
-                        <div class="px-4 py-4 sm:px-6">
-                            <div class="flex items-center justify-between">
-                                <a href="prompt.php?id=<?php echo $prompt['id']; ?>" class="text-lg font-medium text-primary truncate">
-                                    <?php echo esc($prompt['title']); ?>
-                                </a>
-                                <div class="ml-2 flex-shrink-0 flex">
-                                    <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                        <?php echo esc($prompt['category_name'] ?? 'Uncategorized'); ?>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="mt-2 sm:flex sm:justify-between">
-                                <div class="sm:flex">
-                                    <p class="flex items-center text-sm text-gray-500 line-clamp-2 mr-4">
-                                        <?php echo esc(mb_strimwidth($prompt['content'], 0, 150, "...")); ?>
-                                    </p>
-                                </div>
-                                <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 whitespace-nowrap">
-                                    <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <p>
-                                        Updated <?php echo date('M j, Y', strtotime($prompt['updated_at'])); ?>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex justify-end space-x-3">
-                                <button onclick="copyToClipboard(<?php echo esc(json_encode($prompt['content'])); ?>)" class="text-gray-400 hover:text-gray-600">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                    </svg>
-                                </button>
-                                <a href="prompt_edit.php?id=<?php echo $prompt['id']; ?>" class="text-gray-400 hover:text-gray-600">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
+        <?php endforeach; ?>
     </div>
-</div>
+<?php endif; ?>
 
 <?php include 'includes/footer.php'; ?>

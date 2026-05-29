@@ -6,60 +6,151 @@
     <title>Prompt Vault System</title>
     <!-- Tailwind CSS Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
                     colors: {
-                        primary: '#3b82f6',
-                        secondary: '#64748b',
+                        primary: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#bae0fd',
+                            300: '#7cc8fb',
+                            400: '#38acf7',
+                            500: '#0e91e9',
+                            600: '#0274c7',
+                            700: '#035ca1',
+                            800: '#074e85',
+                            900: '#0c426e',
+                        },
+                        surface: '#f8fafc',
                     }
                 }
             }
         }
     </script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
+        .prose-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+<body class="bg-surface text-slate-900 font-sans antialiased min-h-screen flex flex-col md:flex-row">
 
-    <nav class="bg-white border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex">
-                    <div class="flex-shrink-0 flex items-center">
-                        <a href="index.php" class="text-2xl font-bold text-primary">PromptVault</a>
-                    </div>
-                    <?php if (is_logged_in()): ?>
-                    <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
-                        <a href="index.php" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Prompts</a>
-                        <a href="categories.php" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Categories</a>
-                        <a href="tags.php" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Tags</a>
-                        <a href="collections.php" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Collections</a>
-                    </div>
-                    <?php endif; ?>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <?php if (is_logged_in()): ?>
-                        <span class="text-gray-500 text-sm hidden md:inline">Hello, <strong><?php echo esc(get_current_username()); ?></strong></span>
-                        <a href="search.php" class="text-gray-500 hover:text-gray-700">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </a>
-                        <a href="export.php" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Export</a>
-                        <a href="import.php" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Import</a>
-                        <a href="logout.php" class="text-red-500 hover:text-red-700 text-sm font-medium">Logout</a>
-                    <?php else: ?>
-                        <a href="login.php" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Sign In</a>
-                        <a href="register.php" class="text-primary hover:text-blue-700 text-sm font-medium">Register</a>
-                    <?php endif; ?>
-                </div>
-            </div>
+    <!-- Mobile Header -->
+    <header class="md:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-50">
+        <a href="index.php" class="text-xl font-bold text-primary-600 tracking-tight">PromptVault</a>
+        <button id="mobile-menu-toggle" class="p-2 text-slate-500 hover:text-slate-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+            </svg>
+        </button>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out md:sticky md:top-0 h-screen overflow-y-auto">
+        <div class="p-6">
+            <a href="index.php" class="text-2xl font-bold text-primary-600 tracking-tight block mb-8">PromptVault</a>
+            
+            <nav class="space-y-1">
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-3">Main</p>
+                <a href="index.php" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    Prompts
+                </a>
+                <a href="search.php" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'search.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    Search
+                </a>
+                
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-8 mb-2 px-3">Organize</p>
+                <a href="categories.php" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'categories.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                    </svg>
+                    Categories
+                </a>
+                <a href="tags.php" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'tags.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                    Tags
+                </a>
+                <a href="collections.php" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'collections.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                    </svg>
+                    Collections
+                </a>
+
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-8 mb-2 px-3">Data</p>
+                <a href="export.php" class="flex items-center px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900">
+                    <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Export
+                </a>
+                <a href="import.php" class="flex items-center px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900">
+                    <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                    Import
+                </a>
+            </nav>
         </div>
-    </nav>
 
-    <main class="flex-grow max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 w-full">
-        <?php if ($flash = get_flash()): ?>
-            <div class="mb-4 p-4 rounded-md <?php echo $flash['type'] === 'error' ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'; ?>">
-                <?php echo esc($flash['message']); ?>
-            </div>
-        <?php endif; ?>
+        <div class="absolute bottom-0 w-full p-6 border-t border-slate-100 bg-white">
+            <?php if (is_logged_in()): ?>
+                <div class="flex items-center mb-4">
+                    <div class="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-bold mr-3">
+                        <?php echo strtoupper(substr(get_current_username(), 0, 1)); ?>
+                    </div>
+                    <div class="flex-grow overflow-hidden">
+                        <p class="text-sm font-semibold text-slate-900 truncate"><?php echo esc(get_current_username()); ?></p>
+                    </div>
+                </div>
+                <a href="logout.php" class="flex items-center px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    Logout
+                </a>
+            <?php else: ?>
+                <a href="login.php" class="flex items-center px-3 py-2 text-sm font-medium text-primary-600 rounded-lg hover:bg-primary-50">
+                    Sign In
+                </a>
+            <?php endif; ?>
+        </div>
+    </aside>
+
+    <!-- Content Wrapper -->
+    <div class="flex-grow flex flex-col min-h-screen">
+        <main class="flex-grow p-4 md:p-8 lg:p-12 max-w-6xl w-full mx-auto">
+            <?php if ($flash = get_flash()): ?>
+                <div class="mb-8 p-4 rounded-xl border <?php echo $flash['type'] === 'error' ? 'bg-red-50 border-red-100 text-red-700' : 'bg-green-50 border-green-100 text-green-700'; ?> flex items-center">
+                    <?php if ($flash['type'] === 'error'): ?>
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <?php else: ?>
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <?php endif; ?>
+                    <span class="text-sm font-medium"><?php echo esc($flash['message']); ?></span>
+                </div>
+            <?php endif; ?>
