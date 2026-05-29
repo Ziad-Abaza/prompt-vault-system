@@ -104,58 +104,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['backup_file'])) {
 include 'includes/header.php';
 ?>
 
-<div class="max-w-2xl mx-auto">
-    <h1 class="text-3xl font-bold text-gray-900 mb-6">Import Backup</h1>
+<div class="max-w-3xl mx-auto">
+    <div class="mb-12">
+        <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Import Library</h1>
+        <p class="text-slate-500 text-lg font-medium text-balance">Restore your prompts and organizational data from a backup file.</p>
+    </div>
 
-    <div class="bg-white shadow sm:rounded-lg overflow-hidden border border-gray-200">
-        <div class="px-4 py-8 sm:p-10">
-            <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm">
-                            <strong>Warning:</strong> This will <strong>permanently delete</strong> your current prompts, categories, tags, and collections and replace them with the backup content. This action only affects your account.
-                        </p>
-                    </div>
+    <div class="form-section shadow-xl shadow-slate-200/40 border-amber-100">
+        <div class="form-section-header bg-amber-50/50 border-amber-50">
+            <h3 class="form-section-title text-amber-900">Critical: Data Replacement Warning</h3>
+            <span class="text-[10px] font-black text-amber-600 bg-white px-2 py-1 rounded-md uppercase tracking-widest border border-amber-100">Action Required</span>
+        </div>
+        
+        <div class="form-body">
+            <div class="p-6 bg-amber-50 rounded-2xl border border-amber-100 flex items-start">
+                <div class="shrink-0 w-10 h-10 rounded-xl bg-white flex items-center justify-center text-amber-600 shadow-sm border border-amber-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-amber-900 font-bold leading-relaxed">
+                        This process will permanently overwrite your current library.
+                    </p>
+                    <p class="text-xs text-amber-700 mt-1 font-medium leading-relaxed">
+                        All prompts, categories, tags, and collections in your account will be deleted and replaced with the contents of the uploaded JSON file.
+                    </p>
                 </div>
             </div>
 
             <?php if (isset($error)): ?>
-                <div class="mb-4 p-4 rounded-md bg-red-50 text-red-700">
+                <div class="p-4 rounded-xl bg-red-50 border border-red-100 text-red-700 text-sm font-bold flex items-center">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <?php echo esc($error); ?>
                 </div>
             <?php endif; ?>
 
-            <form action="import.php" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form action="import.php" method="POST" enctype="multipart/form-data" class="space-y-10 pt-4">
                 <?php echo csrf_input(); ?>
                 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Select JSON Backup File</label>
-                    <div class="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                        <div class="space-y-1 text-center">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <div class="flex text-sm text-gray-600">
-                                <label for="backup_file" class="relative cursor-pointer bg-white rounded-md font-medium text-primary hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary">
-                                    <span>Upload a file</span>
-                                    <input id="backup_file" name="backup_file" type="file" class="sr-only" accept=".json" required>
-                                </label>
-                                <p class="pl-1">or drag and drop</p>
+                <div class="form-group">
+                    <label class="form-label px-1">Select JSON Backup File</label>
+                    <div class="relative group">
+                        <input id="backup_file" name="backup_file" type="file" class="sr-only" accept=".json" required onchange="document.getElementById('file-name-display').textContent = this.files[0].name">
+                        <label for="backup_file" class="flex flex-col items-center justify-center w-full h-64 px-6 transition bg-slate-50 border-2 border-slate-100 border-dashed rounded-3xl cursor-pointer hover:bg-primary-50/30 hover:border-primary-300 focus:outline-none group-hover:scale-[1.01] transition-all">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <div class="w-16 h-16 mb-4 rounded-2xl bg-white flex items-center justify-center text-slate-400 group-hover:text-primary-500 shadow-sm border border-slate-100 transition-colors">
+                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                </div>
+                                <p id="file-name-display" class="mb-2 text-sm text-slate-700 font-bold">Click to upload or drag and drop</p>
+                                <p class="text-xs text-slate-400 font-medium uppercase tracking-widest">Only JSON files are supported</p>
                             </div>
-                            <p class="text-xs text-gray-500">JSON files only</p>
-                        </div>
+                        </label>
                     </div>
                 </div>
 
-                <div>
-                    <button type="submit" onclick="return confirm('Are you absolutely sure? Your current vault data will be replaced.')" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-                        Start Import
+                <div class="pt-6">
+                    <button type="submit" onclick="return confirm('Final confirmation: Are you sure you want to replace your entire vault?')" class="btn-primary w-full py-5 text-lg">
+                        Execute Data Restoration
                     </button>
+                    <p class="text-center mt-6 text-xs text-slate-400 font-medium">Your current vault remains untouched until you press this button.</p>
                 </div>
             </form>
         </div>

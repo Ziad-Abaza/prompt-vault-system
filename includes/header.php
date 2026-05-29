@@ -38,24 +38,58 @@
     </script>
     <style>
         [x-cloak] { display: none !important; }
-        .form-input {
-            @apply block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-900;
+        
+        /* Form Design System */
+        .form-section {
+            @apply bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden mb-8;
+        }
+        .form-section-header {
+            @apply px-8 py-5 border-b border-slate-50 bg-slate-50/50 flex justify-between items-center;
+        }
+        .form-section-title {
+            @apply text-sm font-bold text-slate-900 uppercase tracking-widest;
+        }
+        .form-body {
+            @apply p-8 space-y-8;
+        }
+        .form-group {
+            @apply space-y-2;
         }
         .form-label {
-            @apply block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2;
+            @apply block text-xs font-bold text-slate-500 uppercase tracking-widest px-1 transition-colors;
         }
-        .form-section {
-            @apply bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden;
+        .form-group:focus-within .form-label {
+            @apply text-primary-600;
+        }
+        .form-input {
+            @apply block w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 focus:bg-white transition-all text-slate-900 font-medium placeholder-slate-300;
+        }
+        .form-textarea {
+            @apply block w-full px-6 py-6 bg-slate-50 border border-slate-100 rounded-3xl focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 focus:bg-white font-mono text-slate-800 leading-relaxed transition-all placeholder-slate-300 resize-y;
+        }
+        .form-select {
+            @apply block w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 focus:bg-white transition-all text-slate-900 font-semibold appearance-none cursor-pointer;
         }
         .form-error {
-            @apply text-red-500 text-xs font-semibold mt-1;
+            @apply text-red-500 text-xs font-bold mt-2 px-1 flex items-center;
         }
+        .form-error::before {
+            content: "!";
+            @apply inline-flex items-center justify-center w-4 h-4 rounded-full bg-red-100 text-red-600 mr-2 text-[10px];
+        }
+        
+        /* Buttons */
         .btn-primary {
-            @apply px-8 py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 shadow-lg shadow-primary-600/20 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
+            @apply px-10 py-4 bg-primary-600 text-white font-bold rounded-2xl hover:bg-primary-700 shadow-lg shadow-primary-600/20 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transform active:scale-[0.98];
         }
         .btn-secondary {
-            @apply px-8 py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all;
+            @apply px-10 py-4 bg-white border border-slate-200 text-slate-600 font-bold rounded-2xl hover:bg-slate-50 hover:text-slate-900 transition-all transform active:scale-[0.98];
         }
+        .btn-danger-link {
+            @apply text-red-500 hover:text-red-700 text-xs font-bold uppercase tracking-widest transition-colors;
+        }
+
+        /* Utilities */
         .line-clamp-2 {
             display: -webkit-box;
             -webkit-line-clamp: 2;
