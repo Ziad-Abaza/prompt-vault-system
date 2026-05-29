@@ -1,0 +1,16 @@
+{
+  "name": "Atlas AI Prompt Library",
+  "short_name": "Atlas",
+  "description": "A professional workspace for organizing and managing AI prompts, prompt engineering tools, and LLM workflows.",
+  "start_url": "index.php",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0e91e9",
+  "icons": [
+    {
+      "src": "assets/icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}

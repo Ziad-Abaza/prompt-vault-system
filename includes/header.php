@@ -8,13 +8,32 @@
 
     <?php
     $final_title = (isset($page_title) ? $page_title . " | " : "") . APP_NAME;
-    $final_desc = $meta_description ?? "Atlas Library - A professional workspace for organizing and managing AI prompts.";
+    $default_desc = "Atlas Library - The best tool to store, save, and manage AI prompts. A searchable database for ChatGPT prompts, prompt engineering, and LLM workflow management.";
+    $final_desc = $meta_description ?? $default_desc;
+    $keywords = "how to organize AI prompts, how to save and manage prompts for ChatGPT, best tool to store AI prompts, searchable database for AI prompts, create your own prompt library, organize prompts for ChatGPT and AI tools, AI prompt management system for developers, cloud based prompt storage system, share and reuse AI prompts easily, centralized AI prompt workspace, AI prompt library, prompt library, prompt database, AI prompts collection, save AI prompts, prompt management tool, prompt organizer, AI prompt manager, prompt storage system, searchable prompt library, Atlas AI prompt library, Atlas prompt manager, Atlas prompt database, Atlas AI workspace, Atlas prompt hub, prompt engineering tools, prompt engineering library, LLM prompt management, AI workflow prompt system, prompt versioning system, prompt engineering platform, structured prompt database, reusable AI prompts system, prompt API management, AI prompt optimization tool";
     $canonical_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     ?>
 
     <title><?php echo esc($final_title); ?></title>
     <meta name="description" content="<?php echo esc($final_desc); ?>">
+    <meta name="keywords" content="<?php echo esc($keywords); ?>">
     <link rel="canonical" href="<?php echo esc($canonical_url); ?>">
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="theme-color" content="#0e91e9">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<?php echo esc($canonical_url); ?>">
+    <meta property="og:title" content="<?php echo esc($final_title); ?>">
+    <meta property="og:description" content="<?php echo esc($final_desc); ?>">
+    <meta property="og:image" content="assets/logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="<?php echo esc($canonical_url); ?>">
+    <meta property="twitter:title" content="<?php echo esc($final_title); ?>">
+    <meta property="twitter:description" content="<?php echo esc($final_desc); ?>">
+    <meta property="twitter:image" content="assets/logo.png">
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -23,11 +42,28 @@
             "@context" => "https://schema.org",
             "@graph" => [
                 [
-                    "@type" => "SoftwareApplication",
+                    "@type" => "WebApplication",
+                    "@id" => $canonical_url . "#website",
                     "name" => APP_NAME,
+                    "url" => $canonical_url,
                     "operatingSystem" => "Web",
                     "applicationCategory" => "DeveloperApplication",
-                    "description" => "A centralized workspace for organizing, managing, and discovering AI prompts."
+                    "description" => "A centralized AI prompt workspace and prompt engineering platform for organizing, managing, and discovering AI prompts.",
+                    "keywords" => $keywords,
+                    "offers" => [
+                        "@type" => "Offer",
+                        "price" => "0",
+                        "priceCurrency" => "USD"
+                    ]
+                ],
+                [
+                    "@type" => "Organization",
+                    "name" => APP_NAME,
+                    "url" => $canonical_url,
+                    "logo" => [
+                        "@type" => "ImageObject",
+                        "url" => "assets/logo.png"
+                    ]
                 ]
             ]
         ];

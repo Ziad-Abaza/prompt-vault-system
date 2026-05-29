@@ -1,9 +1,3 @@
----
-noteId: "d450dbd05b7b11f1a040f92a15dc2ecd"
-tags: []
-
----
-
 # Atlas Library
 
 Atlas Library is a professional, production-ready knowledge management platform designed for storing, organizing, categorizing, and managing AI prompts and prompt collections. Built with a focus on simplicity, portability, and security, it provides a centralized workspace for teams and individuals to build their prompt intelligence.
