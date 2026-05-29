@@ -46,8 +46,8 @@ include 'includes/header.php';
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
             </svg>
         </div>
-        <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Create Account</h1>
-        <p class="text-slate-500 font-medium">Join the vault and secure your prompts.</p>
+        <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Join <?php echo APP_NAME; ?></h1>
+        <p class="text-slate-500 font-medium">Start your professional knowledge library today.</p>
     </div>
 
     <div class="form-section shadow-xl shadow-slate-200/50">

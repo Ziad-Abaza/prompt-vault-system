@@ -19,8 +19,8 @@ include 'includes/header.php';
 <div class="mb-12">
     <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
         <div>
-            <h1 class="text-4xl font-bold text-slate-900 tracking-tight mb-2">Workspace</h1>
-            <p class="text-slate-500 text-lg">Manage and discover your prompt library.</p>
+            <h1 class="text-4xl font-bold text-slate-900 tracking-tight mb-2"><?php echo APP_NAME; ?> Dashboard</h1>
+            <p class="text-slate-500 text-lg">A centralized workspace for organizing, managing, and discovering AI prompts.</p>
         </div>
         <a href="prompt_edit.php" class="inline-flex items-center px-6 py-3 border border-transparent rounded-xl shadow-sm text-base font-semibold text-white bg-primary-600 hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
             <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

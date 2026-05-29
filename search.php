@@ -6,7 +6,7 @@ include 'includes/header.php';
 
 <div class="max-w-4xl mx-auto">
     <div class="mb-12 text-center">
-        <h1 class="text-5xl font-extrabold text-slate-900 tracking-tight mb-4">Search Vault</h1>
+        <h1 class="text-5xl font-extrabold text-slate-900 tracking-tight mb-4"><?php echo APP_NAME; ?> Search</h1>
         <p class="text-slate-500 text-xl">Find exactly what you need in seconds.</p>
     </div>
 

@@ -7,6 +7,9 @@
 require_once __DIR__ . '/includes/env.php';
 Env::load(__DIR__ . '/.env');
 
+// Define global application name
+define('APP_NAME', Env::get('APP_NAME', 'Atlas Library'));
+
 // Error reporting configuration
 $debug = Env::get('APP_DEBUG', false);
 if ($debug) {

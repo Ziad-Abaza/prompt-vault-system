@@ -3,7 +3,7 @@
         <footer class="bg-white border-t border-slate-100 py-8">
             <div class="max-w-6xl mx-auto px-4 md:px-8 text-center">
                 <p class="text-slate-400 text-xs font-medium uppercase tracking-widest">
-                    &copy; <?php echo date('Y'); ?> Prompt Vault System &bull; Private & Secure
+                    &copy; <?php echo date('Y'); ?> <?php echo APP_NAME; ?> &bull; Private & Secure
                 </p>
             </div>
         </footer>

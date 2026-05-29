@@ -34,8 +34,8 @@ include 'includes/header.php';
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
             </svg>
         </div>
-        <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Vault Login</h1>
-        <p class="text-slate-500 font-medium">Identify yourself to access your prompts.</p>
+        <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight mb-2"><?php echo APP_NAME; ?> Login</h1>
+        <p class="text-slate-500 font-medium">Welcome to your professional knowledge workspace.</p>
     </div>
 
     <div class="form-section shadow-xl shadow-slate-200/50">

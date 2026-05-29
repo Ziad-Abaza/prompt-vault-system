@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prompt Vault System</title>
+    <title><?php echo APP_NAME; ?></title>
     <!-- Tailwind CSS Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -68,7 +68,7 @@
 
     <!-- Mobile Header -->
     <header class="md:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-50">
-        <a href="index.php" class="text-xl font-bold text-primary-600 tracking-tight">PromptVault</a>
+        <a href="index.php" class="text-xl font-bold text-primary-600 tracking-tight"><?php echo APP_NAME; ?></a>
         <button id="mobile-menu-toggle" class="p-2 text-slate-500 hover:text-slate-700">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
@@ -79,7 +79,7 @@
     <!-- Sidebar Navigation -->
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out md:sticky md:top-0 h-screen overflow-y-auto">
         <div class="p-6">
-            <a href="index.php" class="text-2xl font-bold text-primary-600 tracking-tight block mb-8">PromptVault</a>
+            <a href="index.php" class="text-2xl font-bold text-primary-600 tracking-tight block mb-8"><?php echo APP_NAME; ?></a>
             
             <nav class="space-y-1">
                 <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-3">Main</p>
