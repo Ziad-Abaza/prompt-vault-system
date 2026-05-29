@@ -10,72 +10,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['backup_file'])) {
 
         if ($data) {
             $db = get_db();
+            $user_id = get_current_user_id();
             $db->beginTransaction();
 
             try {
-                // Disable foreign key checks for the import
-                $db->exec('PRAGMA foreign_keys = OFF;');
+                // Clear existing data for CURRENT USER ONLY
+                query("DELETE FROM prompt_tags WHERE prompt_id IN (SELECT id FROM prompts WHERE user_id = ?)", [$user_id]);
+                query("DELETE FROM prompt_collections WHERE prompt_id IN (SELECT id FROM prompts WHERE user_id = ?)", [$user_id]);
+                query("DELETE FROM prompts WHERE user_id = ?", [$user_id]);
+                query("DELETE FROM categories WHERE user_id = ?", [$user_id]);
+                query("DELETE FROM tags WHERE user_id = ?", [$user_id]);
+                query("DELETE FROM collections WHERE user_id = ?", [$user_id]);
 
-                // Clear existing data
-                $db->exec('DELETE FROM prompt_tags');
-                $db->exec('DELETE FROM prompt_collections');
-                $db->exec('DELETE FROM prompts');
-                $db->exec('DELETE FROM categories');
-                $db->exec('DELETE FROM tags');
-                $db->exec('DELETE FROM collections');
+                $cat_map = [];
+                $tag_map = [];
+                $coll_map = [];
+                $prompt_map = [];
 
                 // Import Categories
                 if (!empty($data['categories'])) {
                     foreach ($data['categories'] as $row) {
-                        query("INSERT INTO categories (id, name) VALUES (?, ?)", [$row['id'], $row['name']]);
+                        query("INSERT INTO categories (name, user_id) VALUES (?, ?)", [$row['name'], $user_id]);
+                        $cat_map[$row['id']] = $db->lastInsertId();
                     }
                 }
 
                 // Import Tags
                 if (!empty($data['tags'])) {
                     foreach ($data['tags'] as $row) {
-                        query("INSERT INTO tags (id, name) VALUES (?, ?)", [$row['id'], $row['name']]);
+                        query("INSERT INTO tags (name, user_id) VALUES (?, ?)", [$row['name'], $user_id]);
+                        $tag_map[$row['id']] = $db->lastInsertId();
                     }
                 }
 
                 // Import Collections
                 if (!empty($data['collections'])) {
                     foreach ($data['collections'] as $row) {
-                        query("INSERT INTO collections (id, name, description) VALUES (?, ?, ?)", [$row['id'], $row['name'], $row['description']]);
+                        query("INSERT INTO collections (name, description, user_id) VALUES (?, ?, ?)", [$row['name'], $row['description'], $user_id]);
+                        $coll_map[$row['id']] = $db->lastInsertId();
                     }
                 }
 
                 // Import Prompts
                 if (!empty($data['prompts'])) {
                     foreach ($data['prompts'] as $row) {
-                        query("INSERT INTO prompts (id, title, content, category_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)", [
-                            $row['id'], $row['title'], $row['content'], $row['category_id'], $row['created_at'], $row['updated_at']
+                        $new_cat_id = isset($row['category_id']) ? ($cat_map[$row['category_id']] ?? null) : null;
+                        query("INSERT INTO prompts (title, content, category_id, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)", [
+                            $row['title'], $row['content'], $new_cat_id, $user_id, $row['created_at'], $row['updated_at']
                         ]);
+                        $prompt_map[$row['id']] = $db->lastInsertId();
                     }
                 }
 
                 // Import Prompt Tags
                 if (!empty($data['prompt_tags'])) {
                     foreach ($data['prompt_tags'] as $row) {
-                        query("INSERT INTO prompt_tags (prompt_id, tag_id) VALUES (?, ?)", [$row['prompt_id'], $row['tag_id']]);
+                        $new_prompt_id = $prompt_map[$row['prompt_id']] ?? null;
+                        $new_tag_id = $tag_map[$row['tag_id']] ?? null;
+                        if ($new_prompt_id && $new_tag_id) {
+                            query("INSERT INTO prompt_tags (prompt_id, tag_id) VALUES (?, ?)", [$new_prompt_id, $new_tag_id]);
+                        }
                     }
                 }
 
                 // Import Prompt Collections
                 if (!empty($data['prompt_collections'])) {
                     foreach ($data['prompt_collections'] as $row) {
-                        query("INSERT INTO prompt_collections (prompt_id, collection_id) VALUES (?, ?)", [$row['prompt_id'], $row['collection_id']]);
+                        $new_prompt_id = $prompt_map[$row['prompt_id']] ?? null;
+                        $new_coll_id = $coll_map[$row['collection_id']] ?? null;
+                        if ($new_prompt_id && $new_coll_id) {
+                            query("INSERT INTO prompt_collections (prompt_id, collection_id) VALUES (?, ?)", [$new_prompt_id, $new_coll_id]);
+                        }
                     }
                 }
-
-                // Re-enable foreign key checks
-                $db->exec('PRAGMA foreign_keys = ON;');
                 
                 $db->commit();
-                set_flash('Import successful. All data restored.');
+                set_flash('Import successful. Your vault has been restored.');
                 redirect('index.php');
             } catch (Exception $e) {
-                $db->rollBack();
+                if ($db->inTransaction()) {
+                    $db->rollBack();
+                }
                 $error = 'Import failed: ' . $e->getMessage();
             }
         } else {
@@ -103,7 +118,7 @@ include 'includes/header.php';
                     </div>
                     <div class="ml-3">
                         <p class="text-sm">
-                            <strong>Warning:</strong> Importing a backup will <strong>permanently delete</strong> all current data in the system and replace it with the backup content.
+                            <strong>Warning:</strong> This will <strong>permanently delete</strong> your current prompts, categories, tags, and collections and replace them with the backup content. This action only affects your account.
                         </p>
                     </div>
                 </div>
@@ -138,7 +153,7 @@ include 'includes/header.php';
                 </div>
 
                 <div>
-                    <button type="submit" onclick="return confirm('Are you absolutely sure? Current data will be lost.')" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                    <button type="submit" onclick="return confirm('Are you absolutely sure? Your current vault data will be replaced.')" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                         Start Import
                     </button>
                 </div>

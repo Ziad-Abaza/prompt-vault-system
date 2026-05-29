@@ -27,9 +27,8 @@ function get_db() {
             $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             $pdo->exec('PRAGMA foreign_keys = ON;');
 
-            if (!$db_exists) {
-                init_database($pdo);
-            }
+            init_database($pdo);
+            migrate_database($pdo);
         } catch (PDOException $e) {
             die('Database connection failed: ' . $e->getMessage());
         }
@@ -45,20 +44,36 @@ function get_db() {
  */
 function init_database($pdo) {
     $sql = "
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        password_hash TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE TABLE IF NOT EXISTS categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE
+        name TEXT NOT NULL,
+        user_id INTEGER,
+        UNIQUE(name, user_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS tags (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE
+        name TEXT NOT NULL,
+        user_id INTEGER,
+        UNIQUE(name, user_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS collections (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE,
-        description TEXT
+        name TEXT NOT NULL,
+        description TEXT,
+        user_id INTEGER,
+        UNIQUE(name, user_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS prompts (
@@ -66,9 +81,11 @@ function init_database($pdo) {
         title TEXT NOT NULL,
         content TEXT NOT NULL,
         category_id INTEGER,
+        user_id INTEGER,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+        FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS prompt_tags (
@@ -89,9 +106,38 @@ function init_database($pdo) {
 
     CREATE INDEX IF NOT EXISTS idx_prompts_title ON prompts(title);
     CREATE INDEX IF NOT EXISTS idx_prompts_category ON prompts(category_id);
+    CREATE INDEX IF NOT EXISTS idx_prompts_user ON prompts(user_id);
     ";
 
     $pdo->exec($sql);
+}
+
+/**
+ * Migrate existing database schema.
+ */
+function migrate_database($pdo) {
+    // Add users table if it doesn't exist
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password_hash TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+    ");
+
+    // Add user_id column to existing tables if missing
+    $tables = ['categories', 'tags', 'collections', 'prompts'];
+    foreach ($tables as $table) {
+        $columns = $pdo->query("PRAGMA table_info($table)")->fetchAll(PDO::FETCH_COLUMN, 1);
+        if (!in_array('user_id', $columns)) {
+            try {
+                $pdo->exec("ALTER TABLE $table ADD COLUMN user_id INTEGER REFERENCES users(id) ON DELETE CASCADE;");
+            } catch (PDOException $e) {
+                // Ignore if column already exists (sometimes PRAGMA might be slow or table locked)
+            }
+        }
+    }
 }
 
 /**

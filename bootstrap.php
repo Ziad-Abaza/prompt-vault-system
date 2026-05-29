@@ -18,7 +18,11 @@ if (session_status() === PHP_SESSION_NONE) {
 // Load core files
 require_once __DIR__ . '/includes/security.php';
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/models.php';
+
+// Enforce authentication
+require_login();
 
 // Verify CSRF on all POST requests
 verify_csrf_or_die();

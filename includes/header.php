@@ -28,21 +28,30 @@
                     <div class="flex-shrink-0 flex items-center">
                         <a href="index.php" class="text-2xl font-bold text-primary">PromptVault</a>
                     </div>
+                    <?php if (is_logged_in()): ?>
                     <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                         <a href="index.php" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Prompts</a>
                         <a href="categories.php" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Categories</a>
                         <a href="tags.php" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Tags</a>
                         <a href="collections.php" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Collections</a>
                     </div>
+                    <?php endif; ?>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="search.php" class="text-gray-500 hover:text-gray-700">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </a>
-                    <a href="export.php" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Export</a>
-                    <a href="import.php" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Import</a>
+                    <?php if (is_logged_in()): ?>
+                        <span class="text-gray-500 text-sm hidden md:inline">Hello, <strong><?php echo esc(get_current_username()); ?></strong></span>
+                        <a href="search.php" class="text-gray-500 hover:text-gray-700">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </a>
+                        <a href="export.php" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Export</a>
+                        <a href="import.php" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Import</a>
+                        <a href="logout.php" class="text-red-500 hover:text-red-700 text-sm font-medium">Logout</a>
+                    <?php else: ?>
+                        <a href="login.php" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Sign In</a>
+                        <a href="register.php" class="text-primary hover:text-blue-700 text-sm font-medium">Register</a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
