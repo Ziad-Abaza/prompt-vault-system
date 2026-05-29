@@ -1,20 +1,83 @@
-# Enable Rewrite Engine
-RewriteEngine On
-RewriteBase /
-
-# Rewrite sitemap.xml to sitemap.php
-RewriteRule ^sitemap\.xml$ sitemap.php [L]
+# ----------------------------------------------------------------------
+# | Security & Access Control                                          |
+# ----------------------------------------------------------------------
 
 # Prevent directory listing
 Options -Indexes
 
-# Security Headers
-<IfModule mod_headers.c>
-    Header set X-Content-Type-Options "nosniff"
-    Header set X-Frame-Options "SAMEORIGIN"
-    Header set X-XSS-Protection "1; mode=block"
-    Header set Referrer-Policy "strict-origin-when-cross-origin"
+# Disable the server signature (if allowed by server config)
+ServerSignature Off
+
+# Enable Rewrite Engine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # 1. Block access to hidden files and directories (starting with a dot)
+    # This covers .env, .git, .htaccess, .github, etc.
+    RewriteCond %{SCRIPT_FILENAME} -d [OR]
+    RewriteCond %{SCRIPT_FILENAME} -f
+    RewriteRule "(^|/)\." - [F]
+
+    # 2. Block access to sensitive directories
+    RewriteRule ^(includes|data|logs|storage|backup|config)/ - [F]
+
+    # 3. Block access to common sensitive files
+    <FilesMatch "^(composer\.json|composer\.lock|package\.json|package-lock\.json|README\.md|LICENSE|phpinfo\.php|config\.php|bootstrap\.php)$">
+        <IfModule mod_authz_core.c>
+            Require all denied
+        </IfModule>
+        <IfModule !mod_authz_core.c>
+            Order deny,allow
+            Deny from all
+        </IfModule>
+    </FilesMatch>
+
+    # 4. Block access to database, log, and backup files by extension
+    <FilesMatch "\.(sqlite|log|sql|bak|zip|env|yaml|yml|ini|conf|dist|sh|bin)$">
+        <IfModule mod_authz_core.c>
+            Require all denied
+        </IfModule>
+        <IfModule !mod_authz_core.c>
+            Order deny,allow
+            Deny from all
+        </IfModule>
+    </FilesMatch>
+
+    # 5. Route sitemap.xml to sitemap.php
+    RewriteRule ^sitemap\.xml$ sitemap.php [L]
 </IfModule>
+
+# ----------------------------------------------------------------------
+# | Security Headers                                                   |
+# ----------------------------------------------------------------------
+
+<IfModule mod_headers.c>
+    # Protect against clickjacking
+    Header set X-Frame-Options "SAMEORIGIN"
+    
+    # Prevent browsers from MIME-sniffing a response away from the declared content-type
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Enable XSS protection in older browsers
+    Header set X-XSS-Protection "1; mode=block"
+    
+    # Control how much information the browser includes when navigating away
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Enforce HTTPS (uncomment if SSL is enabled)
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    
+    # Content Security Policy (Basic restrictive policy)
+    # Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self';"
+    
+    # Disable FLoC (Privacy)
+    Header set Permissions-Policy "interest-cohort=()"
+</IfModule>
+
+# ----------------------------------------------------------------------
+# | Performance & Compression                                          |
+# ----------------------------------------------------------------------
 
 # Gzip Compression
 <IfModule mod_deflate.c>
@@ -22,9 +85,11 @@ Options -Indexes
     AddOutputFilterByType DEFLATE text/html
     AddOutputFilterByType DEFLATE text/xml
     AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
     AddOutputFilterByType DEFLATE application/xml
     AddOutputFilterByType DEFLATE application/xhtml+xml
     AddOutputFilterByType DEFLATE application/rss+xml
     AddOutputFilterByType DEFLATE application/javascript
     AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
 </IfModule>
