@@ -50,6 +50,16 @@ require_login();
 verify_csrf_or_die();
 
 /**
+ * Set HTTP response code and show the error page.
+ */
+function abort($code = 404) {
+    http_response_code($code);
+    $_GET['code'] = $code; // For error.php to pick up
+    require __DIR__ . '/error.php';
+    exit;
+}
+
+/**
  * Redirect to a given URL.
  */
 function redirect($path) {

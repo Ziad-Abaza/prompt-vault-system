@@ -38,7 +38,13 @@ if (isset($_GET['delete'])) {
 }
 
 $tags = get_tags();
-$edit_tag = isset($_GET['edit']) ? get_tag($_GET['edit']) : null;
+$edit_tag = null;
+if (isset($_GET['edit'])) {
+    $edit_tag = get_tag($_GET['edit']);
+    if (!$edit_tag) {
+        abort(404);
+    }
+}
 
 include 'includes/header.php';
 ?>

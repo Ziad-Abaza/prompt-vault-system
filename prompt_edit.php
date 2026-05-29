@@ -5,8 +5,7 @@ $id = $_GET['id'] ?? null;
 $prompt = $id ? get_prompt($id) : null;
 
 if ($id && !$prompt) {
-    set_flash('Prompt not found.', 'error');
-    redirect('index.php');
+    abort(404);
 }
 
 $categories = get_categories();

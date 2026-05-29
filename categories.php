@@ -38,7 +38,13 @@ if (isset($_GET['delete'])) {
 }
 
 $categories = get_categories();
-$edit_cat = isset($_GET['edit']) ? get_category($_GET['edit']) : null;
+$edit_cat = null;
+if (isset($_GET['edit'])) {
+    $edit_cat = get_category($_GET['edit']);
+    if (!$edit_cat) {
+        abort(404);
+    }
+}
 
 include 'includes/header.php';
 ?>

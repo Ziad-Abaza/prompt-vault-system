@@ -2,6 +2,18 @@
 # | Security & Access Control                                          |
 # ----------------------------------------------------------------------
 
+# ----------------------------------------------------------------------
+# | Error Handling                                                     |
+# ----------------------------------------------------------------------
+
+# Custom error pages (Adjust paths if project is in a subdirectory)
+ErrorDocument 400 /prompt-vault/error.php?code=400
+ErrorDocument 401 /prompt-vault/error.php?code=401
+ErrorDocument 403 /prompt-vault/error.php?code=403
+ErrorDocument 404 /prompt-vault/error.php?code=404
+ErrorDocument 405 /prompt-vault/error.php?code=405
+ErrorDocument 500 /prompt-vault/error.php?code=500
+
 # Prevent directory listing
 Options -Indexes
 
@@ -11,7 +23,7 @@ ServerSignature Off
 # Enable Rewrite Engine
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
+    RewriteBase /prompt-vault/
 
     # 1. Block access to hidden files and directories (starting with a dot)
     # This covers .env, .git, .htaccess, .github, etc.

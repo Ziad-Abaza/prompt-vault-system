@@ -44,8 +44,7 @@ function verify_csrf_or_die() {
     if (PHP_SAPI !== 'cli' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $token = $_POST['csrf_token'] ?? '';
         if (!validate_csrf($token)) {
-            http_response_code(403);
-            die('Security Error: CSRF validation failed.');
+            abort(403);
         }
     }
 }

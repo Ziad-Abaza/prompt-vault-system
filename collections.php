@@ -40,7 +40,13 @@ if (isset($_GET['delete'])) {
 }
 
 $collections = get_collections();
-$edit_coll = isset($_GET['edit']) ? get_collection($_GET['edit']) : null;
+$edit_coll = null;
+if (isset($_GET['edit'])) {
+    $edit_coll = get_collection($_GET['edit']);
+    if (!$edit_coll) {
+        abort(404);
+    }
+}
 
 include 'includes/header.php';
 ?>

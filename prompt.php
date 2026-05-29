@@ -8,8 +8,7 @@ if (!$id) {
 
 $prompt = get_prompt($id);
 if (!$prompt) {
-    set_flash('Prompt not found.', 'error');
-    redirect('index.php');
+    abort(404);
 }
 
 $page_title = $prompt['title'];
