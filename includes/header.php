@@ -1,58 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <meta name="google-site-verification" content="w-9EvKmwgBcTyx95BKBaJO3MeRVoBRLpPUvskDITbzA" />
+
     <?php
     $final_title = (isset($page_title) ? $page_title . " | " : "") . APP_NAME;
     $final_desc = $meta_description ?? "Atlas Library - A professional workspace for organizing and managing AI prompts.";
     $canonical_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     ?>
-    
+
     <title><?php echo esc($final_title); ?></title>
     <meta name="description" content="<?php echo esc($final_desc); ?>">
     <link rel="canonical" href="<?php echo esc($canonical_url); ?>">
 
     <!-- Structured Data -->
     <script type="application/ld+json">
-    <?php
-    $schema = [
-        "@context" => "https://schema.org",
-        "@graph" => [
-            [
-                "@type" => "SoftwareApplication",
-                "name" => APP_NAME,
-                "operatingSystem" => "Web",
-                "applicationCategory" => "DeveloperApplication",
-                "description" => "A centralized workspace for organizing, managing, and discovering AI prompts."
+        <?php
+        $schema = [
+            "@context" => "https://schema.org",
+            "@graph" => [
+                [
+                    "@type" => "SoftwareApplication",
+                    "name" => APP_NAME,
+                    "operatingSystem" => "Web",
+                    "applicationCategory" => "DeveloperApplication",
+                    "description" => "A centralized workspace for organizing, managing, and discovering AI prompts."
+                ]
             ]
-        ]
-    ];
-
-    if (isset($breadcrumbs) && is_array($breadcrumbs)) {
-        $breadcrumbList = [
-            "@type" => "BreadcrumbList",
-            "itemListElement" => []
         ];
-        
-        $current_base = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
-        $current_path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/';
-        $full_base = $current_base . $current_path;
 
-        foreach ($breadcrumbs as $i => $bc) {
-            $breadcrumbList['itemListElement'][] = [
-                "@type" => "ListItem",
-                "position" => $i + 1,
-                "name" => $bc['name'],
-                "item" => $full_base . $bc['url']
+        if (isset($breadcrumbs) && is_array($breadcrumbs)) {
+            $breadcrumbList = [
+                "@type" => "BreadcrumbList",
+                "itemListElement" => []
             ];
-        }
-        $schema['@graph'][] = $breadcrumbList;
-    }
 
-    echo json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
-    ?>
+            $current_base = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+            $current_path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/';
+            $full_base = $current_base . $current_path;
+
+            foreach ($breadcrumbs as $i => $bc) {
+                $breadcrumbList['itemListElement'][] = [
+                    "@type" => "ListItem",
+                    "position" => $i + 1,
+                    "name" => $bc['name'],
+                    "item" => $full_base . $bc['url']
+                ];
+            }
+            $schema['@graph'][] = $breadcrumbList;
+        }
+
+        echo json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+        ?>
     </script>
 
     <!-- Tailwind CSS Play CDN -->
@@ -165,6 +167,7 @@
         }
     </style>
 </head>
+
 <body class="bg-surface text-slate-900 font-sans antialiased min-h-screen flex flex-col md:flex-row">
 
     <!-- Mobile Header -->
@@ -181,7 +184,7 @@
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out md:sticky md:top-0 h-screen overflow-y-auto">
         <div class="p-6">
             <a href="index.php" class="text-2xl font-bold text-primary-600 tracking-tight block mb-8"><?php echo APP_NAME; ?></a>
-            
+
             <nav class="space-y-1">
                 <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-3">Main</p>
                 <a href="index.php" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
@@ -196,7 +199,7 @@
                     </svg>
                     Search
                 </a>
-                
+
                 <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-8 mb-2 px-3">Organize</p>
                 <a href="categories.php" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'categories.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -263,9 +266,13 @@
             <?php if ($flash = get_flash()): ?>
                 <div class="mb-8 p-4 rounded-xl border <?php echo $flash['type'] === 'error' ? 'bg-red-50 border-red-100 text-red-700' : 'bg-green-50 border-green-100 text-green-700'; ?> flex items-center">
                     <?php if ($flash['type'] === 'error'): ?>
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
                     <?php else: ?>
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
                     <?php endif; ?>
                     <span class="text-sm font-medium"><?php echo esc($flash['message']); ?></span>
                 </div>
