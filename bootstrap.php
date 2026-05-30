@@ -43,11 +43,13 @@ require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/models.php';
 
-// Enforce authentication
-require_login();
+// Enforce authentication and CSRF only for web requests
+if (php_sapi_name() !== 'cli') {
+    require_login();
 
-// Verify CSRF on all POST requests
-verify_csrf_or_die();
+    // Verify CSRF on all POST requests
+    verify_csrf_or_die();
+}
 
 /**
  * Set HTTP response code and show the error page.
