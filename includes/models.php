@@ -306,6 +306,10 @@ function increment_prompt_view_count($id) {
     return query("UPDATE prompts SET view_count = view_count + 1 WHERE id = ?", [$id]);
 }
 
+function increment_prompt_copy_count($id) {
+    return query("UPDATE prompts SET copy_count = copy_count + 1 WHERE id = ?", [$id]);
+}
+
 function delete_prompt($id) {
     // Delete image files first
     $images = get_prompt_images($id);

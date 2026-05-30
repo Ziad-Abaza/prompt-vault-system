@@ -85,6 +85,7 @@ function init_database($pdo) {
         user_id INTEGER,
         is_public BOOLEAN DEFAULT FALSE,
         view_count INTEGER DEFAULT 0,
+        copy_count INTEGER DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
@@ -169,6 +170,12 @@ function migrate_database($pdo) {
     if (!in_array('view_count', $columns)) {
         try {
             $pdo->exec("ALTER TABLE prompts ADD COLUMN view_count INTEGER DEFAULT 0;");
+        } catch (PDOException $e) {}
+    }
+
+    if (!in_array('copy_count', $columns)) {
+        try {
+            $pdo->exec("ALTER TABLE prompts ADD COLUMN copy_count INTEGER DEFAULT 0;");
         } catch (PDOException $e) {}
     }
 
