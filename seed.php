@@ -51,11 +51,56 @@ if (!$seeder_data) {
 /**
  * Realistic Content Buckets
  */
-$realistic_categories = [
-    'AI' => ['Prompt Engineering', 'AI Assistants', 'Generative AI', 'LLMs', 'AI Agents', 'Automation', 'RAG', 'Fine Tuning'],
-    'Vibe Coding' => ['Vibe Coding', 'Full Stack Development', 'Laravel', 'Vue.js', 'React', 'Next.js', 'Python', 'FastAPI', 'SaaS', 'API Development', 'DevOps', 'System Design'],
-    'Image Generation' => ['Midjourney', 'Stable Diffusion', 'Flux', 'AI Photography', 'Cinematic Images', 'Product Photography', 'Character Design', 'Concept Art', 'Photo Restoration', 'Image Enhancement', 'AI Video Generation'],
-    'Content Creation' => ['Marketing', 'SEO', 'Copywriting', 'Blogging', 'Social Media', 'YouTube']
+$category_list = [
+    'Prompt Engineering', 'Vibe Coding', 'Software Development', 'Web Development', 
+    'Laravel', 'PHP', 'JavaScript', 'Python', 'DevOps', 'Cybersecurity', 'Data Science', 
+    'Machine Learning', 'Deep Learning', 'Computer Vision', 'AI Agents', 'Automation', 
+    'Productivity', 'Marketing', 'SEO', 'Copywriting', 'Social Media', 'Business', 
+    'Education', 'Research', 'Image Generation', 'Midjourney', 'Stable Diffusion', 
+    'Flux', 'Leonardo AI', 'DALL-E', 'Video Generation', 'UI/UX Design', 'Graphic Design', 
+    '3D Design', 'Architecture', 'Photography', 'Photo Restoration', 'Character Design', 
+    'Anime', 'Game Development'
+];
+
+$tag_list = [
+    'ai', 'prompt', 'chatgpt', 'claude', 'gemini', 'openai', 'anthropic', 'llm', 'agent', 
+    'automation', 'coding', 'vibe-coding', 'laravel', 'php', 'javascript', 'python', 
+    'vuejs', 'react', 'nextjs', 'api', 'backend', 'frontend', 'fullstack', 'seo', 
+    'marketing', 'copywriting', 'productivity', 'startup', 'business', 'image-generation', 
+    'flux', 'midjourney', 'stable-diffusion', 'dall-e', 'cinematic', 'realistic', 
+    'portrait', 'photography', 'restoration', 'enhancement', 'ui', 'ux', 'design', 
+    'logo', 'branding', 'youtube', 'tiktok', 'instagram', 'social-media', 'workflow',
+    'sql', 'database', 'optimization', 'refactor', 'debugging', 'architecture', 'template'
+];
+
+$collections_list = [
+    ['name' => 'Laravel Development', 'desc' => 'Master the Laravel ecosystem with these expert prompts.'],
+    ['name' => 'PHP Mastery', 'desc' => 'Deep dives into modern PHP development and best practices.'],
+    ['name' => 'Python Automation', 'desc' => 'Automate your life and work with Python and AI.'],
+    ['name' => 'JavaScript Essentials', 'desc' => 'From React to Node, the best prompts for JS developers.'],
+    ['name' => 'Full Stack Development', 'desc' => 'Prompts for managing both ends of the stack effectively.'],
+    ['name' => 'API Development', 'desc' => 'Design, build, and document professional APIs.'],
+    ['name' => 'DevOps Toolkit', 'desc' => 'Docker, CI/CD, and infrastructure management prompts.'],
+    ['name' => 'AI Agent Prompts', 'desc' => 'Defining and guiding autonomous AI agents.'],
+    ['name' => 'Prompt Engineering Library', 'desc' => 'The foundation of successful LLM interactions.'],
+    ['name' => 'Productivity AI', 'desc' => 'Boost your daily output with smart AI workflows.'],
+    ['name' => 'Business Automation', 'desc' => 'Streamline business processes using generative AI.'],
+    ['name' => 'Marketing AI Toolkit', 'desc' => 'Campaign planning, ad copy, and market research.'],
+    ['name' => 'Photo Restoration', 'desc' => 'Advanced prompts for repairing and enhancing old photos.'],
+    ['name' => 'AI Image Enhancement', 'desc' => 'Upscaling and detailing prompts for generative art.'],
+    ['name' => 'Cinematic Photography', 'desc' => 'Generating hyper-realistic and cinematic visuals.'],
+    ['name' => 'Portrait Generation', 'desc' => 'Perfecting human features and expressions in AI art.'],
+    ['name' => 'Realistic Image Creation', 'desc' => 'Achieving photorealism in Stable Diffusion and Midjourney.'],
+    ['name' => 'Character Design', 'desc' => 'Consistent character creation for games and stories.'],
+    ['name' => 'Anime Art', 'desc' => 'Stylized prompts for high-quality anime illustrations.'],
+    ['name' => 'Product Photography', 'desc' => 'E-commerce style visuals for products.'],
+    ['name' => 'Logo Design', 'desc' => 'Minimalist and professional logo generation.'],
+    ['name' => 'Branding Assets', 'desc' => 'Full brand identity kits using AI.'],
+    ['name' => 'SEO Toolkit', 'desc' => 'Ranking higher on search engines with AI content.'],
+    ['name' => 'Blog Writing', 'desc' => 'Long-form content generation and structuring.'],
+    ['name' => 'Social Media Content', 'desc' => 'Viral post ideas and captions for all platforms.'],
+    ['name' => 'YouTube Growth', 'desc' => 'Scriptwriting and video optimization prompts.'],
+    ['name' => 'Copywriting Library', 'desc' => 'High-conversion sales copy and marketing scripts.']
 ];
 
 echo "Seeding Categories...\n";
@@ -70,13 +115,11 @@ foreach ($seeder_data['categories'] as $cat) {
     }
 }
 
-// Add missing realistic categories
-foreach ($realistic_categories as $main => $subs) {
-    foreach ($subs as $name) {
-        $existing = query("SELECT id FROM categories WHERE name = ? AND user_id = ?", [$name, $user_id])->fetch();
-        if (!$existing) {
-            query("INSERT INTO categories (name, user_id) VALUES (?, ?)", [$name, $user_id]);
-        }
+// Add specified categories
+foreach ($category_list as $name) {
+    $existing = query("SELECT id FROM categories WHERE name = ? AND user_id = ?", [$name, $user_id])->fetch();
+    if (!$existing) {
+        query("INSERT INTO categories (name, user_id) VALUES (?, ?)", [$name, $user_id]);
     }
 }
 
@@ -92,14 +135,11 @@ foreach ($seeder_data['tags'] as $tag) {
     }
 }
 
-// Add more realistic tags based on the categories
-foreach ($realistic_categories as $main => $subs) {
-    foreach ($subs as $name) {
-        $tag_name = strtolower(str_replace(' ', '-', $name));
-        $existing = query("SELECT id FROM tags WHERE name = ? AND user_id = ?", [$tag_name, $user_id])->fetch();
-        if (!$existing) {
-            query("INSERT INTO tags (name, user_id) VALUES (?, ?)", [$tag_name, $user_id]);
-        }
+// Add specified tags
+foreach ($tag_list as $name) {
+    $existing = query("SELECT id FROM tags WHERE name = ? AND user_id = ?", [$name, $user_id])->fetch();
+    if (!$existing) {
+        query("INSERT INTO tags (name, user_id) VALUES (?, ?)", [$name, $user_id]);
     }
 }
 
@@ -112,6 +152,14 @@ foreach ($seeder_data['collections'] as $coll) {
     } else {
         query("INSERT INTO collections (name, description, user_id) VALUES (?, ?, ?)", [$coll['name'], $coll['description'] ?? '', $user_id]);
         $collection_map[$coll['id']] = $db->lastInsertId();
+    }
+}
+
+// Add specified collections
+foreach ($collections_list as $c) {
+    $existing = query("SELECT id FROM collections WHERE name = ? AND user_id = ?", [$c['name'], $user_id])->fetch();
+    if (!$existing) {
+        query("INSERT INTO collections (name, description, user_id) VALUES (?, ?, ?)", [$c['name'], $c['desc'], $user_id]);
     }
 }
 

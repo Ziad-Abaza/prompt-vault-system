@@ -73,7 +73,11 @@ function get_or_create_tags_by_names($names) {
 // --- Collections ---
 
 function get_collections() {
-    return query("SELECT * FROM collections WHERE user_id = ? ORDER BY name ASC", [get_current_user_id()])->fetchAll();
+    $user_id = get_current_user_id();
+    return query("SELECT c.*, (SELECT COUNT(*) FROM prompt_collections pc WHERE pc.collection_id = c.id) as prompt_count 
+                 FROM collections c 
+                 WHERE c.user_id = ? 
+                 ORDER BY c.name ASC", [$user_id])->fetchAll();
 }
 
 function get_collection($id) {
