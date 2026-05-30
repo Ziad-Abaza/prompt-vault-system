@@ -25,47 +25,45 @@ $meta_description = "Discover high-quality AI prompts in a social-feed style gal
 include 'includes/header.php';
 ?>
 
-<div class="max-w-[1600px] mx-auto px-4 md:px-8">
+<div class="max-w-7xl mx-auto">
     
     <!-- Modern Compact Header -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-4">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-3xl font-black text-slate-900 tracking-tight">Explore <span class="text-primary-600">Feed</span></h1>
-            <p class="text-slate-400 text-sm font-bold uppercase tracking-[0.15em] mt-1">Discover what's trending in prompt engineering</p>
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Explore <span class="text-primary-600">Hub</span></h1>
+            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mt-0.5">Discover trending prompt engineering</p>
         </div>
         
-        <div class="flex items-center gap-4">
+        <div class="flex flex-wrap items-center gap-3">
             <form action="public_prompts.php" method="GET" class="relative group">
                 <input type="text" name="search" value="<?php echo esc($filters['search']); ?>" 
-                    class="h-12 w-full md:w-80 pl-12 pr-4 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all text-sm font-medium" 
-                    placeholder="Search prompts...">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-slate-400 group-focus-within:text-primary-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    class="h-10 w-full md:w-64 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all text-xs font-medium" 
+                    placeholder="Search feed...">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <svg class="h-4 w-4 text-slate-400 group-focus-within:text-primary-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
             </form>
             
-            <div class="hidden md:flex items-center bg-white rounded-2xl border border-slate-200 p-1">
-                <a href="public_prompts.php?sort=trending" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all <?php echo $filters['sort'] === 'trending' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900'; ?>">Trending</a>
-                <a href="public_prompts.php?sort=newest" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all <?php echo $filters['sort'] === 'newest' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900'; ?>">New</a>
-                <a href="public_prompts.php?sort=popular" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all <?php echo $filters['sort'] === 'popular' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900'; ?>">Most Copied</a>
+            <div class="flex items-center bg-white rounded-xl border border-slate-200 p-1">
+                <a href="public_prompts.php?sort=trending" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all <?php echo $filters['sort'] === 'trending' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'; ?>">Trending</a>
+                <a href="public_prompts.php?sort=newest" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all <?php echo $filters['sort'] === 'newest' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'; ?>">New</a>
+                <a href="public_prompts.php?sort=popular" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all <?php echo $filters['sort'] === 'popular' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'; ?>">Popular</a>
             </div>
         </div>
     </div>
 
     <!-- Horizontal Category Navigation -->
-    <div class="relative mb-12">
-        <div class="flex items-center gap-3 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
-            <a href="public_prompts.php" class="shrink-0 px-6 py-3 rounded-2xl text-sm font-black uppercase tracking-widest transition-all <?php echo empty($filters['category_id']) ? 'bg-primary-600 text-white shadow-xl shadow-primary-600/20' : 'bg-white border border-slate-200 text-slate-500 hover:border-primary-400 hover:text-primary-600'; ?>">
-                All Feed
+    <div class="relative mb-8">
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
+            <a href="public_prompts.php" class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all <?php echo empty($filters['category_id']) ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20' : 'bg-white border border-slate-200 text-slate-500 hover:border-primary-400 hover:text-primary-600'; ?>">
+                All
             </a>
             <?php foreach ($categories as $cat): ?>
-                <a href="public_prompts.php?category_id=<?php echo $cat['id']; ?>" class="shrink-0 px-6 py-3 rounded-2xl text-sm font-black uppercase tracking-widest transition-all <?php echo $filters['category_id'] == $cat['id'] ? 'bg-primary-600 text-white shadow-xl shadow-primary-600/20' : 'bg-white border border-slate-200 text-slate-500 hover:border-primary-400 hover:text-primary-600'; ?>">
+                <a href="public_prompts.php?category_id=<?php echo $cat['id']; ?>" class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all <?php echo $filters['category_id'] == $cat['id'] ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20' : 'bg-white border border-slate-200 text-slate-500 hover:border-primary-400 hover:text-primary-600'; ?>">
                     <?php echo esc($cat['name']); ?>
                 </a>
             <?php endforeach; ?>
         </div>
-        <!-- Shadow gradients for scroll indication -->
-        <div class="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-surface to-transparent pointer-events-none md:hidden"></div>
     </div>
 
     <!-- Main Feed Grid -->
@@ -98,86 +96,76 @@ include 'includes/header.php';
     $prompts = query($sql, $params)->fetchAll();
 
     if (empty($prompts)): ?>
-        <div class="py-32 text-center">
-            <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-white border border-slate-100 shadow-sm mb-6">
-                <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H4a2 2 0 00-2 2v11a2 2 0 002 2h11M20 13l-4 4m4-4l4 4m-4-4v6m-6-6H7m1-4h.01M11 16h.01"></path></svg>
+        <div class="py-20 text-center">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white border border-slate-100 shadow-sm mb-4">
+                <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H4a2 2 0 00-2 2v11a2 2 0 002 2h11M20 13l-4 4m4-4l4 4m-4-4v6m-6-6H7m1-4h.01M11 16h.01"></path></svg>
             </div>
-            <h3 class="text-2xl font-black text-slate-900 mb-2">The feed is quiet...</h3>
-            <p class="text-slate-500 font-medium max-w-xs mx-auto mb-8">No prompts match your criteria. Try exploring other channels or search terms.</p>
-            <a href="public_prompts.php" class="btn-primary">Return to Home Feed</a>
+            <h3 class="text-xl font-bold text-slate-900 mb-1">No results found</h3>
+            <p class="text-slate-500 text-sm font-medium max-w-xs mx-auto mb-6">Try exploring other categories or search terms.</p>
+            <a href="public_prompts.php" class="px-5 py-2.5 bg-primary-600 text-white text-sm font-bold rounded-lg hover:bg-primary-700 transition-colors">Return to Feed</a>
         </div>
     <?php else: ?>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
             <?php foreach ($prompts as $p): 
                 $images = get_prompt_images($p['id']);
                 $cover_image = !empty($images) ? $images[0]['image_path'] : null;
             ?>
-                <article class="group relative flex flex-col bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-primary-900/5 hover:border-primary-200 transition-all duration-500">
+                <article class="group relative flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-primary-200 transition-all duration-300">
                     
                     <!-- Visual Header -->
-                    <a href="prompt.php?id=<?php echo $p['id'] . '-' . $p['slug']; ?>" class="block relative aspect-[1.25/1] overflow-hidden bg-slate-50">
+                    <a href="prompt.php?id=<?php echo $p['id'] . '-' . $p['slug']; ?>" class="block relative aspect-video overflow-hidden bg-slate-50">
                         <?php if ($cover_image): ?>
-                            <img src="<?php echo esc($cover_image); ?>" alt="<?php echo esc($p['title']); ?>" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <img src="<?php echo esc($cover_image); ?>" alt="<?php echo esc($p['title']); ?>" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <?php else: ?>
-                            <div class="w-full h-full bg-gradient-to-br from-primary-50 to-indigo-50 flex items-center justify-center p-12">
-                                <svg class="w-24 h-24 text-primary-100 group-hover:text-primary-200 transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            <div class="w-full h-full bg-gradient-to-br from-primary-50 to-indigo-50 flex items-center justify-center p-8">
+                                <svg class="w-12 h-12 text-primary-100 group-hover:text-primary-200 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                             </div>
                         <?php endif; ?>
                         
                         <!-- Overlay Labels -->
-                        <div class="absolute top-6 left-6 flex flex-wrap gap-2">
-                            <span class="px-3 py-1.5 rounded-xl bg-white/90 backdrop-blur text-[10px] font-black text-primary-600 uppercase tracking-widest shadow-sm">
+                        <div class="absolute top-3 left-3">
+                            <span class="px-2 py-1 rounded-md bg-white/90 backdrop-blur text-[9px] font-bold text-primary-600 uppercase tracking-wider shadow-sm border border-white/20">
                                 <?php echo esc($p['category_name'] ?? 'Uncategorized'); ?>
                             </span>
-                        </div>
-
-                        <!-- Hover Actions -->
-                        <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
-                            <button onclick="event.preventDefault(); copyToClipboard(<?php echo esc(json_encode($p['content'])); ?>, this, <?php echo $p['id']; ?>)" class="p-4 bg-white text-slate-900 rounded-2xl shadow-xl hover:bg-primary-600 hover:text-white transition-all transform hover:scale-110">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-                            </button>
-                            <span class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl">View Detail</span>
                         </div>
                     </a>
 
                     <!-- Content Body -->
-                    <div class="p-8 flex-grow flex flex-col">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-black mr-3 border-2 border-white shadow-sm">
-                                    <?php echo strtoupper(substr($p['author_name'] ?? 'U', 0, 1)); ?>
-                                </div>
-                                <div class="flex flex-col">
-                                    <span class="text-sm font-black text-slate-900 leading-none"><?php echo esc($p['author_name'] ?? 'Anonymous'); ?></span>
-                                    <span class="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest"><?php echo date('M j, Y', strtotime($p['created_at'])); ?></span>
-                                </div>
+                    <div class="p-4 flex-grow flex flex-col">
+                        <div class="flex items-center mb-3">
+                            <div class="w-6 h-6 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-[9px] font-bold mr-2 border border-white shadow-sm">
+                                <?php echo strtoupper(substr($p['author_name'] ?? 'U', 0, 1)); ?>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-bold text-slate-900 leading-none"><?php echo esc($p['author_name'] ?? 'Anonymous'); ?></span>
+                                <span class="text-[9px] font-bold text-slate-400 mt-0.5 uppercase tracking-tighter"><?php echo date('M j, Y', strtotime($p['created_at'])); ?></span>
                             </div>
                         </div>
 
                         <a href="prompt.php?id=<?php echo $p['id'] . '-' . $p['slug']; ?>" class="block">
-                            <h2 class="text-2xl font-black text-slate-900 mb-4 leading-tight group-hover:text-primary-600 transition-colors line-clamp-2">
+                            <h2 class="text-sm font-bold text-slate-900 mb-2 leading-tight group-hover:text-primary-600 transition-colors line-clamp-2">
                                 <?php echo esc($p['title']); ?>
                             </h2>
                         </a>
                         
-                        <p class="text-slate-500 text-sm line-clamp-3 mb-8 font-medium leading-relaxed flex-grow">
+                        <p class="text-slate-500 text-xs line-clamp-2 mb-4 leading-normal flex-grow">
                             <?php echo esc(strip_tags($p['content'])); ?>
                         </p>
 
                         <!-- Social Proof Bar -->
-                        <div class="pt-6 border-t border-slate-50 flex items-center justify-between text-slate-400">
-                            <div class="flex items-center gap-4">
-                                <span class="flex items-center text-[11px] font-black uppercase tracking-widest">
-                                    <svg class="w-4 h-4 mr-1.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <div class="pt-3 border-t border-slate-50 flex items-center justify-between text-slate-400">
+                            <div class="flex items-center gap-3">
+                                <span class="flex items-center text-[10px] font-bold uppercase tracking-wider">
+                                    <svg class="w-3 h-3 mr-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                     <?php echo number_format($p['view_count']); ?>
                                 </span>
-                                <span class="flex items-center text-[11px] font-black uppercase tracking-widest">
-                                    <svg class="w-4 h-4 mr-1.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                                <span class="flex items-center text-[10px] font-bold uppercase tracking-wider">
+                                    <svg class="w-3 h-3 mr-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
                                     <?php echo number_format($p['copy_count']); ?>
                                 </span>
                             </div>
-                            <button onclick="copyToClipboard(<?php echo esc(json_encode($p['content'])); ?>, this, <?php echo $p['id']; ?>)" class="text-xs font-black text-primary-600 uppercase tracking-widest hover:text-primary-800 transition-colors">
-                                Copy Recipe
+                            <button onclick="copyToClipboard(<?php echo esc(json_encode($p['content'])); ?>, this, <?php echo $p['id']; ?>)" class="text-[10px] font-bold text-primary-600 uppercase tracking-widest hover:text-primary-800 transition-colors">
+                                Copy
                             </button>
                         </div>
                     </div>
@@ -202,16 +190,16 @@ include 'includes/header.php';
         $total_pages = ceil($total_prompts / $per_page);
         
         if ($total_pages > 1): ?>
-            <div class="mt-24 mb-12 flex justify-center">
+            <div class="mt-12 mb-8 flex justify-center">
                 <nav class="flex items-center space-x-2">
                     <?php if ($page > 1): ?>
-                        <a href="public_prompts.php?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>" class="px-6 py-3 rounded-2xl bg-white border border-slate-200 text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-50 transition-all">Previous</a>
+                        <a href="public_prompts.php?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>" class="px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold text-[10px] uppercase tracking-wider hover:bg-slate-50 transition-all">Previous</a>
                     <?php endif; ?>
                     
-                    <span class="px-6 py-3 text-slate-400 font-bold text-xs uppercase tracking-widest">Page <?php echo $page; ?> of <?php echo $total_pages; ?></span>
+                    <span class="px-4 py-2 text-slate-400 font-bold text-[10px] uppercase tracking-wider">Page <?php echo $page; ?> of <?php echo $total_pages; ?></span>
 
                     <?php if ($page < $total_pages): ?>
-                        <a href="public_prompts.php?<?php echo http_build_query(array_merge($_GET, ['page' => $page + 1])); ?>" class="px-8 py-3 rounded-2xl bg-slate-900 text-white font-black text-xs uppercase tracking-widest hover:bg-primary-600 transition-all shadow-xl shadow-slate-900/20">Next Feed</a>
+                        <a href="public_prompts.php?<?php echo http_build_query(array_merge($_GET, ['page' => $page + 1])); ?>" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-[10px] uppercase tracking-wider hover:bg-primary-600 transition-all shadow-lg shadow-slate-900/20">Next Feed</a>
                     <?php endif; ?>
                 </nav>
             </div>

@@ -217,60 +217,60 @@
     </header>
 
     <!-- Sidebar Navigation -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out md:sticky md:top-0 h-screen overflow-y-auto">
-        <div class="p-6">
-            <a href="index.php" class="text-2xl font-bold text-primary-600 tracking-tight block mb-8"><?php echo APP_NAME; ?></a>
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-56 bg-white border-r border-slate-200 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out md:sticky md:top-0 h-screen overflow-y-auto">
+        <div class="p-4">
+            <a href="index.php" class="text-xl font-bold text-primary-600 tracking-tight block mb-6 px-2"><?php echo APP_NAME; ?></a>
 
-            <nav class="space-y-1">
-                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-3">Main</p>
-                <a href="index.php" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <nav class="space-y-0.5">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 px-2">Main</p>
+                <a href="index.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                     </svg>
                     Prompts
                 </a>
-                <a href="public_prompts.php" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'public_prompts.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="public_prompts.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'public_prompts.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
                     </svg>
                     Public Hub
                 </a>
-                <a href="search.php" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'search.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="search.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'search.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                     Search
                 </a>
 
-                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-8 mb-2 px-3">Organize</p>
-                <a href="categories.php" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'categories.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-6 mb-1 px-2">Organize</p>
+                <a href="categories.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'categories.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
                     </svg>
                     Categories
                 </a>
-                <a href="tags.php" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'tags.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="tags.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'tags.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                     </svg>
                     Tags
                 </a>
-                <a href="collections.php" class="flex items-center px-3 py-2 text-sm font-medium rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'collections.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="collections.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'collections.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                     </svg>
                     Collections
                 </a>
 
-                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-8 mb-2 px-3">Data</p>
-                <a href="export.php" class="flex items-center px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900">
-                    <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-6 mb-1 px-2">Data</p>
+                <a href="export.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900">
+                    <svg class="w-4 h-4 mr-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                     </svg>
                     Export
                 </a>
-                <a href="import.php" class="flex items-center px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900">
-                    <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="import.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900">
+                    <svg class="w-4 h-4 mr-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                     </svg>
                     Import
@@ -278,24 +278,24 @@
             </nav>
         </div>
 
-        <div class="absolute bottom-0 w-full p-6 border-t border-slate-100 bg-white">
+        <div class="absolute bottom-0 w-full p-4 border-t border-slate-100 bg-white">
             <?php if (is_logged_in()): ?>
-                <div class="flex items-center mb-4">
-                    <div class="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-bold mr-3">
+                <div class="flex items-center mb-2 px-2">
+                    <div class="w-6 h-6 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-[10px] font-bold mr-2">
                         <?php echo strtoupper(substr(get_current_username(), 0, 1)); ?>
                     </div>
                     <div class="flex-grow overflow-hidden">
-                        <p class="text-sm font-semibold text-slate-900 truncate"><?php echo esc(get_current_username()); ?></p>
+                        <p class="text-xs font-bold text-slate-900 truncate"><?php echo esc(get_current_username()); ?></p>
                     </div>
                 </div>
-                <a href="logout.php" class="flex items-center px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="logout.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-red-600 rounded-lg hover:bg-red-50">
+                    <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                     </svg>
                     Logout
                 </a>
             <?php else: ?>
-                <a href="login.php" class="flex items-center px-3 py-2 text-sm font-medium text-primary-600 rounded-lg hover:bg-primary-50">
+                <a href="login.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-primary-600 rounded-lg hover:bg-primary-50">
                     Sign In
                 </a>
             <?php endif; ?>
@@ -304,7 +304,7 @@
 
     <!-- Content Wrapper -->
     <div class="flex-grow flex flex-col min-h-screen">
-        <main class="flex-grow p-4 md:p-8 lg:p-12 max-w-6xl w-full mx-auto">
+        <main class="flex-grow p-4 md:p-6 lg:p-8 max-w-7xl w-full mx-auto">
             <?php if ($flash = get_flash()): ?>
                 <div class="mb-8 p-4 rounded-xl border <?php echo $flash['type'] === 'error' ? 'bg-red-50 border-red-100 text-red-700' : 'bg-green-50 border-green-100 text-green-700'; ?> flex items-center">
                     <?php if ($flash['type'] === 'error'): ?>
