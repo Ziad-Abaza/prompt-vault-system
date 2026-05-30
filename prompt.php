@@ -212,24 +212,6 @@ include 'includes/header.php';
                     });
                 </script>
             <?php endif; ?>
-
-            <div class="bg-slate-900 rounded-2xl p-6 text-white">
-                <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Quick Insights</h3>
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-slate-400 font-medium">Platform</span>
-                        <span class="text-xs font-bold">Multi-modal</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-slate-400 font-medium">Reusability</span>
-                        <span class="text-xs font-bold text-green-400">High</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-slate-400 font-medium">Created</span>
-                        <span class="text-xs font-bold"><?php echo date('M Y', strtotime($prompt['created_at'])); ?></span>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
