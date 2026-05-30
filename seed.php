@@ -12,8 +12,8 @@ require_once 'bootstrap.php';
 $db = get_db();
 
 // 1. Ensure Default User exists
-$target_username = 'ziad';
-$target_password = 'zezo6920';
+$target_username = Env::get('SEEDER_USER', 'ziad');
+$target_password = Env::get('SEEDER_PASSWORD', 'zezo6920');
 
 $user = query("SELECT * FROM users WHERE username = ?", [$target_username])->fetch();
 if (!$user) {
