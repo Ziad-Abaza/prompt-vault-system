@@ -55,9 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Handle image uploads
             if (!empty($_FILES['images']['name'][0])) {
-                $upload_dir = 'uploads/';
+                $upload_dir = __DIR__ . '/uploads/';
+                
+                // Ensure upload directory exists
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0777, true);
+                }
+
                 $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-                $max_size = 5 * 1024 * 1024; // 5MB
+                $max_size = 10 * 1024 * 1024; // 10MB
+                $upload_errors = [];
 
                 foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
                     if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
@@ -68,12 +75,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $extension = pathinfo($_FILES['images']['name'][$key], PATHINFO_EXTENSION);
                             $filename = uniqid('prompt_' . $id . '_') . '.' . $extension;
                             $target_path = $upload_dir . $filename;
+                            $db_path = 'uploads/' . $filename;
 
                             if (move_uploaded_file($tmp_name, $target_path)) {
-                                add_prompt_image($id, $target_path);
+                                add_prompt_image($id, $db_path);
+                            } else {
+                                $upload_errors[] = "Failed to move uploaded file: " . $_FILES['images']['name'][$key];
+                            }
+                        } else {
+                            if (!in_array($file_type, $allowed_types)) {
+                                $upload_errors[] = "Invalid file type: " . $_FILES['images']['name'][$key];
+                            }
+                            if ($file_size > $max_size) {
+                                $upload_errors[] = "File too large (max 10MB): " . $_FILES['images']['name'][$key];
                             }
                         }
+                    } else if ($_FILES['images']['error'][$key] !== UPLOAD_ERR_NO_FILE) {
+                        $upload_errors[] = "Upload error code " . $_FILES['images']['error'][$key] . " for " . $_FILES['images']['name'][$key];
                     }
+                }
+
+                if (!empty($upload_errors)) {
+                    set_flash('Some images could not be uploaded: ' . implode(', ', $upload_errors), 'error');
                 }
             }
 
@@ -255,7 +278,7 @@ include 'includes/header.php';
                 <div class="form-group">
                     <label for="images" class="form-label px-1">Upload Reference Images</label>
                     <input type="file" name="images[]" id="images" multiple accept="image/*" class="form-input border-dashed border-2 py-8 bg-slate-50/50 hover:bg-white hover:border-primary-400 transition-all">
-                    <p class="text-[10px] text-slate-400 font-medium px-1">Supported: JPG, PNG, GIF, WEBP. Max 5MB per image.</p>
+                    <p class="text-[10px] text-slate-400 font-medium px-1">Supported: JPG, PNG, GIF, WEBP. Max 10MB per image.</p>
                 </div>
 
                 <?php if ($prompt && !empty($prompt['images'])): ?>

@@ -106,70 +106,8 @@ include 'includes/header.php';
         </div>
     <?php else: ?>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-            <?php foreach ($prompts as $p): 
-                $images = get_prompt_images($p['id']);
-                $cover_image = !empty($images) ? $images[0]['image_path'] : null;
-            ?>
-                <article class="group relative flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-primary-200 transition-all duration-300">
-                    
-                    <!-- Visual Header -->
-                    <a href="prompt.php?id=<?php echo $p['id'] . '-' . $p['slug']; ?>" class="block relative aspect-video overflow-hidden bg-slate-50">
-                        <?php if ($cover_image): ?>
-                            <img src="<?php echo esc($cover_image); ?>" alt="<?php echo esc($p['title']); ?>" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <?php else: ?>
-                            <div class="w-full h-full bg-gradient-to-br from-primary-50 to-indigo-50 flex items-center justify-center p-8">
-                                <svg class="w-12 h-12 text-primary-100 group-hover:text-primary-200 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <!-- Overlay Labels -->
-                        <div class="absolute top-3 left-3">
-                            <span class="px-2 py-1 rounded-md bg-white/90 backdrop-blur text-[9px] font-bold text-primary-600 uppercase tracking-wider shadow-sm border border-white/20">
-                                <?php echo esc($p['category_name'] ?? 'Uncategorized'); ?>
-                            </span>
-                        </div>
-                    </a>
-
-                    <!-- Content Body -->
-                    <div class="p-4 flex-grow flex flex-col">
-                        <div class="flex items-center mb-3">
-                            <div class="w-6 h-6 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-[9px] font-bold mr-2 border border-white shadow-sm">
-                                <?php echo strtoupper(substr($p['author_name'] ?? 'U', 0, 1)); ?>
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-[10px] font-bold text-slate-900 leading-none"><?php echo esc($p['author_name'] ?? 'Anonymous'); ?></span>
-                                <span class="text-[9px] font-bold text-slate-400 mt-0.5 uppercase tracking-tighter"><?php echo date('M j, Y', strtotime($p['created_at'])); ?></span>
-                            </div>
-                        </div>
-
-                        <a href="prompt.php?id=<?php echo $p['id'] . '-' . $p['slug']; ?>" class="block">
-                            <h2 class="text-sm font-bold text-slate-900 mb-2 leading-tight group-hover:text-primary-600 transition-colors line-clamp-2">
-                                <?php echo esc($p['title']); ?>
-                            </h2>
-                        </a>
-                        
-                        <p class="text-slate-500 text-xs line-clamp-2 mb-4 leading-normal flex-grow">
-                            <?php echo esc(strip_tags($p['content'])); ?>
-                        </p>
-
-                        <!-- Social Proof Bar -->
-                        <div class="pt-3 border-t border-slate-50 flex items-center justify-between text-slate-400">
-                            <div class="flex items-center gap-3">
-                                <span class="flex items-center text-[10px] font-bold uppercase tracking-wider">
-                                    <svg class="w-3 h-3 mr-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                    <?php echo number_format($p['view_count']); ?>
-                                </span>
-                                <span class="flex items-center text-[10px] font-bold uppercase tracking-wider">
-                                    <svg class="w-3 h-3 mr-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-                                    <?php echo number_format($p['copy_count']); ?>
-                                </span>
-                            </div>
-                            <button onclick="copyToClipboard(<?php echo esc(json_encode($p['content'])); ?>, this, <?php echo $p['id']; ?>)" class="text-[10px] font-bold text-primary-600 uppercase tracking-widest hover:text-primary-800 transition-colors">
-                                Copy
-                            </button>
-                        </div>
-                    </div>
-                </article>
+            <?php foreach ($prompts as $prompt): ?>
+                <?php include 'includes/prompt_card.php'; ?>
             <?php endforeach; ?>
         </div>
 
