@@ -14,10 +14,15 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
 echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' . PHP_EOL;
 
 // Base URL detection
-$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");
-$host = $_SERVER['HTTP_HOST'];
-$path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-$base_url = "$protocol://$host$path/";
+$app_url = Env::get('APP_URL');
+if ($app_url) {
+    $base_url = rtrim($app_url, '/') . '/';
+} else {
+    $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");
+    $host = $_SERVER['HTTP_HOST'];
+    $path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+    $base_url = "$protocol://$host$path/";
+}
 
 // Static Pages
 $static_pages = [

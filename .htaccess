@@ -58,6 +58,9 @@ ServerSignature Off
 
     # 5. Route sitemap.xml to sitemap.php
     RewriteRule ^sitemap\.xml$ sitemap.php [L]
+
+    # 6. Route robots.txt to robots.php
+    RewriteRule ^robots\.txt$ robots.php [L]
 </IfModule>
 
 # ----------------------------------------------------------------------
