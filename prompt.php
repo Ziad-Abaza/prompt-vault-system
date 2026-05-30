@@ -1,22 +1,32 @@
 <?php
 require_once 'bootstrap.php';
 
-$id = $_GET['id'] ?? null;
-if (!$id) {
+$id_param = $_GET['id'] ?? null;
+if (!$id_param) {
     redirect('index.php');
 }
+
+// Extract ID from slug if necessary (e.g. 123-slug)
+$id = (int)explode('-', $id_param)[0];
 
 $prompt = get_prompt($id);
 if (!$prompt) {
     abort(404);
 }
 
+// Increment view count
+increment_prompt_view_count($id);
+
+$is_owner = is_logged_in() && $prompt['user_id'] === get_current_user_id();
+
 $page_title = $prompt['title'];
 $meta_description = substr(strip_tags($prompt['content']), 0, 160);
+$canonical_url = rtrim(Env::get('APP_URL', ''), '/') . '/prompt.php?id=' . $id . '-' . $prompt['slug'];
+
 $breadcrumbs = [
     ['name' => 'Library', 'url' => 'index.php'],
     ['name' => $prompt['category_name'] ?? 'Uncategorized', 'url' => 'index.php?category_id=' . ($prompt['category_id'] ?? '')],
-    ['name' => $prompt['title'], 'url' => 'prompt.php?id=' . $prompt['id']]
+    ['name' => $prompt['title'], 'url' => 'prompt.php?id=' . $id . '-' . $prompt['slug']]
 ];
 
 include 'includes/header.php';
@@ -48,8 +58,16 @@ include 'includes/header.php';
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-primary-100 text-primary-800 uppercase tracking-wider">
                     <?php echo esc($prompt['category_name'] ?? 'Uncategorized'); ?>
                 </span>
+                <span class="inline-flex items-center text-slate-400 text-xs font-semibold uppercase tracking-widest">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    By <?php echo esc($prompt['author_name'] ?? 'Unknown'); ?>
+                </span>
                 <span class="text-slate-400 text-sm">
                     Updated <?php echo date('M j, Y', strtotime($prompt['updated_at'])); ?>
+                </span>
+                <span class="inline-flex items-center text-slate-400 text-sm">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    <?php echo number_format($prompt['view_count']); ?> views
                 </span>
             </div>
         </div>
@@ -60,23 +78,40 @@ include 'includes/header.php';
                 </svg>
                 Copy Content
             </button>
-            <a href="prompt_edit.php?id=<?php echo $prompt['id']; ?>" class="inline-flex items-center px-5 py-2.5 bg-white border border-slate-200 text-slate-700 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-colors shadow-sm">
-                <svg class="w-5 h-5 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                Edit
-            </a>
+            <?php if ($is_owner): ?>
+                <a href="prompt_edit.php?id=<?php echo $prompt['id']; ?>" class="inline-flex items-center px-5 py-2.5 bg-white border border-slate-200 text-slate-700 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-colors shadow-sm">
+                    <svg class="w-5 h-5 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit
+                </a>
+            <?php endif; ?>
         </div>
     </div>
 
     <!-- Main Content Area -->
-    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden mb-8">
         <div class="p-8 md:p-12">
             <div class="prose prose-slate prose-lg max-w-none">
-                <div class="bg-slate-50 rounded-2xl p-6 md:p-8 font-mono text-slate-800 whitespace-pre-wrap leading-relaxed border border-slate-100 text-base md:text-lg">
+                <div class="bg-slate-50 rounded-2xl p-6 md:p-8 font-mono text-slate-800 whitespace-pre-wrap leading-relaxed border border-slate-100 text-base md:text-lg mb-8">
                     <?php echo esc($prompt['content']); ?>
                 </div>
             </div>
+
+            <?php if (!empty($prompt['images'])): ?>
+                <div class="mt-8">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Attachments</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <?php foreach ($prompt['images'] as $img): ?>
+                            <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-50">
+                                <a href="<?php echo esc($img['image_path']); ?>" target="_blank" class="block group">
+                                    <img src="<?php echo esc($img['image_path']); ?>" alt="Prompt Visual" class="w-full h-auto transition-transform duration-500 group-hover:scale-105">
+                                </a>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
 
         <!-- Footer Metadata -->

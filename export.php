@@ -10,7 +10,9 @@ $data = [
     'prompts' => query("SELECT * FROM prompts WHERE user_id = ?", [$user_id])->fetchAll(),
     'prompt_tags' => query("SELECT pt.* FROM prompt_tags pt JOIN prompts p ON pt.prompt_id = p.id WHERE p.user_id = ?", [$user_id])->fetchAll(),
     'prompt_collections' => query("SELECT pc.* FROM prompt_collections pc JOIN prompts p ON pc.prompt_id = p.id WHERE p.user_id = ?", [$user_id])->fetchAll(),
-];
+    'prompt_images' => query("SELECT pi.* FROM prompt_images pi JOIN prompts p ON pi.prompt_id = p.id WHERE p.user_id = ?", [$user_id])->fetchAll(),
+    ];
+
 
 $json = json_encode($data, JSON_PRETTY_PRINT);
 $filename = 'prompt_vault_backup_' . get_current_username() . '_' . date('Y-m-d_H-i-s') . '.json';

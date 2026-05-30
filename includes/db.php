@@ -79,14 +79,24 @@ function init_database($pdo) {
     CREATE TABLE IF NOT EXISTS prompts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
+        slug TEXT,
         content TEXT NOT NULL,
         category_id INTEGER,
         user_id INTEGER,
         is_public BOOLEAN DEFAULT FALSE,
+        view_count INTEGER DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS prompt_images (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        prompt_id INTEGER NOT NULL,
+        image_path TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (prompt_id) REFERENCES prompts(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS prompt_tags (
@@ -106,6 +116,7 @@ function init_database($pdo) {
     );
 
     CREATE INDEX IF NOT EXISTS idx_prompts_title ON prompts(title);
+    CREATE INDEX IF NOT EXISTS idx_prompts_slug ON prompts(slug);
     CREATE INDEX IF NOT EXISTS idx_prompts_category ON prompts(category_id);
     CREATE INDEX IF NOT EXISTS idx_prompts_user ON prompts(user_id);
     ";
@@ -145,10 +156,32 @@ function migrate_database($pdo) {
     if (!in_array('is_public', $columns)) {
         try {
             $pdo->exec("ALTER TABLE prompts ADD COLUMN is_public BOOLEAN DEFAULT FALSE;");
-        } catch (PDOException $e) {
-            // Ignore if column already exists
-        }
+        } catch (PDOException $e) {}
     }
+
+    if (!in_array('slug', $columns)) {
+        try {
+            $pdo->exec("ALTER TABLE prompts ADD COLUMN slug TEXT;");
+            $pdo->exec("CREATE INDEX IF NOT EXISTS idx_prompts_slug ON prompts(slug);");
+        } catch (PDOException $e) {}
+    }
+
+    if (!in_array('view_count', $columns)) {
+        try {
+            $pdo->exec("ALTER TABLE prompts ADD COLUMN view_count INTEGER DEFAULT 0;");
+        } catch (PDOException $e) {}
+    }
+
+    // Create prompt_images table if it doesn't exist
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS prompt_images (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            prompt_id INTEGER NOT NULL,
+            image_path TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (prompt_id) REFERENCES prompts(id) ON DELETE CASCADE
+        );
+    ");
 }
 
 /**

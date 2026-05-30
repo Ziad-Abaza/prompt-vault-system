@@ -116,11 +116,20 @@ function remove_prompt_from_collection($prompt_id, $collection_id) {
 
 function get_prompts($filters = []) {
     $user_id = get_current_user_id();
-    $sql = "SELECT p.*, c.name as category_name 
+    $sql = "SELECT p.*, c.name as category_name, u.username as author_name 
             FROM prompts p 
             LEFT JOIN categories c ON p.category_id = c.id
-            WHERE p.user_id = ?";
-    $params = [$user_id];
+            LEFT JOIN users u ON p.user_id = u.id
+            WHERE 1=1";
+    $params = [];
+    
+    if (isset($filters['is_public'])) {
+        $sql .= " AND p.is_public = ?";
+        $params[] = $filters['is_public'] ? 1 : 0;
+    } else {
+        $sql .= " AND p.user_id = ?";
+        $params[] = $user_id;
+    }
     $where = [];
 
     if (!empty($filters['category_id'])) {
@@ -129,15 +138,13 @@ function get_prompts($filters = []) {
     }
 
     if (!empty($filters['tag_id'])) {
-        $where[] = "p.id IN (SELECT prompt_id FROM prompt_tags pt JOIN tags t ON pt.tag_id = t.id WHERE t.id = ? AND t.user_id = ?)";
+        $where[] = "p.id IN (SELECT prompt_id FROM prompt_tags pt JOIN tags t ON pt.tag_id = t.id WHERE t.id = ?)";
         $params[] = $filters['tag_id'];
-        $params[] = $user_id;
     }
 
     if (!empty($filters['collection_id'])) {
-        $where[] = "p.id IN (SELECT prompt_id FROM prompt_collections pc JOIN collections cl ON pc.collection_id = cl.id WHERE cl.id = ? AND cl.user_id = ?)";
+        $where[] = "p.id IN (SELECT prompt_id FROM prompt_collections pc JOIN collections cl ON pc.collection_id = cl.id WHERE cl.id = ?)";
         $params[] = $filters['collection_id'];
-        $params[] = $user_id;
     }
 
     if (!empty($filters['search'])) {
@@ -152,25 +159,35 @@ function get_prompts($filters = []) {
 
     $sql .= " ORDER BY p.created_at DESC";
 
+    if (!empty($filters['limit'])) {
+        $sql .= " LIMIT " . (int)$filters['limit'];
+        if (!empty($filters['offset'])) {
+            $sql .= " OFFSET " . (int)$filters['offset'];
+        }
+    }
+
     return query($sql, $params)->fetchAll();
 }
 
 function get_prompt($id) {
     $user_id = get_current_user_id();
-    $prompt = query("SELECT p.*, c.name as category_name 
+    $prompt = query("SELECT p.*, c.name as category_name, u.username as author_name 
                      FROM prompts p 
                      LEFT JOIN categories c ON p.category_id = c.id 
+                     LEFT JOIN users u ON p.user_id = u.id
                      WHERE p.id = ? AND (p.user_id = ? OR p.is_public = 1)", [$id, $user_id])->fetch();
     
     if ($prompt) {
         $owner_id = $prompt['user_id'];
         $prompt['tags'] = query("SELECT t.* FROM tags t 
                                  JOIN prompt_tags pt ON t.id = pt.tag_id 
-                                 WHERE pt.prompt_id = ? AND t.user_id = ?", [$id, $owner_id])->fetchAll();
+                                 WHERE pt.prompt_id = ?", [$id])->fetchAll();
         
         $prompt['collections'] = query("SELECT cl.* FROM collections cl 
                                         JOIN prompt_collections pc ON cl.id = pc.collection_id 
-                                        WHERE pc.prompt_id = ? AND cl.user_id = ?", [$id, $owner_id])->fetchAll();
+                                        WHERE pc.prompt_id = ?", [$id])->fetchAll();
+
+        $prompt['images'] = get_prompt_images($id);
     }
 
     return $prompt;
@@ -180,10 +197,12 @@ function create_prompt($data) {
     $db = get_db();
     $db->beginTransaction();
     $user_id = get_current_user_id();
+    $slug = slugify($data['title']);
 
     try {
-        query("INSERT INTO prompts (title, content, category_id, user_id, is_public) VALUES (?, ?, ?, ?, ?)", [
+        query("INSERT INTO prompts (title, slug, content, category_id, user_id, is_public) VALUES (?, ?, ?, ?, ?, ?)", [
             $data['title'],
+            $slug,
             $data['content'],
             $data['category_id'] ?: null,
             $user_id,
@@ -193,21 +212,13 @@ function create_prompt($data) {
 
         if (!empty($data['tag_ids'])) {
             foreach ($data['tag_ids'] as $tag_id) {
-                // Verify tag ownership
-                $tag = query("SELECT id FROM tags WHERE id = ? AND user_id = ?", [$tag_id, $user_id])->fetch();
-                if ($tag) {
-                    query("INSERT INTO prompt_tags (prompt_id, tag_id) VALUES (?, ?)", [$prompt_id, $tag_id]);
-                }
+                query("INSERT INTO prompt_tags (prompt_id, tag_id) VALUES (?, ?)", [$prompt_id, $tag_id]);
             }
         }
 
         if (!empty($data['collection_ids'])) {
             foreach ($data['collection_ids'] as $collection_id) {
-                // Verify collection ownership
-                $coll = query("SELECT id FROM collections WHERE id = ? AND user_id = ?", [$collection_id, $user_id])->fetch();
-                if ($coll) {
-                    query("INSERT INTO prompt_collections (prompt_id, collection_id) VALUES (?, ?)", [$prompt_id, $collection_id]);
-                }
+                query("INSERT INTO prompt_collections (prompt_id, collection_id) VALUES (?, ?)", [$prompt_id, $collection_id]);
             }
         }
 
@@ -223,6 +234,7 @@ function update_prompt($id, $data) {
     $db = get_db();
     $db->beginTransaction();
     $user_id = get_current_user_id();
+    $slug = slugify($data['title']);
 
     try {
         // Ensure prompt belongs to user
@@ -231,8 +243,9 @@ function update_prompt($id, $data) {
             throw new Exception("Unauthorized or prompt not found.");
         }
 
-        query("UPDATE prompts SET title = ?, content = ?, category_id = ?, is_public = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?", [
+        query("UPDATE prompts SET title = ?, slug = ?, content = ?, category_id = ?, is_public = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?", [
             $data['title'],
+            $slug,
             $data['content'],
             $data['category_id'] ?: null,
             $data['is_public'] ?? 0,
@@ -244,10 +257,7 @@ function update_prompt($id, $data) {
         query("DELETE FROM prompt_tags WHERE prompt_id = ?", [$id]);
         if (!empty($data['tag_ids'])) {
             foreach ($data['tag_ids'] as $tag_id) {
-                $tag = query("SELECT id FROM tags WHERE id = ? AND user_id = ?", [$tag_id, $user_id])->fetch();
-                if ($tag) {
-                    query("INSERT INTO prompt_tags (prompt_id, tag_id) VALUES (?, ?)", [$id, $tag_id]);
-                }
+                query("INSERT INTO prompt_tags (prompt_id, tag_id) VALUES (?, ?)", [$id, $tag_id]);
             }
         }
 
@@ -255,10 +265,7 @@ function update_prompt($id, $data) {
         query("DELETE FROM prompt_collections WHERE prompt_id = ?", [$id]);
         if (!empty($data['collection_ids'])) {
             foreach ($data['collection_ids'] as $collection_id) {
-                $coll = query("SELECT id FROM collections WHERE id = ? AND user_id = ?", [$collection_id, $user_id])->fetch();
-                if ($coll) {
-                    query("INSERT INTO prompt_collections (prompt_id, collection_id) VALUES (?, ?)", [$id, $collection_id]);
-                }
+                query("INSERT INTO prompt_collections (prompt_id, collection_id) VALUES (?, ?)", [$id, $collection_id]);
             }
         }
 
@@ -270,7 +277,43 @@ function update_prompt($id, $data) {
     }
 }
 
+// --- Images ---
+
+function get_prompt_images($prompt_id) {
+    return query("SELECT * FROM prompt_images WHERE prompt_id = ? ORDER BY created_at ASC", [$prompt_id])->fetchAll();
+}
+
+function add_prompt_image($prompt_id, $image_path) {
+    return query("INSERT INTO prompt_images (prompt_id, image_path) VALUES (?, ?)", [$prompt_id, $image_path]);
+}
+
+function delete_prompt_image($image_id) {
+    $image = query("SELECT * FROM prompt_images WHERE id = ?", [$image_id])->fetch();
+    if ($image) {
+        // Only allow if user owns the prompt
+        $prompt = get_prompt($image['prompt_id']);
+        if ($prompt && $prompt['user_id'] === get_current_user_id()) {
+            if (file_exists($image['image_path'])) {
+                unlink($image['image_path']);
+            }
+            return query("DELETE FROM prompt_images WHERE id = ?", [$image_id]);
+        }
+    }
+    return false;
+}
+
+function increment_prompt_view_count($id) {
+    return query("UPDATE prompts SET view_count = view_count + 1 WHERE id = ?", [$id]);
+}
+
 function delete_prompt($id) {
+    // Delete image files first
+    $images = get_prompt_images($id);
+    foreach ($images as $image) {
+        if (file_exists($image['image_path'])) {
+            unlink($image['image_path']);
+        }
+    }
     return query("DELETE FROM prompts WHERE id = ? AND user_id = ?", [$id, get_current_user_id()]);
 }
 

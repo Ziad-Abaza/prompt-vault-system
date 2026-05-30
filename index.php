@@ -128,9 +128,16 @@ include 'includes/header.php';
             <div class="group bg-white rounded-2xl border border-slate-200 hover:border-primary-300 hover:shadow-xl hover:shadow-primary-900/5 transition-all duration-300 flex flex-col overflow-hidden">
                 <div class="p-6 flex-grow">
                     <div class="flex justify-between items-start mb-4">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-primary-50 text-primary-700 uppercase tracking-wider">
-                            <?php echo esc($prompt['category_name'] ?? 'Uncategorized'); ?>
-                        </span>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-primary-50 text-primary-700 uppercase tracking-wider">
+                                <?php echo esc($prompt['category_name'] ?? 'Uncategorized'); ?>
+                            </span>
+                            <?php if ($prompt['is_public']): ?>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-green-50 text-green-700 uppercase tracking-wider border border-green-100">
+                                    Public
+                                </span>
+                            <?php endif; ?>
+                        </div>
                         <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button onclick="copyToClipboard(<?php echo esc(json_encode($prompt['content'])); ?>, this)" class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors" title="Copy Prompt">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,7 +152,7 @@ include 'includes/header.php';
                         </div>
                     </div>
                     
-                    <a href="prompt.php?id=<?php echo $prompt['id']; ?>" class="block group-hover:text-primary-600 transition-colors">
+                    <a href="prompt.php?id=<?php echo $prompt['id'] . '-' . $prompt['slug']; ?>" class="block group-hover:text-primary-600 transition-colors">
                         <h2 class="text-xl font-bold text-slate-900 mb-3 leading-snug"><?php echo esc($prompt['title']); ?></h2>
                     </a>
                     
@@ -158,7 +165,7 @@ include 'includes/header.php';
                     <span class="text-xs font-medium text-slate-400">
                         Updated <?php echo date('M j, Y', strtotime($prompt['updated_at'])); ?>
                     </span>
-                    <a href="prompt.php?id=<?php echo $prompt['id']; ?>" class="text-xs font-bold text-primary-600 hover:text-primary-800 uppercase tracking-widest flex items-center">
+                    <a href="prompt.php?id=<?php echo $prompt['id'] . '-' . $prompt['slug']; ?>" class="text-xs font-bold text-primary-600 hover:text-primary-800 uppercase tracking-widest flex items-center">
                         View Prompt
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />

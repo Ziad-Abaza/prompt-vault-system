@@ -13,6 +13,14 @@ $tags = get_tags();
 $collections = get_collections();
 $errors = [];
 
+// Handle image deletion
+if ($id && isset($_GET['delete_image'])) {
+    if (delete_prompt_image($_GET['delete_image'])) {
+        set_flash('Image removed successfully.');
+        redirect("prompt_edit.php?id=$id");
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $validator = new Validator($_POST);
     $validator->required('title', 'Please provide a title for your prompt.')
@@ -26,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'category_id' => $_POST['category_id'] ?: null,
             'tag_ids' => $_POST['tag_ids'] ?? [],
             'collection_ids' => $_POST['collection_ids'] ?? [],
+            'is_public' => isset($_POST['is_public']) ? 1 : 0,
         ];
 
         // Handle new tags
@@ -43,6 +52,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $id = create_prompt($data);
                 set_flash('Prompt created successfully.');
             }
+
+            // Handle image uploads
+            if (!empty($_FILES['images']['name'][0])) {
+                $upload_dir = 'uploads/';
+                $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                $max_size = 5 * 1024 * 1024; // 5MB
+
+                foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
+                    if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
+                        $file_type = $_FILES['images']['type'][$key];
+                        $file_size = $_FILES['images']['size'][$key];
+
+                        if (in_array($file_type, $allowed_types) && $file_size <= $max_size) {
+                            $extension = pathinfo($_FILES['images']['name'][$key], PATHINFO_EXTENSION);
+                            $filename = uniqid('prompt_' . $id . '_') . '.' . $extension;
+                            $target_path = $upload_dir . $filename;
+
+                            if (move_uploaded_file($tmp_name, $target_path)) {
+                                add_prompt_image($id, $target_path);
+                            }
+                        }
+                    }
+                }
+            }
+
             redirect("prompt.php?id=$id");
         } catch (Exception $e) {
             $errors['form'] = $e->getMessage();
@@ -83,7 +117,7 @@ include 'includes/header.php';
         </div>
     <?php endif; ?>
 
-    <form action="prompt_edit.php<?php echo $id ? '?id=' . $id : ''; ?>" method="POST" class="space-y-10 pb-24">
+    <form action="prompt_edit.php<?php echo $id ? '?id=' . $id : ''; ?>" method="POST" enctype="multipart/form-data" class="space-y-10 pb-24">
         <?php echo csrf_input(); ?>
 
         <!-- Section 1: Basic Information -->
@@ -208,6 +242,36 @@ include 'includes/header.php';
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Visuals & Attachments -->
+        <div class="form-section shadow-xl shadow-slate-200/40">
+            <div class="form-section-header">
+                <h3 class="form-section-title">Step 4: Visuals & Attachments</h3>
+                <span class="text-[10px] font-black text-rose-500 bg-rose-50 px-2 py-1 rounded-md uppercase tracking-widest">Images</span>
+            </div>
+            <div class="form-body">
+                <div class="form-group">
+                    <label for="images" class="form-label px-1">Upload Reference Images</label>
+                    <input type="file" name="images[]" id="images" multiple accept="image/*" class="form-input border-dashed border-2 py-8 bg-slate-50/50 hover:bg-white hover:border-primary-400 transition-all">
+                    <p class="text-[10px] text-slate-400 font-medium px-1">Supported: JPG, PNG, GIF, WEBP. Max 5MB per image.</p>
+                </div>
+
+                <?php if ($prompt && !empty($prompt['images'])): ?>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-6">
+                        <?php foreach ($prompt['images'] as $img): ?>
+                            <div class="relative group aspect-square rounded-2xl overflow-hidden border border-slate-200 bg-slate-50">
+                                <img src="<?php echo esc($img['image_path']); ?>" alt="Prompt Attachment" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                                <a href="prompt_edit.php?id=<?php echo $id; ?>&delete_image=<?php echo $img['id']; ?>" 
+                                   onclick="return confirm('Delete this image?');"
+                                   class="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </a>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
 

@@ -55,8 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['backup_file'])) {
                 if (!empty($data['prompts'])) {
                     foreach ($data['prompts'] as $row) {
                         $new_cat_id = isset($row['category_id']) ? ($cat_map[$row['category_id']] ?? null) : null;
-                        query("INSERT INTO prompts (title, content, category_id, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)", [
-                            $row['title'], $row['content'], $new_cat_id, $user_id, $row['created_at'], $row['updated_at']
+                        query("INSERT INTO prompts (title, slug, content, category_id, user_id, is_public, view_count, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+                            $row['title'], 
+                            $row['slug'] ?? slugify($row['title']), 
+                            $row['content'], 
+                            $new_cat_id, 
+                            $user_id, 
+                            $row['is_public'] ?? 0,
+                            $row['view_count'] ?? 0,
+                            $row['created_at'], 
+                            $row['updated_at']
                         ]);
                         $prompt_map[$row['id']] = $db->lastInsertId();
                     }
@@ -80,6 +88,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['backup_file'])) {
                         $new_coll_id = $coll_map[$row['collection_id']] ?? null;
                         if ($new_prompt_id && $new_coll_id) {
                             query("INSERT INTO prompt_collections (prompt_id, collection_id) VALUES (?, ?)", [$new_prompt_id, $new_coll_id]);
+                        }
+                    }
+                }
+
+                // Import Prompt Images
+                if (!empty($data['prompt_images'])) {
+                    foreach ($data['prompt_images'] as $row) {
+                        $new_prompt_id = $prompt_map[$row['prompt_id']] ?? null;
+                        if ($new_prompt_id) {
+                            query("INSERT INTO prompt_images (prompt_id, image_path, created_at) VALUES (?, ?, ?)", [
+                                $new_prompt_id, $row['image_path'], $row['created_at']
+                            ]);
                         }
                     }
                 }

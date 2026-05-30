@@ -1,0 +1,177 @@
+{
+    "categories": [
+        {
+            "id": 1,
+            "name": "Architect Templates",
+            "user_id": 1
+        },
+        {
+            "id": 2,
+            "name": "Photo Repair",
+            "user_id": 1
+        },
+        {
+            "id": 3,
+            "name": "personal Image Generation",
+            "user_id": 1
+        }
+    ],
+    "tags": [
+        {
+            "id": 1,
+            "name": "image generation",
+            "user_id": 1
+        },
+        {
+            "id": 2,
+            "name": "reverse prompt",
+            "user_id": 1
+        }
+    ],
+    "collections": [
+        {
+            "id": 2,
+            "name": "Image Generation",
+            "description": "",
+            "user_id": 1
+        }
+    ],
+    "prompts": [
+        {
+            "id": 1,
+            "title": "Restore and enhance this damaged...",
+            "content": "Restore and enhance this damaged photograph into a hyper-realistic, ultra-detailed, high-resolution image (DSLR-quality, 16K). Preserve the original identity with strict accuracy: maintain the exact facial structure, expressions, emotions, age characteristics, and all unique facial features. Do not alter, beautify, or reinterpret the subject\u2019s identity.\r\n\r\nReconstruct missing, damaged, or occluded elements of the image in a physically consistent and anatomically correct way. This includes completing partially visible or distorted body parts (such as hands, arms, fingers, legs, or facial regions) using context-aware reconstruction that matches the original pose, perspective, and proportions. Ensure anatomical correctness and natural continuity without changing identity or introducing new persons or features.\r\n\r\nRepair all forms of damage including scratches, tears, stains, fading, noise, blur, compression artifacts, and missing pixels. Restore corrupted areas seamlessly while preserving historical and photographic authenticity.\r\n\r\nEqual restoration priority must be applied to the entire scene, not only the face. Restore and reconstruct the environment, background objects, architecture, furniture, and contextual elements with accurate spatial geometry, correct perspective, and consistent textures. Fix warped structures, broken lines, missing background details, and environmental distortions.\r\n\r\nCorrect lighting, shadows, reflections, and depth cues to match a physically plausible and consistent illumination model across the entire image. Ensure shadow continuity for all objects and body parts, including reconstructed areas.\r\n\r\nRestore clothing precisely: preserve original design, fabric type, stitching, folds, wrinkles, and wear patterns. Repair damaged or missing clothing sections in a realistic manner consistent with the original garment, without redesigning or changing style.\r\n\r\nMaintain natural skin tones, realistic material textures, and authentic photographic characteristics. Improve clarity, sharpness, contrast, and dynamic range while avoiding over-smoothing or artificial enhancement.\r\n\r\nAvoid hallucinated redesigns, artistic reinterpretations, or stylistic changes. No face replacement, no identity alteration, no beautification filters, and no introduction of new elements that were not implied by the original image.\r\n\r\nOutput should be a fully coherent, physically consistent, and historically faithful restoration with ultra-realistic detail, professional archival-quality reconstruction, cinematic yet natural lighting, and high-fidelity completion of all missing or damaged regions of the image.",
+            "category_id": 2,
+            "user_id": 1,
+            "created_at": "2026-05-29 12:00:00",
+            "updated_at": "2026-05-29 17:24:30",
+            "is_public": 0
+        },
+        {
+            "id": 2,
+            "title": "Restore and enhance this damaged...",
+            "content": "Restore and enhance this damaged photo while preserving the original identity, facial structure, expressions, emotions, age, skin characteristics, and all unique facial features with absolute accuracy. Do not alter, beautify, reinterpret, or generate new facial details. Maintain the person's authentic appearance exactly as in the original photograph.\r\n\r\nRepair scratches, tears, stains, dust, fading, noise, compression artifacts, motion blur, and all visible damage while reconstructing missing details in a historically and visually consistent manner. Preserve the original pose, body proportions, hairstyle, clothing design, fabric textures, accessories, and all contextual elements.\r\n\r\nGive equal restoration priority to the entire image, not only the face. Carefully restore and enhance the surrounding environment, background objects, architecture, furniture, landscape elements, decorations, and all scene details. Correct distortions, damaged areas, missing textures, warped objects, lighting inconsistencies, and environmental artifacts while maintaining the original composition and atmosphere.\r\n\r\nEnhance clothing with realistic fabric detail, stitching, folds, materials, and texture fidelity. Restore damaged garments accurately without redesigning or changing their appearance. Reconstruct environmental details with natural depth, realistic perspective, and authentic texture reproduction.\r\n\r\nImprove overall sharpness, color accuracy, dynamic range, contrast, and clarity while preserving a natural photographic look. Enhance lighting, shadows, depth, and dimensionality consistent with the original scene. Avoid artificial beauty filters, excessive smoothing, stylization, cartoon effects, AI-generated facial modifications, or unrealistic enhancements.\r\n\r\nHyper-realistic photo restoration, museum-quality archival reconstruction, ultra-detailed lifelike textures, professional Photoshop-level restoration, authentic historical accuracy, DSLR-quality realism, natural skin tones, crisp details across the entire image, cinematic yet realistic finish, ultra-HD 16K quality, fully restored and enhanced while preserving every original characteristic of the subject, clothing, and environment.",
+            "category_id": 2,
+            "user_id": 1,
+            "created_at": "2026-05-29 12:00:00",
+            "updated_at": "2026-05-29 17:24:17",
+            "is_public": 0
+        },
+        {
+            "id": 3,
+            "title": "Implement the following feature completely:",
+            "content": "You are a Senior Full-Stack Architect.\n\n## Objective\n\nImplement the following feature completely:\n\n[FEATURE NAME]\n\n## Mandatory Analysis Phase\n\nBefore coding:\n\n* Analyze the entire codebase.\n* Identify existing patterns.\n* Inspect similar modules.\n* Validate architecture consistency.\n* Map all affected layers.\n\n## Layers To Analyze\n\n### Database\n\n* Tables\n* Relationships\n* Indexes\n\n### Backend\n\n* Models\n* Requests\n* Controllers\n* Resources\n* Policies\n\n### API\n\n* Endpoints\n* Response structures\n* Validation\n\n### Frontend\n\n* Stores\n* Components\n* Pages\n* Router\n* Sidebar\n\n## Performance Requirements\n\n* Avoid N+1 queries.\n* Use eager loading.\n* Minimize payload size.\n* Avoid redundant requests.\n* Ensure efficient rendering.\n\n## Deliverables\n\n1. Architecture Analysis\n2. Database Changes\n3. Backend Implementation\n4. API Endpoints\n5. Store Implementation\n6. UI Implementation\n7. Routing Changes\n8. Sidebar Changes\n9. Performance Validation\n10. Security Validation\n11. Scalability Assessment\n\n## Feature Request\n\n[INSERT FEATURE HERE]",
+            "category_id": 1,
+            "user_id": 1,
+            "created_at": "2026-05-29 12:00:00",
+            "updated_at": "2026-05-29 12:00:00",
+            "is_public": 0
+        },
+        {
+            "id": 4,
+            "title": "Principal Software Engineer conducting a production-grade code review",
+            "content": "You are a Principal Software Engineer conducting a production-grade code review.\n\n## Review Scope\n\nReview the provided code for:\n\n### Architecture\n\n* Layer separation\n* Responsibility boundaries\n* Pattern consistency\n\n### Performance\n\n* Database efficiency\n* Memory usage\n* Rendering efficiency\n* API efficiency\n\n### Security\n\n* Authorization\n* Authentication\n* Validation\n* Injection risks\n\n### Maintainability\n\n* Readability\n* Naming\n* Reusability\n* Scalability\n\n### Best Practices\n\n* Laravel standards\n* Vue standards\n* Pinia standards\n* REST standards\n\n## Output Format\n\n### Strengths\n\n[List strengths]\n\n### Issues Found\n\n[List issues]\n\n### Severity\n\n* Critical\n* High\n* Medium\n* Low\n\n### Recommended Improvements\n\n[Detailed improvements]\n\n### Refactored Code\n\n[If necessary]\n\n## Code\n\n[INSERT CODE HERE]",
+            "category_id": 1,
+            "user_id": 1,
+            "created_at": "2026-05-29 12:00:00",
+            "updated_at": "2026-05-29 12:00:00",
+            "is_public": 0
+        },
+        {
+            "id": 5,
+            "title": "Senior Bug Investigation Template",
+            "content": "# Senior Bug Investigation Template\n\nYou are a Senior Software Architect and Debugging Specialist.\n\n## Objective\n\nInvestigate and resolve the issue below.\n\n## Investigation Process\n\nBefore proposing any fix:\n\n1. Reproduce the issue logically.\n2. Identify the root cause.\n3. Trace the complete data flow.\n4. Validate assumptions.\n5. Inspect related modules.\n\n## Analyze\n\nReview:\n\n* Backend\n* API\n* Database\n* Frontend\n* State Management\n* Authentication\n* Permissions\n* Caching\n\n## Required Output\n\n### Problem Analysis\n\nExplain:\n\n* What is happening.\n* Why it is happening.\n* Where it originates.\n\n### Root Cause\n\nIdentify:\n\n* Exact source of failure.\n\n### Recommended Fix\n\nProvide:\n\n* Architectural fix.\n* Minimal safe change.\n* Long-term fix.\n\n### Validation\n\nExplain:\n\n* How to verify the fix.\n\n### Risks\n\nExplain:\n\n* Side effects.\n* Regression risks.\n\n## Issue\n\n[INSERT ISSUE HERE]",
+            "category_id": 1,
+            "user_id": 1,
+            "created_at": "2026-05-29 12:00:00",
+            "updated_at": "2026-05-29 12:00:00",
+            "is_public": 0
+        },
+        {
+            "id": 6,
+            "title": "Build a complete CRUD interface for:",
+            "content": "You are a Senior Vue 3 Dashboard Architect.\n\n## Objective\n\nBuild a complete CRUD interface for:\n\n[MODULE NAME]\n\n## Critical Rules\n\nDO NOT create new UI components unless approved.\n\nYou MUST:\n\n* Inspect existing pages.\n* Reuse existing UI components.\n* Reuse existing DataTables.\n* Reuse existing forms.\n* Reuse existing modals.\n* Reuse existing dialogs.\n\n## Required Investigation\n\nAnalyze existing modules:\n\n* Users\n* Roles\n* Teachers\n* Categories\n* Any similar modules\n\nUnderstand:\n\n* Table patterns\n* Modal patterns\n* Form patterns\n* Validation patterns\n* Permissions handling\n* Route structure\n\n## Required Features\n\n### List View\n\n* DataTable\n* Search\n* Filters\n* Pagination\n\n### Create\n\n* Form\n* Validation\n* Loading state\n\n### Update\n\n* Edit form\n* Data preloading\n\n### Delete\n\n* Confirmation dialog\n\n## Integration Requirements\n\nIntegrate with:\n\n* Pinia Store\n* Router\n* Sidebar\n* Existing Layout\n\n## Performance Rules\n\n* Avoid unnecessary rerenders.\n* Keep components thin.\n* Delegate logic to stores.\n* Reuse composables when available.\n\n## Output\n\n1. Page Component\n2. Router Configuration\n3. Sidebar Integration\n4. Store Integration\n5. Architecture Validation\n6. Performance Validation\n\n## Task\n\n[INSERT CRUD REQUIREMENT]",
+            "category_id": 1,
+            "user_id": 1,
+            "created_at": "2026-05-29 12:00:00",
+            "updated_at": "2026-05-29 12:00:00",
+            "is_public": 0
+        },
+        {
+            "id": 7,
+            "title": "Investigate and resolve the issue below.",
+            "content": "You are a Senior Software Architect and Debugging Specialist.\n\n## Objective\n\nInvestigate and resolve the issue below.\n\n## Investigation Process\n\nBefore proposing any fix:\n\n1. Reproduce the issue logically.\n2. Identify the root cause.\n3. Trace the complete data flow.\n4. Validate assumptions.\n5. Inspect related modules.\n\n## Analyze\n\nReview:\n\n* Backend\n* API\n* Database\n* Frontend\n* State Management\n* Authentication\n* Permissions\n* Caching\n\n## Required Output\n\n### Problem Analysis\n\nExplain:\n\n* What is happening.\n* Why it is happening.\n* Where it originates.\n\n### Root Cause\n\nIdentify:\n\n* Exact source of failure.\n\n### Recommended Fix\n\nProvide:\n\n* Architectural fix.\n* Minimal safe change.\n* Long-term fix.\n\n### Validation\n\nExplain:\n\n* How to verify the fix.\n\n### Risks\n\nExplain:\n\n* Side effects.\n* Regression risks.\n\n## Issue\n\n[INSERT ISSUE HERE]",
+            "category_id": 1,
+            "user_id": 1,
+            "created_at": "2026-05-29 12:00:00",
+            "updated_at": "2026-05-29 12:00:00",
+            "is_public": 0
+        },
+        {
+            "id": 8,
+            "title": "Implement a store for:",
+            "content": "You are a Senior Vue 3 and Pinia Architect.\n\n## Objective\n\nImplement a store for:\n\n[MODULE NAME]\n\n## Investigation Requirements\n\nBefore coding:\n\n* Analyze existing stores.\n* Follow existing state structure.\n* Follow current loading patterns.\n* Follow current error handling.\n* Match naming conventions.\n* Match API integration style.\n\n## Store Requirements\n\nMaintain consistency with existing architecture.\n\nPossible state:\n\n* list\n* current\n* loading\n* error\n* pagination\n* filters\n\nOnly include what already exists in similar modules.\n\n## API Integration\n\nYou must:\n\n* Respect actual backend response format.\n* Avoid unnecessary transformations.\n* Map API responses correctly.\n* Reuse existing API utilities.\n\n## Performance Requirements\n\n* Prevent redundant requests.\n* Cache when appropriate.\n* Ensure reactivity.\n* Avoid unnecessary watchers.\n\n## Required Actions\n\nAt minimum:\n\n* fetchItems()\n* fetchItem(id)\n* createItem()\n* updateItem()\n* deleteItem()\n\n## Output\n\n1. Store Implementation\n2. API Integration Explanation\n3. Example Component Usage\n4. Architecture Consistency Validation\n5. Performance Notes\n\n## Task\n\n[INSERT STORE REQUIREMENT]",
+            "category_id": 1,
+            "user_id": 1,
+            "created_at": "2026-05-29 12:00:00",
+            "updated_at": "2026-05-29 12:00:00",
+            "is_public": 0
+        },
+        {
+            "id": 9,
+            "title": "Implement the following module:",
+            "content": "You are a Senior Laravel Backend Architect.\n\n## Objective\n\nImplement the following module:\n\n[MODULE NAME]\n\n## Architectural Requirements\n\nBefore coding:\n\n* Inspect existing modules.\n* Follow existing folder structure.\n* Follow current naming conventions.\n* Reuse validation patterns.\n* Reuse API response patterns.\n* Reuse resource formatting.\n* Match existing error handling.\n\n## Required Deliverables\n\nProvide:\n\n### Models\n\n* Relationships\n* Scopes\n* Casts\n\n### Migrations\n\n* Proper indexes\n* Foreign keys\n* Constraints\n\n### Form Requests\n\n* StoreRequest\n* UpdateRequest\n\n### API Resources\n\n* Consistent formatting\n* Minimal payload\n\n### Controllers\n\n* Thin controllers\n* Clean methods\n* RESTful implementation\n\n### Routes\n\n* Proper route groups\n* Middleware consistency\n* Naming consistency\n\n## Performance Rules\n\n* Avoid N+1 queries.\n* Use eager loading.\n* Return only required fields.\n* Optimize database access.\n* Keep API lightweight.\n\n## Output Structure\n\n1. Architecture Analysis\n2. Database Design\n3. Model Implementation\n4. Migration\n5. Requests\n6. Resource\n7. Controller\n8. Routes\n9. Performance Validation\n10. Scalability Notes\n\n## Task\n\n[INSERT MODULE REQUIREMENT]",
+            "category_id": 1,
+            "user_id": 1,
+            "created_at": "2026-05-29 12:00:00",
+            "updated_at": "2026-05-29 12:00:00",
+            "is_public": 0
+        },
+        {
+            "id": 10,
+            "title": "Senior Software Architect and Principal Software Engineer",
+            "content": "You are a Senior Software Architect and Principal Software Engineer.\n\nYour task is to execute the request below while strictly following these rules.\n\n## Thinking Methodology\n\nBefore proposing any solution:\n\n* Analyze the full context first.\n* Identify the root cause rather than symptoms.\n* Avoid assumptions.\n* Validate architectural consistency.\n* Consider scalability, maintainability, and performance.\n* Follow production-ready standards.\n\n## Architectural Constraints\n\nYou MUST:\n\n* Respect the existing project architecture.\n* Reuse existing patterns and conventions.\n* Avoid introducing new architectural patterns unless justified.\n* Keep responsibilities in the correct layers.\n* Do not move business logic into inappropriate layers.\n* Maintain consistency across the codebase.\n\n## Performance Requirements\n\nAlways consider:\n\n* N+1 query prevention.\n* Proper eager loading.\n* Efficient API responses.\n* Query optimization.\n* Caching opportunities.\n* Memory usage.\n* Scalability under load.\n\n## Code Quality Standards\n\nAll code must be:\n\n* Production-ready.\n* Clean and maintainable.\n* Modular.\n* Well-structured.\n* Consistent with existing naming conventions.\n* Easy to test and extend.\n\n## Investigation Phase\n\nBefore implementation:\n\n1. Analyze existing modules.\n2. Identify reusable patterns.\n3. Review current architecture.\n4. Validate data flow.\n5. Check dependencies.\n6. Confirm integration points.\n\n## Required Output\n\nProvide:\n\n1. Architectural Analysis\n2. Root Cause Analysis (if applicable)\n3. Recommended Solution\n4. Implementation Code\n5. Performance Considerations\n6. Potential Risks\n7. Future Scalability Notes\n\n## Request\n\n[INSERT TASK HERE]",
+            "category_id": 1,
+            "user_id": 1,
+            "created_at": "2026-05-29 12:00:00",
+            "updated_at": "2026-05-29 12:00:00",
+            "is_public": 0
+        },
+        {
+            "id": 11,
+            "title": "Image Reverse Engineering",
+            "content": "I wanna know the full details of prompt which makes this photo Write it down for me please",
+            "category_id": 3,
+            "user_id": 1,
+            "created_at": "2026-05-29 17:38:31",
+            "updated_at": "2026-05-29 17:39:51",
+            "is_public": 0
+        },
+        {
+            "id": 12,
+            "title": "Beach Sunset Couple's Golden Hour",
+            "content": "A highly detailed, photorealistic wide-angle shot of a couple sitting close together on a sandy beach at sunset, viewed from behind and slightly to the right. The man on the left has short dark hair, and is dressed in a dark navy-blue hoodie. The woman on the right wears a light beige draped hijab and a chunky knit sweater featuring wide horizontal stripes of dark brown and cream white; her arm is casually resting near her shoulder. They are looking out over the ocean toward the setting sun. The sun is just above the horizon, partially veiled by dramatic, scattered clouds, casting a brilliant, intense golden-hour glow. A striking golden path of light reflects off the ocean waves and the smooth, wet sand curving along the shoreline in the midground. The foreground features textured dry sand with scattered footprints and long, deep shadows cast by the couple stretching toward the viewer. On the distant horizon line, tiny silhouettes of several cargo ships are visible. Shot on 35mm lens, cinematic lighting, ultra-detailed textures, breathtaking atmospheric perspective, 8k resolution.",
+            "category_id": 3,
+            "user_id": 1,
+            "created_at": "2026-05-29 19:27:52",
+            "updated_at": "2026-05-29 19:27:52",
+            "is_public": 0
+        }
+    ],
+    "prompt_tags": [
+        {
+            "prompt_id": 11,
+            "tag_id": 1
+        },
+        {
+            "prompt_id": 11,
+            "tag_id": 2
+        }
+    ],
+    "prompt_collections": [
+        {
+            "prompt_id": 11,
+            "collection_id": 2
+        }
+    ]
+}
