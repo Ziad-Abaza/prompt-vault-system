@@ -3,11 +3,11 @@ require_once 'bootstrap.php';
 
 $page_title = "Terms of Service";
 $meta_description = "Read the terms of service for Atlas Library. Understand the guidelines for using our AI prompt management platform.";
-$canonical_url = rtrim(Env::get('APP_URL', ''), '/') . '/terms.php';
+$canonical_url = APP_URL_BASE . '/terms.php';
 
 $breadcrumbs = [
-    ['name' => 'Home', 'url' => 'public_prompts.php'],
-    ['name' => 'Terms of Service', 'url' => 'terms.php']
+    ['name' => 'Home', 'url' => APP_URL_BASE . '/public_prompts.php'],
+    ['name' => 'Terms of Service', 'url' => APP_URL_BASE . '/terms.php']
 ];
 
 include 'includes/header.php';
@@ -18,7 +18,7 @@ include 'includes/header.php';
     <nav class="flex mb-8" aria-label="Breadcrumb">
         <ol class="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest">
             <li>
-                <a href="public_prompts.php" class="text-slate-400 hover:text-primary-600 transition-colors">Home</a>
+                <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php" class="text-slate-400 hover:text-primary-600 transition-colors">Home</a>
             </li>
             <li>
                 <svg class="h-3 w-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

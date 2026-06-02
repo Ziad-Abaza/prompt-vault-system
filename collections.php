@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 create_collection($name, $description);
                 set_flash('New collection created.');
             }
-            redirect('collections.php');
+            redirect(APP_URL_BASE . '/collections.php');
         } catch (Exception $e) {
             $errors['form'] = $e->getMessage();
         }
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (isset($_GET['delete'])) {
     delete_collection($_GET['delete']);
     set_flash('Collection removed.');
-    redirect('collections.php');
+    redirect(APP_URL_BASE . '/collections.php');
 }
 
 $collections = get_collections();
@@ -76,12 +76,12 @@ include 'includes/header.php';
                             </span>
                         </div>
                         <div class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <a href="collections.php?edit=<?php echo $coll['id']; ?>" class="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors">
+                            <a href="<?php echo APP_URL_BASE; ?>/collections.php?edit=<?php echo $coll['id']; ?>" class="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
                             </a>
-                            <a href="collections.php?delete=<?php echo $coll['id']; ?>" onclick="return confirm('Are you sure?');" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                            <a href="<?php echo APP_URL_BASE; ?>/collections.php?delete=<?php echo $coll['id']; ?>" onclick="return confirm('Are you sure?');" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                 </svg>
@@ -91,7 +91,7 @@ include 'includes/header.php';
                     <h3 class="text-lg font-bold text-slate-900 mb-1.5 group-hover:text-primary-600 transition-colors truncate"><?php echo esc($coll['name']); ?></h3>
                     <p class="text-slate-500 text-xs mb-6 leading-relaxed line-clamp-2 min-h-[2rem] font-medium"><?php echo esc($coll['description'] ?: 'No description provided for this collection.'); ?></p>
                     <div class="mt-auto">
-                        <a href="index.php?collection_id=<?php echo $coll['id']; ?>" class="inline-flex items-center text-[10px] font-bold text-primary-600 hover:text-primary-800 uppercase tracking-widest group">
+                        <a href="<?php echo APP_URL_BASE; ?>/index.php?collection_id=<?php echo $coll['id']; ?>" class="inline-flex items-center text-[10px] font-bold text-primary-600 hover:text-primary-800 uppercase tracking-widest group">
                             Explore
                             <svg class="w-3 h-3 ml-1.5 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
@@ -115,7 +115,7 @@ include 'includes/header.php';
                         <?php echo $edit_coll ? 'Edit Collection' : 'New Workspace'; ?>
                     </h3>
                 </div>
-                <form action="collections.php" method="POST" class="p-5 space-y-4">
+                <form action="<?php echo APP_URL_BASE; ?>/collections.php" method="POST" class="p-5 space-y-4">
                     <?php echo csrf_input(); ?>
                     <?php if ($edit_coll): ?>
                         <input type="hidden" name="id" value="<?php echo $edit_coll['id']; ?>">
@@ -151,7 +151,7 @@ include 'includes/header.php';
                         </button>
                         
                         <?php if ($edit_coll): ?>
-                            <a href="collections.php" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-50 text-center transition-all">
+                            <a href="<?php echo APP_URL_BASE; ?>/collections.php" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-50 text-center transition-all">
                                 Cancel
                             </a>
                         <?php endif; ?>

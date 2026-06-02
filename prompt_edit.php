@@ -17,7 +17,7 @@ $errors = [];
 if ($id && isset($_GET['delete_image'])) {
     if (delete_prompt_image($_GET['delete_image'])) {
         set_flash('Image removed successfully.');
-        redirect("prompt_edit.php?id=$id");
+        redirect(APP_URL_BASE . "/prompt_edit.php?id=$id");
     }
 }
 
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            redirect("prompt.php?id=$id");
+            redirect(APP_URL_BASE . "/prompt.php?id=$id");
         } catch (Exception $e) {
             $errors['form'] = $e->getMessage();
         }
@@ -120,7 +120,7 @@ include 'includes/header.php';
     <div class="mb-12">
         <nav class="flex mb-4" aria-label="Breadcrumb">
             <ol class="flex items-center space-x-2 text-sm font-medium">
-                <li><a href="index.php" class="text-slate-400 hover:text-slate-600 transition-colors font-semibold">Library</a></li>
+                <li><a href="<?php echo APP_URL_BASE; ?>/dashboard.php" class="text-slate-400 hover:text-slate-600 transition-colors font-semibold">Library</a></li>
                 <li>
                     <svg class="h-5 w-5 text-slate-300" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
@@ -140,7 +140,7 @@ include 'includes/header.php';
         </div>
     <?php endif; ?>
 
-    <form action="prompt_edit.php<?php echo $id ? '?id=' . $id : ''; ?>" method="POST" enctype="multipart/form-data" class="space-y-10 pb-24">
+    <form action="<?php echo APP_URL_BASE; ?>/prompt_edit.php<?php echo $id ? '?id=' . $id : ''; ?>" method="POST" enctype="multipart/form-data" class="space-y-10 pb-24">
         <?php echo csrf_input(); ?>
 
         <!-- Section 1: Basic Information -->
@@ -285,8 +285,8 @@ include 'includes/header.php';
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-6">
                         <?php foreach ($prompt['images'] as $img): ?>
                             <div class="relative group aspect-square rounded-2xl overflow-hidden border border-slate-200 bg-slate-50">
-                                <img src="<?php echo esc($img['image_path']); ?>" alt="Prompt Attachment" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                                <a href="prompt_edit.php?id=<?php echo $id; ?>&delete_image=<?php echo $img['id']; ?>" 
+                                <img src="<?php echo APP_URL_BASE . '/' . esc($img['image_path']); ?>" alt="Prompt Attachment" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                                <a href="<?php echo APP_URL_BASE; ?>/prompt_edit.php?id=<?php echo $id; ?>&delete_image=<?php echo $img['id']; ?>" 
                                    onclick="return confirm('Delete this image?');"
                                    class="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -308,7 +308,7 @@ include 'includes/header.php';
                 <?php endif; ?>
             </div>
             <div class="flex items-center space-x-4 w-full md:w-auto">
-                <a href="<?php echo $id ? 'prompt.php?id=' . $id : 'index.php'; ?>" class="btn-secondary flex-grow md:flex-grow-0 text-center">
+                <a href="<?php echo $id ? APP_URL_BASE . '/prompt.php?id=' . $id . '-' . $prompt['slug'] : APP_URL_BASE . '/dashboard.php'; ?>" class="btn-secondary flex-grow md:flex-grow-0 text-center">
                     Discard
                 </a>
                 <button type="submit" class="btn-primary flex-grow md:flex-grow-0 shadow-primary-600/30">
@@ -319,7 +319,7 @@ include 'includes/header.php';
     </form>
 
     <?php if ($id): ?>
-        <form id="delete-form" action="prompt_delete.php" method="POST" class="hidden">
+        <form id="delete-form" action="<?php echo APP_URL_BASE; ?>/prompt_delete.php" method="POST" class="hidden">
             <?php echo csrf_input(); ?>
             <input type="hidden" name="id" value="<?php echo $id; ?>">
         </form>

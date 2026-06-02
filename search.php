@@ -17,7 +17,7 @@ if ($query !== '') {
 
 $page_title = $query ? "Search results for \"$query\"" : "Search Prompt Library";
 $meta_description = $query ? "Discover prompts matching \"$query\" in our AI library. Copy and use high-quality community prompts." : "Search our comprehensive library of AI prompts for ChatGPT, Claude, and Midjourney.";
-$canonical_url = rtrim(Env::get('APP_URL', ''), '/') . '/search.php' . ($query ? '?q=' . urlencode($query) : '');
+$canonical_url = APP_URL_BASE . '/search.php' . ($query ? '?q=' . urlencode($query) : '');
 
 include 'includes/header.php';
 ?>
@@ -33,7 +33,7 @@ include 'includes/header.php';
 
     <!-- Search Box -->
     <div class="mb-12">
-        <form action="search.php" method="GET" class="relative max-w-2xl mx-auto">
+        <form action="<?php echo APP_URL_BASE; ?>/search.php" method="GET" class="relative max-w-2xl mx-auto">
             <input type="text" name="q" value="<?php echo esc($query); ?>" autofocus
                 class="block w-full px-12 py-5 bg-white border border-slate-200 rounded-[2rem] shadow-xl shadow-slate-200/40 focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all text-lg font-bold placeholder-slate-300" 
                 placeholder="Search by keywords, tags, or categories...">

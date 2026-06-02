@@ -3,15 +3,15 @@ require_once 'bootstrap.php';
 
 // Requires login
 if (!is_logged_in()) {
-    redirect('login.php');
+    redirect(APP_URL_BASE . '/login.php');
 }
 
 $followed_authors = get_followed_authors();
 
 $page_title = "Authors I Follow";
 $breadcrumbs = [
-    ['name' => 'Library', 'url' => 'dashboard.php'],
-    ['name' => 'Following', 'url' => 'following.php']
+    ['name' => 'Library', 'url' => APP_URL_BASE . '/dashboard.php'],
+    ['name' => 'Following', 'url' => APP_URL_BASE . '/following.php']
 ];
 
 include 'includes/header.php';
@@ -33,7 +33,7 @@ include 'includes/header.php';
             </div>
             <h3 class="text-2xl font-black text-slate-900 mb-2">You're not following anyone yet</h3>
             <p class="text-slate-500 font-medium max-w-xs mx-auto mb-8 text-balance">Follow top contributors from the leaderboards or public profiles to build your network.</p>
-            <a href="leaderboards.php" class="px-8 py-4 bg-primary-600 text-white font-bold rounded-2xl hover:bg-primary-700 transition-all shadow-xl shadow-primary-600/20">Discover Top Authors</a>
+            <a href="<?php echo APP_URL_BASE; ?>/leaderboards.php" class="px-8 py-4 bg-primary-600 text-white font-bold rounded-2xl hover:bg-primary-700 transition-all shadow-xl shadow-primary-600/20">Discover Top Authors</a>
         </div>
     <?php else: ?>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -53,7 +53,7 @@ include 'includes/header.php';
                         </div>
                         
                         <div class="flex items-center gap-2">
-                            <a href="u/<?php echo $author['slug']; ?>" class="px-4 py-2 bg-slate-50 text-slate-600 text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-all">View Profile</a>
+                            <a href="<?php echo APP_URL_BASE; ?>/u/<?php echo $author['slug']; ?>" class="px-4 py-2 bg-slate-50 text-slate-600 text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-all">View Profile</a>
                             <button onclick="toggleFollow(<?php echo $author['id']; ?>, this)" class="p-2 text-slate-400 hover:text-red-500 transition-colors" title="Unfollow">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6"></path></svg>
                             </button>
@@ -73,7 +73,7 @@ include 'includes/header.php';
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         if (csrfToken) formData.append('csrf_token', csrfToken);
 
-        fetch('ajax_toggle_follow.php', {
+        fetch('<?php echo APP_URL_BASE; ?>/ajax_toggle_follow.php', {
             method: 'POST',
             body: formData
         })

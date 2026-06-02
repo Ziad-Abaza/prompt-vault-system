@@ -2,7 +2,7 @@
 require_once 'bootstrap.php';
 
 if (is_logged_in()) {
-    redirect('index.php');
+    redirect(APP_URL_BASE . '/index.php');
 }
 
 $errors = [];
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($validator->is_valid()) {
         if (login($_POST['username'], $_POST['password'])) {
             set_flash('Welcome back to your vault!');
-            redirect('index.php');
+            redirect(APP_URL_BASE . '/index.php');
         } else {
             $errors['form'] = 'Invalid username or password.';
         }
@@ -47,7 +47,7 @@ include 'includes/header.php';
                 </div>
             <?php endif; ?>
 
-            <form action="login.php" method="POST" class="space-y-8">
+            <form action="<?php echo APP_URL_BASE; ?>/login.php" method="POST" class="space-y-8">
                 <?php echo csrf_input(); ?>
                 <div class="form-group">
                     <label for="username" class="form-label">Username</label>
@@ -77,7 +77,7 @@ include 'includes/header.php';
         
         <div class="px-10 py-8 bg-slate-50 border-t border-slate-100 text-center">
             <p class="text-slate-500 text-sm font-medium">
-                Need a private vault? <a href="register.php" class="text-primary-600 font-bold hover:text-primary-700 transition-colors underline decoration-primary-200 underline-offset-4 hover:decoration-primary-500">Create an account</a>
+                Need a private vault? <a href="<?php echo APP_URL_BASE; ?>/register.php" class="text-primary-600 font-bold hover:text-primary-700 transition-colors underline decoration-primary-200 underline-offset-4 hover:decoration-primary-500">Create an account</a>
             </p>
         </div>
     </div>

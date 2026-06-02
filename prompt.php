@@ -67,21 +67,23 @@ include 'includes/header.php';
             <!-- PROMPT AREA -->
             <div class="group relative bg-slate-900 rounded-[2.5rem] shadow-2xl shadow-primary-900/20 overflow-hidden mb-12">
                 <!-- Mac-style Window Controls -->
-                <div class="flex items-center gap-1.5 px-6 py-4 bg-slate-800/50 border-b border-white/5">
-                    <div class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div>
-                    <div class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></div>
-                    <div class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></div>
-                    <span class="ml-4 text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">AI Prompt Terminal</span>
+                <div class="flex items-center justify-between px-6 py-4 bg-slate-800/50 border-b border-white/5">
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></div>
+                        <span class="ml-4 text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">AI Prompt Terminal</span>
+                    </div>
+
+                    <!-- Header Copy Button (Prevents overlap with content) -->
+                    <button onclick="copyToClipboard(<?php echo esc(json_encode($prompt['content'])); ?>, this, <?php echo $prompt['id']; ?>)" 
+                        class="p-2 bg-white/5 hover:bg-primary-600 text-white/40 hover:text-white rounded-xl transition-all active:scale-95 group/copy" title="Copy to Clipboard">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+                    </button>
                 </div>
 
                 <div class="relative p-8 md:p-12">
                     <pre class="font-mono text-slate-100 text-sm md:text-lg leading-relaxed whitespace-pre-wrap selection:bg-primary-500/30 selection:text-white"><?php echo esc($prompt['content']); ?></pre>
-                    
-                    <!-- Inner Copy Button -->
-                    <button onclick="copyToClipboard(<?php echo esc(json_encode($prompt['content'])); ?>, this, <?php echo $prompt['id']; ?>)" 
-                        class="absolute top-6 right-6 p-4 bg-white/10 hover:bg-primary-600 text-white rounded-2xl backdrop-blur-md border border-white/10 transition-all active:scale-95 group/copy" title="Copy to Clipboard">
-                        <svg class="w-5 h-5 group-hover/copy:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
-                    </button>
                 </div>
             </div>
 

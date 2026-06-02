@@ -10,6 +10,7 @@
 require_once __DIR__ . '/includes/env.php';
 Env::load(__DIR__ . '/.env');
 define('APP_NAME', Env::get('APP_NAME', 'Atlas Library'));
+define('APP_URL_BASE', rtrim(Env::get('APP_URL', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]"), '/'));
 
 function esc($string) {
     return htmlspecialchars($string ?? '', ENT_QUOTES, 'UTF-8');
@@ -84,7 +85,7 @@ $page_title = $code . ' ' . $error['title'];
             </p>
 
             <div class="space-y-3">
-                <a href="index.php" class="block w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-600/20 transition-all transform active:scale-[0.98]">
+                <a href="<?php echo APP_URL_BASE; ?>/index.php" class="block w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-600/20 transition-all transform active:scale-[0.98]">
                     Back to Library
                 </a>
                 <button onclick="window.history.back()" class="block w-full py-4 px-6 bg-white border border-slate-200 text-slate-600 font-bold rounded-2xl hover:bg-slate-50 transition-all transform active:scale-[0.98]">

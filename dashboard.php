@@ -21,7 +21,7 @@ if (isset($_GET['ajax'])) {
             </div>
             <h3 class="text-lg font-bold text-slate-900 mb-1">No prompts found</h3>
             <p class="text-slate-500 text-sm max-w-sm mx-auto mb-6">Try adjusting your filters or start fresh with a new prompt.</p>
-            <a href="prompt_edit.php" class="inline-flex items-center px-5 py-2.5 bg-primary-600 text-white text-sm font-bold rounded-lg hover:bg-primary-700 transition-colors">
+            <a href="' . APP_URL_BASE . '/prompt_edit.php" class="inline-flex items-center px-5 py-2.5 bg-primary-600 text-white text-sm font-bold rounded-lg hover:bg-primary-700 transition-colors">
                 Create First Prompt
             </a>
         </div>';
@@ -40,7 +40,7 @@ $collections = get_collections();
 $page_title = "Prompt Library Dashboard";
 $meta_description = "Manage and organize your AI prompts in a centralized workspace. Browse categories, tags, and collections.";
 $breadcrumbs = [
-    ['name' => 'Library', 'url' => 'dashboard.php']
+    ['name' => 'Library', 'url' => APP_URL_BASE . '/dashboard.php']
 ];
 
 include 'includes/header.php';
@@ -52,7 +52,7 @@ include 'includes/header.php';
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight"><?php echo APP_NAME; ?></h1>
             <p class="text-slate-500 text-sm">Discover, organize, and manage your AI prompts.</p>
         </div>
-        <a href="prompt_edit.php" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+        <a href="<?php echo APP_URL_BASE; ?>/prompt_edit.php" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
             <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
@@ -63,7 +63,7 @@ include 'includes/header.php';
 
 <!-- Search and Filter Bar -->
 <div class="bg-white p-1.5 rounded-xl shadow-sm border border-slate-200 mb-6">
-    <form action="dashboard.php" method="GET" class="flex flex-col md:flex-row gap-2">
+    <form action="<?php echo APP_URL_BASE; ?>/dashboard.php" method="GET" class="flex flex-col md:flex-row gap-2">
         <div class="flex-grow relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,7 +96,7 @@ include 'includes/header.php';
                 Apply
             </button>
             <?php if (array_filter($filters)): ?>
-                <a href="dashboard.php" class="px-4 py-1.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-md hover:bg-slate-200 transition-colors">
+                <a href="<?php echo APP_URL_BASE; ?>/dashboard.php" class="px-4 py-1.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-md hover:bg-slate-200 transition-colors">
                     Reset
                 </a>
             <?php endif; ?>
@@ -112,7 +112,7 @@ include 'includes/header.php';
             <?php if (!empty($active_cat)): ?>
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-50 text-primary-700 border border-primary-100">
                     Category: <?php echo esc(reset($active_cat)['name']); ?>
-                    <a href="dashboard.php?<?php echo http_build_query(array_merge($filters, ['category_id' => ''])); ?>" class="ml-1.5 text-primary-400 hover:text-primary-600">&times;</a>
+                    <a href="<?php echo APP_URL_BASE; ?>/dashboard.php?<?php echo http_build_query(array_merge($filters, ['category_id' => ''])); ?>" class="ml-1.5 text-primary-400 hover:text-primary-600">&times;</a>
                 </span>
             <?php endif; ?>
         <?php endif; ?>
@@ -122,7 +122,7 @@ include 'includes/header.php';
             <?php if (!empty($active_tag)): ?>
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
                     Tag: <?php echo esc(reset($active_tag)['name']); ?>
-                    <a href="dashboard.php?<?php echo http_build_query(array_merge($filters, ['tag_id' => ''])); ?>" class="ml-1.5 text-indigo-400 hover:text-indigo-600">&times;</a>
+                    <a href="<?php echo APP_URL_BASE; ?>/dashboard.php?<?php echo http_build_query(array_merge($filters, ['tag_id' => ''])); ?>" class="ml-1.5 text-indigo-400 hover:text-indigo-600">&times;</a>
                 </span>
             <?php endif; ?>
         <?php endif; ?>
@@ -130,7 +130,7 @@ include 'includes/header.php';
         <?php if ($filters['search']): ?>
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
                 Search: "<?php echo esc($filters['search']); ?>"
-                <a href="dashboard.php?<?php echo http_build_query(array_merge($filters, ['search' => ''])); ?>" class="ml-1.5 text-slate-400 hover:text-slate-600">&times;</a>
+                <a href="<?php echo APP_URL_BASE; ?>/dashboard.php?<?php echo http_build_query(array_merge($filters, ['search' => ''])); ?>" class="ml-1.5 text-slate-400 hover:text-slate-600">&times;</a>
             </span>
         <?php endif; ?>
     </div>
@@ -146,7 +146,7 @@ include 'includes/header.php';
         </div>
         <h3 class="text-lg font-bold text-slate-900 mb-1">No prompts found</h3>
         <p class="text-slate-500 text-sm max-w-sm mx-auto mb-6">Try adjusting your filters or start fresh with a new prompt.</p>
-        <a href="prompt_edit.php" class="inline-flex items-center px-5 py-2.5 bg-primary-600 text-white text-sm font-bold rounded-lg hover:bg-primary-700 transition-colors">
+        <a href="<?php echo APP_URL_BASE; ?>/prompt_edit.php" class="inline-flex items-center px-5 py-2.5 bg-primary-600 text-white text-sm font-bold rounded-lg hover:bg-primary-700 transition-colors">
             Create First Prompt
         </a>
     </div>
@@ -167,7 +167,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const updateGrid = async (url) => {
             grid.style.opacity = '0.5';
             try {
-                // Use window.location.origin as base to handle relative URLs
+                // Use APP_URL_BASE if possible, but JS doesn't have it directly.
+                // However, the URL passed here already includes it from the form action or reset link.
                 const ajaxUrl = new URL(url, window.location.origin);
                 ajaxUrl.searchParams.set('ajax', '1');
                 const response = await fetch(ajaxUrl);
@@ -184,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const formData = new FormData(filterForm);
             const params = new URLSearchParams(formData);
-            updateGrid(window.location.pathname + '?' + params.toString());
+            updateGrid('<?php echo APP_URL_BASE; ?>/dashboard.php?' + params.toString());
         });
 
         // Handle select changes automatically

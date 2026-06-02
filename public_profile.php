@@ -62,7 +62,7 @@ include 'includes/header.php';
     <nav class="flex mb-8" aria-label="Breadcrumb">
         <ol class="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest">
             <li>
-                <a href="public_prompts.php" class="text-slate-400 hover:text-primary-600 transition-colors">Home</a>
+                <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php" class="text-slate-400 hover:text-primary-600 transition-colors">Home</a>
             </li>
             <li>
                 <svg class="h-3 w-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,7 +127,7 @@ include 'includes/header.php';
                         <?php echo is_following($user['id']) ? 'Following' : 'Follow Author'; ?>
                     </button>
                 <?php elseif (!is_logged_in()): ?>
-                    <a href="login.php" class="px-6 py-3 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-primary-600 transition-all shadow-lg shadow-slate-900/10 text-center">Follow Author</a>
+                    <a href="<?php echo APP_URL_BASE; ?>/login.php" class="px-6 py-3 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-primary-600 transition-all shadow-lg shadow-slate-900/10 text-center">Follow Author</a>
                 <?php endif; ?>
             </div>
         </div>
@@ -147,7 +147,7 @@ include 'includes/header.php';
                 formData.append('csrf_token', csrfToken);
             }
 
-            fetch('ajax_toggle_follow.php', {
+            fetch('<?php echo APP_URL_BASE; ?>/ajax_toggle_follow.php', {
                 method: 'POST',
                 body: formData
             })
@@ -168,7 +168,7 @@ include 'includes/header.php';
                     
                     // Update follower count in the UI if we add a counter later
                 } else if (data.error === 'auth_required') {
-                    window.location.href = 'login.php';
+                    window.location.href = '<?php echo APP_URL_BASE; ?>/login.php';
                 }
             })
             .catch(err => console.error('Follow error:', err));

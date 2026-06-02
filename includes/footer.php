@@ -4,9 +4,9 @@
             <div class="max-w-6xl mx-auto px-4 md:px-8">
                 <div class="flex flex-col md:flex-row items-center justify-between gap-6">
                     <div class="flex items-center space-x-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                        <a href="about.php" class="hover:text-primary-600 transition-colors">About</a>
-                        <a href="privacy.php" class="hover:text-primary-600 transition-colors">Privacy</a>
-                        <a href="terms.php" class="hover:text-primary-600 transition-colors">Terms</a>
+                        <a href="<?php echo APP_URL_BASE; ?>/about.php" class="hover:text-primary-600 transition-colors">About</a>
+                        <a href="<?php echo APP_URL_BASE; ?>/privacy.php" class="hover:text-primary-600 transition-colors">Privacy</a>
+                        <a href="<?php echo APP_URL_BASE; ?>/terms.php" class="hover:text-primary-600 transition-colors">Terms</a>
                     </div>
                     <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">
                         &copy; <?php echo date('Y'); ?> <?php echo APP_NAME; ?> &bull; Part of the <a href="https://egyitech.com" class="hover:text-primary-600">EgyiTech</a> Ecosystem
@@ -81,7 +81,7 @@
                 formData.append('csrf_token', csrfToken);
             }
 
-            fetch('ajax_save_prompt.php', {
+            fetch('<?php echo APP_URL_BASE; ?>/ajax_save_prompt.php', {
                 method: 'POST',
                 body: formData
             })
@@ -106,7 +106,7 @@
                         showToast('Removed from favorites');
                     }
                 } else if (data.error === 'auth_required') {
-                    window.location.href = 'login.php';
+                    window.location.href = '<?php echo APP_URL_BASE; ?>/login.php';
                 }
             })
             .catch(err => console.error('Save error:', err));
@@ -117,7 +117,7 @@
             navigator.clipboard.writeText(text).then(() => {
                 // Track copy if promptId provided
                 if (promptId) {
-                    fetch('track_copy.php?id=' + promptId);
+                    fetch('<?php echo APP_URL_BASE; ?>/track_copy.php?id=' + promptId);
                 }
                 
                 showToast('Prompt copied to clipboard');

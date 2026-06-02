@@ -3,14 +3,14 @@ require_once 'bootstrap.php';
 
 $page_title = "About Atlas Library";
 $meta_description = "Learn more about Atlas Library, the professional knowledge management platform for AI prompts. Discover our mission, features, and security practices.";
-$canonical_url = rtrim(Env::get('APP_URL', ''), '/') . '/about.php';
+$canonical_url = APP_URL_BASE . '/about.php';
 
 // Organization Schema
 $page_schema = [
     "@type" => "Organization",
     "name" => APP_NAME,
-    "url" => rtrim(Env::get('APP_URL', ''), '/') . '/',
-    "logo" => rtrim(Env::get('APP_URL', ''), '/') . '/assets/logo.png',
+    "url" => APP_URL_BASE . '/',
+    "logo" => APP_URL_BASE . '/assets/logo.png',
     "description" => "A professional AI prompt management platform designed for teams and individuals to organize, categorize, and master their LLM workflows.",
     "sameAs" => [
         "https://github.com/egyitech/atlas-library"
@@ -20,14 +20,14 @@ $page_schema = [
             "@type" => "ContactPoint",
             "contactType" => "customer support",
             "email" => "support@egyitech.com",
-            "url" => rtrim(Env::get('APP_URL', ''), '/') . '/about.php'
+            "url" => APP_URL_BASE . '/about.php'
         ]
     ]
 ];
 
 $breadcrumbs = [
-    ['name' => 'Home', 'url' => 'public_prompts.php'],
-    ['name' => 'About', 'url' => 'about.php']
+    ['name' => 'Home', 'url' => APP_URL_BASE . '/public_prompts.php'],
+    ['name' => 'About', 'url' => APP_URL_BASE . '/about.php']
 ];
 
 include 'includes/header.php';
@@ -127,9 +127,9 @@ include 'includes/header.php';
 <div class="bg-slate-50 py-12 border-t border-slate-100">
     <div class="max-w-4xl mx-auto px-4 text-center">
         <div class="flex flex-wrap justify-center gap-8 text-xs font-bold uppercase tracking-widest text-slate-400">
-            <a href="privacy.php" class="hover:text-primary-600 transition-colors">Privacy Policy</a>
-            <a href="terms.php" class="hover:text-primary-600 transition-colors">Terms of Service</a>
-            <a href="about.php" class="text-slate-900">About Us</a>
+            <a href="<?php echo APP_URL_BASE; ?>/privacy.php" class="hover:text-primary-600 transition-colors">Privacy Policy</a>
+            <a href="<?php echo APP_URL_BASE; ?>/terms.php" class="hover:text-primary-600 transition-colors">Terms of Service</a>
+            <a href="<?php echo APP_URL_BASE; ?>/about.php" class="text-slate-900">About Us</a>
         </div>
         <p class="mt-8 text-[10px] font-medium text-slate-400">
             &copy; <?php echo date('Y'); ?> <?php echo APP_NAME; ?>. Part of the EgyiTech ecosystem.

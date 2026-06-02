@@ -3,11 +3,11 @@ require_once 'bootstrap.php';
 
 $page_title = "Privacy Policy";
 $meta_description = "Read the privacy policy for Atlas Library. We are committed to protecting your data and ensuring complete privacy for your prompt engineering workspace.";
-$canonical_url = rtrim(Env::get('APP_URL', ''), '/') . '/privacy.php';
+$canonical_url = APP_URL_BASE . '/privacy.php';
 
 $breadcrumbs = [
-    ['name' => 'Home', 'url' => 'public_prompts.php'],
-    ['name' => 'Privacy Policy', 'url' => 'privacy.php']
+    ['name' => 'Home', 'url' => APP_URL_BASE . '/public_prompts.php'],
+    ['name' => 'Privacy Policy', 'url' => APP_URL_BASE . '/privacy.php']
 ];
 
 include 'includes/header.php';
@@ -18,7 +18,7 @@ include 'includes/header.php';
     <nav class="flex mb-8" aria-label="Breadcrumb">
         <ol class="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest">
             <li>
-                <a href="public_prompts.php" class="text-slate-400 hover:text-primary-600 transition-colors">Home</a>
+                <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php" class="text-slate-400 hover:text-primary-600 transition-colors">Home</a>
             </li>
             <li>
                 <svg class="h-3 w-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

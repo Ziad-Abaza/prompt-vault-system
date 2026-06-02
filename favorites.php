@@ -3,7 +3,7 @@ require_once 'bootstrap.php';
 
 // Requires login
 if (!is_logged_in()) {
-    redirect('login.php');
+    redirect(APP_URL_BASE . '/login.php');
 }
 
 $filters = [
@@ -15,8 +15,8 @@ $prompts = get_saved_prompts($filters);
 
 $page_title = "My Favorites";
 $breadcrumbs = [
-    ['name' => 'Library', 'url' => 'dashboard.php'],
-    ['name' => 'Favorites', 'url' => 'favorites.php']
+    ['name' => 'Library', 'url' => APP_URL_BASE . '/dashboard.php'],
+    ['name' => 'Favorites', 'url' => APP_URL_BASE . '/favorites.php']
 ];
 
 include 'includes/header.php';
@@ -29,7 +29,7 @@ include 'includes/header.php';
             <p class="text-slate-500 text-sm">Your curated collection of high-performance AI prompts.</p>
         </div>
         
-        <form action="favorites.php" method="GET" class="relative group">
+        <form action="<?php echo APP_URL_BASE; ?>/favorites.php" method="GET" class="relative group">
             <input type="text" name="search" value="<?php echo esc($filters['search']); ?>" 
                 class="h-10 w-full md:w-64 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all text-xs font-medium" 
                 placeholder="Search favorites...">
@@ -48,7 +48,7 @@ include 'includes/header.php';
             </div>
             <h3 class="text-2xl font-black text-slate-900 mb-2">Your collection is empty</h3>
             <p class="text-slate-500 font-medium max-w-xs mx-auto mb-8 text-balance">Save prompts from the public hub to build your own curated intelligence library.</p>
-            <a href="public_prompts.php" class="px-8 py-4 bg-primary-600 text-white font-bold rounded-2xl hover:bg-primary-700 transition-all shadow-xl shadow-primary-600/20">Explore Community Prompts</a>
+            <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php" class="px-8 py-4 bg-primary-600 text-white font-bold rounded-2xl hover:bg-primary-700 transition-all shadow-xl shadow-primary-600/20">Explore Community Prompts</a>
         </div>
     <?php else: ?>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
