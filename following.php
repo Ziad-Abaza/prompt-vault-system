@@ -32,8 +32,8 @@ include 'includes/header.php';
                 </svg>
             </div>
             <h3 class="text-2xl font-black text-slate-900 mb-2">You're not following anyone yet</h3>
-            <p class="text-slate-500 font-medium max-w-xs mx-auto mb-8 text-balance">Follow top contributors from the leaderboards or public profiles to build your network.</p>
-            <a href="<?php echo APP_URL_BASE; ?>/leaderboards.php" class="px-8 py-4 bg-primary-600 text-white font-bold rounded-2xl hover:bg-primary-700 transition-all shadow-xl shadow-primary-600/20">Discover Top Authors</a>
+            <p class="text-slate-500 font-medium max-w-xs mx-auto mb-8 text-balance">Follow contributors from their public profiles to build your network.</p>
+            <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php" class="px-8 py-4 bg-primary-600 text-white font-bold rounded-2xl hover:bg-primary-700 transition-all shadow-xl shadow-primary-600/20">Discover Top Authors</a>
         </div>
     <?php else: ?>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

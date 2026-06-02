@@ -41,7 +41,6 @@ $static_pages = [
     ['url' => 'public_prompts.php', 'priority' => '0.9', 'changefreq' => 'daily'],
     ['url' => 'public_collections.php', 'priority' => '0.9', 'changefreq' => 'daily'],
     ['url' => 'public_categories.php', 'priority' => '0.8', 'changefreq' => 'weekly'],
-    ['url' => 'leaderboards.php', 'priority' => '0.8', 'changefreq' => 'daily'],
     ['url' => 'about.php', 'priority' => '0.8', 'changefreq' => 'monthly'],
     ['url' => 'privacy.php', 'priority' => '0.3', 'changefreq' => 'yearly'],
     ['url' => 'terms.php', 'priority' => '0.3', 'changefreq' => 'yearly'],

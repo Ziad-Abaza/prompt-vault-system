@@ -168,10 +168,6 @@ include 'includes/header.php';
                 <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Top <span class="text-primary-600">Contributors</span></h2>
                 <p class="text-slate-500 font-medium">The engineers driving the community forward with high-impact prompts.</p>
             </div>
-            <a href="<?php echo APP_URL_BASE; ?>/leaderboards.php" class="text-sm font-bold text-primary-600 hover:text-primary-700 uppercase tracking-widest flex items-center transition-all group">
-                View Leaderboards
-                <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-            </a>
         </div>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
