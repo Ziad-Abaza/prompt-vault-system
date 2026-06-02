@@ -167,7 +167,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const updateGrid = async (url) => {
             grid.style.opacity = '0.5';
             try {
-                const ajaxUrl = new URL(url);
+                // Use window.location.origin as base to handle relative URLs
+                const ajaxUrl = new URL(url, window.location.origin);
                 ajaxUrl.searchParams.set('ajax', '1');
                 const response = await fetch(ajaxUrl);
                 const html = await response.text();
