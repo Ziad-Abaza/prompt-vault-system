@@ -39,6 +39,12 @@
         function toggleSave(promptId, btnElement) {
             const formData = new FormData();
             formData.append('prompt_id', promptId);
+            
+            // Add CSRF token for security
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (csrfToken) {
+                formData.append('csrf_token', csrfToken);
+            }
 
             fetch('ajax_save_prompt.php', {
                 method: 'POST',
