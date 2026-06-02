@@ -359,6 +359,39 @@ function increment_prompt_copy_count($id) {
 }
 
 /**
+ * Get all prompts saved by the current user.
+ */
+function get_saved_prompts($filters = []) {
+    $user_id = get_current_user_id();
+    if (!$user_id) return [];
+
+    $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug, u.username as author_name, u.slug as author_slug 
+            FROM prompts p 
+            JOIN user_saved_prompts usp ON p.id = usp.prompt_id
+            LEFT JOIN categories c ON p.category_id = c.id
+            LEFT JOIN users u ON p.user_id = u.id
+            WHERE usp.user_id = ?";
+    $params = [$user_id];
+
+    if (!empty($filters['search'])) {
+        $sql .= " AND (p.title LIKE ? OR p.content LIKE ?)";
+        $params[] = '%' . $filters['search'] . '%';
+        $params[] = '%' . $filters['search'] . '%';
+    }
+
+    $sql .= " ORDER BY usp.created_at DESC";
+
+    if (!empty($filters['limit'])) {
+        $sql .= " LIMIT " . (int)$filters['limit'];
+        if (!empty($filters['offset'])) {
+            $sql .= " OFFSET " . (int)$filters['offset'];
+        }
+    }
+
+    return query($sql, $params)->fetchAll();
+}
+
+/**
  * Toggle a prompt save for the current user.
  */
 function toggle_prompt_save($prompt_id) {
