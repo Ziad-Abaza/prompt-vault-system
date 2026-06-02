@@ -35,6 +35,37 @@
             });
         }
 
+        // Toggle prompt save status via AJAX
+        function toggleSave(promptId, btnElement) {
+            const formData = new FormData();
+            formData.append('prompt_id', promptId);
+
+            fetch('ajax_save_prompt.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const svg = btnElement.querySelector('svg');
+                    if (data.state === 'saved') {
+                        btnElement.classList.add('text-red-500', 'bg-red-50');
+                        btnElement.classList.remove('text-slate-400');
+                        svg.setAttribute('fill', 'currentColor');
+                        btnElement.title = 'Unsave Prompt';
+                    } else {
+                        btnElement.classList.remove('text-red-500', 'bg-red-50');
+                        btnElement.classList.add('text-slate-400');
+                        svg.setAttribute('fill', 'none');
+                        btnElement.title = 'Save to My Library';
+                    }
+                } else if (data.error === 'auth_required') {
+                    window.location.href = 'login.php';
+                }
+            })
+            .catch(err => console.error('Save error:', err));
+        }
+
         // Global copy to clipboard with feedback
         function copyToClipboard(text, btnElement, promptId = null) {
             navigator.clipboard.writeText(text).then(() => {

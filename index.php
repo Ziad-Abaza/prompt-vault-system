@@ -1,209 +1,141 @@
 <?php
 require_once 'bootstrap.php';
 
-$filters = [
-    'category_id' => $_GET['category_id'] ?? null,
-    'tag_id' => $_GET['tag_id'] ?? null,
-    'collection_id' => $_GET['collection_id'] ?? null,
-    'search' => $_GET['search'] ?? null,
-];
+// If logged in, we could redirect to dashboard, but let's keep index.php as a landing page
+// and show a "Go to Dashboard" button instead. It's better for SEO to keep the home page consistent.
 
-$prompts = get_prompts($filters);
+// Fetch some public content for the landing page
+$trending_prompts = query("SELECT p.*, c.name as category_name, c.slug as category_slug, u.username as author_name, u.slug as author_slug,
+                           (SELECT COUNT(*) FROM user_saved_prompts usp WHERE usp.prompt_id = p.id) as save_count 
+                           FROM prompts p 
+                           LEFT JOIN categories c ON p.category_id = c.id
+                           LEFT JOIN users u ON p.user_id = u.id
+                           WHERE p.is_public = 1 
+                           ORDER BY (p.view_count + p.copy_count * 5 + (SELECT COUNT(*) FROM user_saved_prompts usp WHERE usp.prompt_id = p.id) * 10) DESC LIMIT 4")->fetchAll();
 
-// Handle AJAX request for grid only
-if (isset($_GET['ajax'])) {
-    if (empty($prompts)) {
-        echo '<div class="col-span-full bg-white rounded-2xl p-12 border border-slate-200 text-center shadow-sm">
-            <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="h-8 w-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-            </div>
-            <h3 class="text-lg font-bold text-slate-900 mb-1">No prompts found</h3>
-            <p class="text-slate-500 text-sm max-w-sm mx-auto mb-6">Try adjusting your filters or start fresh with a new prompt.</p>
-            <a href="prompt_edit.php" class="inline-flex items-center px-5 py-2.5 bg-primary-600 text-white text-sm font-bold rounded-lg hover:bg-primary-700 transition-colors">
-                Create First Prompt
-            </a>
-        </div>';
-    } else {
-        foreach ($prompts as $prompt) {
-            include 'includes/prompt_card.php';
-        }
-    }
-    exit;
-}
+$featured_collections = query("SELECT c.*, (SELECT COUNT(*) FROM prompt_collections pc WHERE pc.collection_id = c.id) as prompt_count 
+                               FROM collections c 
+                               WHERE (SELECT COUNT(*) FROM prompt_collections pc JOIN prompts p ON pc.prompt_id = p.id WHERE pc.collection_id = c.id AND p.is_public = 1) > 0
+                               ORDER BY prompt_count DESC LIMIT 3")->fetchAll();
 
-$categories = get_categories();
-$tags = get_tags();
-$collections = get_collections();
-
-$page_title = "Prompt Library Dashboard";
-$meta_description = "Manage and organize your AI prompts in a centralized workspace. Browse categories, tags, and collections.";
-$breadcrumbs = [
-    ['name' => 'Library', 'url' => 'index.php']
-];
+$page_title = "Master Your Prompt Engineering";
+$meta_description = "Atlas Library is the professional workspace to organize, discover, and share AI prompts. Build your private vault or explore our community hub.";
+$canonical_url = rtrim(Env::get('APP_URL', ''), '/') . '/';
 
 include 'includes/header.php';
 ?>
 
-<div class="mb-8">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight"><?php echo APP_NAME; ?></h1>
-            <p class="text-slate-500 text-sm">Discover, organize, and manage your AI prompts.</p>
-        </div>
-        <a href="prompt_edit.php" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-            <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            New Prompt
-        </a>
-    </div>
-</div>
-
-<!-- Search and Filter Bar -->
-<div class="bg-white p-1.5 rounded-xl shadow-sm border border-slate-200 mb-6">
-    <form action="index.php" method="GET" class="flex flex-col md:flex-row gap-2">
-        <div class="flex-grow relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+<div class="max-w-6xl mx-auto">
+    <!-- Hero Section -->
+    <div class="relative py-20 md:py-32 overflow-hidden">
+        <div class="relative z-10 text-center">
+            <h1 class="text-5xl md:text-7xl font-black text-slate-900 tracking-tight mb-8 leading-[1.1]">
+                Your Intelligence, <br>
+                <span class="text-primary-600">Perfectly Organized.</span>
+            </h1>
+            <p class="text-xl text-slate-500 font-medium max-w-2xl mx-auto mb-12 leading-relaxed">
+                Atlas Library is the ultimate workspace for prompt engineers. Save, categorize, and discover high-performance prompts for ChatGPT, Claude, and Midjourney.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <?php if (is_logged_in()): ?>
+                    <a href="dashboard.php" class="btn-primary px-12 py-5 text-lg">Go to My Dashboard</a>
+                <?php else: ?>
+                    <a href="register.php" class="btn-primary px-12 py-5 text-lg">Start Your Private Vault</a>
+                    <a href="public_prompts.php" class="btn-secondary px-12 py-5 text-lg">Explore Community Hub</a>
+                <?php endif; ?>
             </div>
-            <input type="text" name="search" value="<?php echo esc($filters['search']); ?>" class="block w-full pl-9 pr-4 py-2 border-transparent bg-transparent rounded-lg focus:ring-0 text-sm" placeholder="Search prompts...">
         </div>
         
-        <div class="flex flex-wrap md:flex-nowrap gap-2 p-1">
-            <select name="category_id" class="block w-full md:w-40 pl-2 pr-8 py-1.5 text-xs border-slate-100 bg-slate-50 rounded-md focus:ring-primary-500 focus:border-primary-500 font-medium">
-                <option value="">Categories</option>
-                <?php foreach ($categories as $cat): ?>
-                    <option value="<?php echo $cat['id']; ?>" <?php echo $filters['category_id'] == $cat['id'] ? 'selected' : ''; ?>>
-                        <?php echo esc($cat['name']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+        <!-- Abstract Background Deco -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-50 rounded-full blur-3xl -z-0 opacity-50"></div>
+    </div>
 
-            <select name="collection_id" class="block w-full md:w-40 pl-2 pr-8 py-1.5 text-xs border-slate-100 bg-slate-50 rounded-md focus:ring-primary-500 focus:border-primary-500 font-medium">
-                <option value="">Collections</option>
-                <?php foreach ($collections as $coll): ?>
-                    <option value="<?php echo $coll['id']; ?>" <?php echo $filters['collection_id'] == $coll['id'] ? 'selected' : ''; ?>>
-                        <?php echo esc($coll['name']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+    <!-- Feature Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
+        <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm">
+            <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-8">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-4">Structured Library</h3>
+            <p class="text-slate-500 leading-relaxed">Turn chaotic chat histories into a structured knowledge base with advanced categories and tags.</p>
+        </div>
+        <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm">
+            <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-8">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-4">Private & Secure</h3>
+            <p class="text-slate-500 leading-relaxed">Your prompts are your intellectual property. Atlas ensures they remain private and under your control.</p>
+        </div>
+        <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm">
+            <div class="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mb-8">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-4">Community Sharing</h3>
+            <p class="text-slate-500 leading-relaxed">Contribute to the public ecosystem or discover curated prompt packs from the world's best engineers.</p>
+        </div>
+    </div>
 
-            <button type="submit" class="px-4 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-md hover:bg-slate-800 transition-colors">
-                Apply
-            </button>
-            <?php if (array_filter($filters)): ?>
-                <a href="index.php" class="px-4 py-1.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-md hover:bg-slate-200 transition-colors">
-                    Reset
+    <!-- Trending Prompts Section -->
+    <div class="mb-32">
+        <div class="flex items-end justify-between mb-10">
+            <div>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Trending <span class="text-primary-600">Now</span></h2>
+                <p class="text-slate-500 font-medium">The most effective prompts being used by the community today.</p>
+            </div>
+            <a href="public_prompts.php" class="text-sm font-bold text-primary-600 hover:text-primary-700 uppercase tracking-widest flex items-center transition-all group">
+                View All Feed
+                <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <?php foreach ($trending_prompts as $prompt): ?>
+                <?php include 'includes/prompt_card.php'; ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <!-- Featured Collections -->
+    <div class="mb-32">
+        <div class="flex items-end justify-between mb-10">
+            <div>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Featured <span class="text-primary-600">Collections</span></h2>
+                <p class="text-slate-500 font-medium">Curated packs designed for specific professional workflows.</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <?php foreach ($featured_collections as $coll): ?>
+                <a href="collections/<?php echo $coll['slug']; ?>" class="group block bg-white p-8 rounded-[2.5rem] border border-slate-200 hover:border-primary-400 hover:shadow-2xl hover:shadow-primary-900/5 transition-all">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-12 h-12 bg-slate-50 text-slate-400 group-hover:bg-primary-600 group-hover:text-white rounded-2xl flex items-center justify-center transition-colors duration-300">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <span class="px-3 py-1 bg-slate-50 text-slate-400 rounded-full text-[10px] font-bold uppercase tracking-widest"><?php echo $coll['prompt_count']; ?> Prompts</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3 group-hover:text-primary-600 transition-colors"><?php echo esc($coll['name']); ?></h3>
+                    <p class="text-slate-500 text-sm line-clamp-2 leading-relaxed">
+                        <?php echo esc($coll['description'] ?: 'A specialized collection of professional AI prompts.'); ?>
+                    </p>
                 </a>
-            <?php endif; ?>
+            <?php endforeach; ?>
         </div>
-    </form>
+    </div>
+
+    <!-- Final CTA -->
+    <div class="bg-slate-900 rounded-[3rem] p-12 md:p-20 text-center text-white relative overflow-hidden mb-20">
+        <div class="relative z-10">
+            <h2 class="text-3xl md:text-5xl font-black mb-8">Ready to Build Your <br>Prompt Intelligence?</h2>
+            <p class="text-slate-400 text-lg max-w-xl mx-auto mb-12">
+                Join thousands of prompt engineers who are organizing their workflow with Atlas Library.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="register.php" class="btn-primary border-none px-12 py-5 text-lg">Create Free Account</a>
+                <a href="login.php" class="px-12 py-5 text-lg font-bold text-white hover:text-primary-400 transition-colors">Sign In to Vault</a>
+            </div>
+        </div>
+        <div class="absolute -bottom-20 -right-20 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl"></div>
+        <div class="absolute -top-20 -left-20 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl"></div>
+    </div>
 </div>
-
-<!-- Active Filter Chips (if any) -->
-<?php if ($filters['tag_id'] || $filters['category_id'] || $filters['collection_id'] || $filters['search']): ?>
-    <div class="flex flex-wrap gap-2 mb-6">
-        <?php if ($filters['category_id']): ?>
-            <?php $active_cat = array_filter($categories, fn($c) => $c['id'] == $filters['category_id']); ?>
-            <?php if (!empty($active_cat)): ?>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-50 text-primary-700 border border-primary-100">
-                    Category: <?php echo esc(reset($active_cat)['name']); ?>
-                    <a href="index.php?<?php echo http_build_query(array_merge($filters, ['category_id' => ''])); ?>" class="ml-1.5 text-primary-400 hover:text-primary-600">&times;</a>
-                </span>
-            <?php endif; ?>
-        <?php endif; ?>
-        
-        <?php if ($filters['tag_id']): ?>
-            <?php $active_tag = array_filter($tags, fn($t) => $t['id'] == $filters['tag_id']); ?>
-            <?php if (!empty($active_tag)): ?>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
-                    Tag: <?php echo esc(reset($active_tag)['name']); ?>
-                    <a href="index.php?<?php echo http_build_query(array_merge($filters, ['tag_id' => ''])); ?>" class="ml-1.5 text-indigo-400 hover:text-indigo-600">&times;</a>
-                </span>
-            <?php endif; ?>
-        <?php endif; ?>
-
-        <?php if ($filters['search']): ?>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
-                Search: "<?php echo esc($filters['search']); ?>"
-                <a href="index.php?<?php echo http_build_query(array_merge($filters, ['search' => ''])); ?>" class="ml-1.5 text-slate-400 hover:text-slate-600">&times;</a>
-            </span>
-        <?php endif; ?>
-    </div>
-<?php endif; ?>
-
-<!-- Prompts Grid -->
-<?php if (empty($prompts)): ?>
-    <div class="bg-white rounded-2xl p-12 border border-slate-200 text-center shadow-sm">
-        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="h-8 w-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-        </div>
-        <h3 class="text-lg font-bold text-slate-900 mb-1">No prompts found</h3>
-        <p class="text-slate-500 text-sm max-w-sm mx-auto mb-6">Try adjusting your filters or start fresh with a new prompt.</p>
-        <a href="prompt_edit.php" class="inline-flex items-center px-5 py-2.5 bg-primary-600 text-white text-sm font-bold rounded-lg hover:bg-primary-700 transition-colors">
-            Create First Prompt
-        </a>
-    </div>
-<?php else: ?>
-    <div id="prompts-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-        <?php foreach ($prompts as $prompt): ?>
-            <?php include 'includes/prompt_card.php'; ?>
-        <?php endforeach; ?>
-    </div>
-<?php endif; ?>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const filterForm = document.querySelector('form');
-    const grid = document.getElementById('prompts-grid');
-    
-    if (filterForm && grid) {
-        const updateGrid = async (url) => {
-            grid.style.opacity = '0.5';
-            try {
-                // Use window.location.origin as base to handle relative URLs
-                const ajaxUrl = new URL(url, window.location.origin);
-                ajaxUrl.searchParams.set('ajax', '1');
-                const response = await fetch(ajaxUrl);
-                const html = await response.text();
-                grid.innerHTML = html;
-                window.history.pushState({}, '', url);
-            } catch (e) {
-                console.error('Failed to update grid', e);
-            }
-            grid.style.opacity = '1';
-        };
-
-        filterForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(filterForm);
-            const params = new URLSearchParams(formData);
-            updateGrid(window.location.pathname + '?' + params.toString());
-        });
-
-        // Handle select changes automatically
-        filterForm.querySelectorAll('select').forEach(select => {
-            select.addEventListener('change', () => {
-                filterForm.dispatchEvent(new Event('submit'));
-            });
-        });
-
-        // Handle search input with debounce
-        let timeout;
-        filterForm.querySelector('input[name="search"]').addEventListener('input', (e) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                filterForm.dispatchEvent(new Event('submit'));
-            }, 300);
-        });
-    }
-});
-</script>
 
 <?php include 'includes/footer.php'; ?>

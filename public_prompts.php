@@ -12,12 +12,12 @@ $filters = [
 
 // Build SQL based on sort
 $order_by = "p.created_at DESC";
-if ($filters['sort'] === 'trending') $order_by = "(p.view_count + p.copy_count * 5) DESC";
+if ($filters['sort'] === 'trending') $order_by = "(p.view_count + p.copy_count * 5 + (SELECT COUNT(*) FROM user_saved_prompts usp WHERE usp.prompt_id = p.id) * 10) DESC";
 if ($filters['sort'] === 'popular') $order_by = "p.copy_count DESC";
 if ($filters['sort'] === 'newest') $order_by = "p.created_at DESC";
 
 // Get categories for navigation
-$categories = query("SELECT DISTINCT c.* FROM categories c JOIN prompts p ON c.id = p.category_id WHERE p.is_public = 1 ORDER BY c.name ASC")->fetchAll();
+$categories = query("SELECT DISTINCT c.* FROM categories c JOIN prompts p ON p.id = p.category_id WHERE p.is_public = 1 ORDER BY c.name ASC")->fetchAll();
 
 // Pagination and Query Setup
 $per_page = 24;

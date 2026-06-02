@@ -70,6 +70,9 @@ ServerSignature Off
 
     # 9. Route public collections
     RewriteRule ^collections/([a-z0-9-]+)/?$ public_collection.php?slug=$1 [L,QSA]
+
+    # 10. Route public profiles
+    RewriteRule ^u/([a-z0-9-]+)/?$ public_profile.php?user=$1 [L,QSA]
 </IfModule>
 
 # ----------------------------------------------------------------------

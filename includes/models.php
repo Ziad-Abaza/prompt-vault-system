@@ -164,7 +164,7 @@ function remove_prompt_from_collection($prompt_id, $collection_id) {
 
 function get_prompts($filters = []) {
     $user_id = get_current_user_id();
-    $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug, u.username as author_name 
+    $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug, u.username as author_name, u.slug as author_slug 
             FROM prompts p 
             LEFT JOIN categories c ON p.category_id = c.id
             LEFT JOIN users u ON p.user_id = u.id
@@ -356,6 +356,40 @@ function increment_prompt_view_count($id) {
 
 function increment_prompt_copy_count($id) {
     return query("UPDATE prompts SET copy_count = copy_count + 1 WHERE id = ?", [$id]);
+}
+
+/**
+ * Toggle a prompt save for the current user.
+ */
+function toggle_prompt_save($prompt_id) {
+    $user_id = get_current_user_id();
+    if (!$user_id) return false;
+
+    $existing = query("SELECT * FROM user_saved_prompts WHERE user_id = ? AND prompt_id = ?", [$user_id, $prompt_id])->fetch();
+    if ($existing) {
+        query("DELETE FROM user_saved_prompts WHERE user_id = ? AND prompt_id = ?", [$user_id, $prompt_id]);
+        return 'removed';
+    } else {
+        query("INSERT INTO user_saved_prompts (user_id, prompt_id) VALUES (?, ?)", [$user_id, $prompt_id]);
+        return 'saved';
+    }
+}
+
+/**
+ * Check if the current user has saved a prompt.
+ */
+function is_prompt_saved($prompt_id) {
+    $user_id = get_current_user_id();
+    if (!$user_id) return false;
+    $exists = query("SELECT 1 FROM user_saved_prompts WHERE user_id = ? AND prompt_id = ?", [$user_id, $prompt_id])->fetch();
+    return (bool)$exists;
+}
+
+/**
+ * Get total saves for a prompt.
+ */
+function get_prompt_save_count($prompt_id) {
+    return query("SELECT COUNT(*) FROM user_saved_prompts WHERE prompt_id = ?", [$prompt_id])->fetchColumn();
 }
 
 function delete_prompt($id) {

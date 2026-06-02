@@ -20,9 +20,10 @@ function register($username, $password) {
     }
 
     $password_hash = password_hash($password, PASSWORD_BCRYPT);
+    $slug = generate_unique_slug('users', $username);
 
     try {
-        query("INSERT INTO users (username, password_hash) VALUES (?, ?)", [$username, $password_hash]);
+        query("INSERT INTO users (username, slug, password_hash) VALUES (?, ?, ?)", [$username, $slug, $password_hash]);
         $user_id = get_db()->lastInsertId();
         
         // Seed default taxonomy for the new user
@@ -111,7 +112,7 @@ function require_login() {
     }
 
     $current_page = basename($_SERVER['PHP_SELF']);
-    $public_pages = ['login.php', 'register.php', 'sitemap.php', 'robots.php', 'public_prompts.php', 'public_category.php', 'public_tag.php', 'public_collection.php', 'about.php', 'privacy.php', 'terms.php'];
+    $public_pages = ['login.php', 'register.php', 'sitemap.php', 'robots.php', 'public_prompts.php', 'public_category.php', 'public_tag.php', 'public_collection.php', 'about.php', 'privacy.php', 'terms.php', 'index.php', 'public_profile.php', 'search.php', 'ajax_save_prompt.php'];
     
     if (in_array($current_page, $public_pages)) {
         return;

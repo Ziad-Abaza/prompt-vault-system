@@ -47,11 +47,21 @@ if (isset($prompt)):
             </div>
             
             <div class="flex-grow">
-                <a href="prompt.php?id=<?php echo $prompt['id'] . '-' . $prompt['slug']; ?>" class="block mb-2">
+                <a href="prompt.php?id=<?php echo $prompt['id'] . '-' . $prompt['slug']; ?>" class="block mb-1">
                     <h2 class="text-base font-bold text-slate-900 group-hover:text-primary-600 transition-colors leading-tight line-clamp-2">
                         <?php echo esc($prompt['title']); ?>
                     </h2>
                 </a>
+                
+                <div class="flex items-center gap-1.5 mb-3">
+                    <div class="w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center text-[8px] font-black text-slate-500 uppercase">
+                        <?php echo strtoupper(substr($prompt['author_name'] ?? 'A', 0, 1)); ?>
+                    </div>
+                    <a href="u/<?php echo esc($prompt['author_slug'] ?? slugify($prompt['author_name'])); ?>" class="text-[10px] font-bold text-slate-400 hover:text-primary-600 transition-colors uppercase tracking-widest">
+                        <?php echo esc($prompt['author_name'] ?? 'Atlas User'); ?>
+                    </a>
+                </div>
+
                 <p class="text-slate-500 text-xs line-clamp-3 leading-relaxed mb-4">
                     <?php echo esc(strip_tags($prompt['content'])); ?>
                 </p>
@@ -69,6 +79,14 @@ if (isset($prompt)):
                 </div>
 
                 <div class="flex items-center gap-1">
+                    <button onclick="toggleSave(<?php echo $prompt['id']; ?>, this)" 
+                        class="p-2 rounded-xl transition-all <?php echo is_prompt_saved($prompt['id']) ? 'text-red-500 bg-red-50' : 'text-slate-400 hover:text-red-500 hover:bg-red-50'; ?>" 
+                        title="<?php echo is_prompt_saved($prompt['id']) ? 'Unsave Prompt' : 'Save to My Library'; ?>">
+                        <svg class="w-4 h-4" fill="<?php echo is_prompt_saved($prompt['id']) ? 'currentColor' : 'none'; ?>" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </button>
+
                     <button onclick="copyToClipboard(<?php echo esc(json_encode($prompt['content'])); ?>, this, <?php echo $prompt['id']; ?>)" class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all" title="Copy Prompt">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
                     </button>

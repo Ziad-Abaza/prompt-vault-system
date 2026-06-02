@@ -47,9 +47,12 @@ function init_database($pdo) {
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL UNIQUE,
+        slug TEXT UNIQUE,
         password_hash TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_users_slug_unique ON users(slug);
 
     CREATE TABLE IF NOT EXISTS categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -119,6 +122,15 @@ function init_database($pdo) {
         FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS user_saved_prompts (
+        user_id INTEGER,
+        prompt_id INTEGER,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (user_id, prompt_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (prompt_id) REFERENCES prompts(id) ON DELETE CASCADE
+    );
+
     CREATE INDEX IF NOT EXISTS idx_prompts_title ON prompts(title);
     CREATE INDEX IF NOT EXISTS idx_prompts_slug ON prompts(slug);
     CREATE INDEX IF NOT EXISTS idx_prompts_category ON prompts(category_id);
@@ -141,6 +153,31 @@ function migrate_database($pdo) {
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
     ");
+
+    // Add slug column to users if missing
+    $user_columns = $pdo->query("PRAGMA table_info(users)")->fetchAll(PDO::FETCH_COLUMN, 1);
+    if (!in_array('slug', $user_columns)) {
+        try {
+            $pdo->exec("ALTER TABLE users ADD COLUMN slug TEXT;");
+            $pdo->exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_slug_unique ON users(slug);");
+            
+            // Backfill slugs
+            $items = $pdo->query("SELECT id, username FROM users")->fetchAll();
+            foreach ($items as $item) {
+                $base_slug = slugify($item['username']);
+                $slug = $base_slug;
+                $count = 1;
+                while (true) {
+                    $stmt = $pdo->prepare("SELECT id FROM users WHERE slug = ? AND id != ?");
+                    $stmt->execute([$slug, $item['id']]);
+                    if (!$stmt->fetch()) break;
+                    $count++;
+                    $slug = $base_slug . '-' . $count;
+                }
+                $pdo->prepare("UPDATE users SET slug = ? WHERE id = ?")->execute([$slug, $item['id']]);
+            }
+        } catch (PDOException $e) {}
+    }
 
     // Add user_id column to existing tables if missing
     $tables = ['categories', 'tags', 'collections', 'prompts'];
