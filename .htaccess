@@ -7,15 +7,15 @@
 # ----------------------------------------------------------------------
 
 # Custom error pages (Adjust paths if project is in a subdirectory)
-ErrorDocument 400 /prompt-vault/error.php?code=400
-ErrorDocument 401 /prompt-vault/error.php?code=401
-ErrorDocument 403 /prompt-vault/error.php?code=403
-ErrorDocument 404 /prompt-vault/error.php?code=404
-ErrorDocument 405 /prompt-vault/error.php?code=405
-ErrorDocument 500 /prompt-vault/error.php?code=500
+ErrorDocument 400 /atlas/error.php?code=400
+ErrorDocument 401 /atlas/error.php?code=401
+ErrorDocument 403 /atlas/error.php?code=403
+ErrorDocument 404 /atlas/error.php?code=404
+ErrorDocument 405 /atlas/error.php?code=405
+ErrorDocument 500 /atlas/error.php?code=500
 
-# Prevent directory listing
-Options -Indexes
+# Prevent directory listing and disable MultiViews to prevent routing conflicts
+Options -Indexes -MultiViews
 
 # Disable the server signature (if allowed by server config)
 ServerSignature Off
@@ -23,7 +23,7 @@ ServerSignature Off
 # Enable Rewrite Engine
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /prompt-vault/
+    RewriteBase /atlas/
 
     # 1. Block access to hidden files and directories (starting with a dot)
     # This covers .env, .git, .htaccess, .github, etc.
@@ -62,11 +62,11 @@ ServerSignature Off
     # 6. Route robots.txt to robots.php
     RewriteRule ^robots\.txt$ robots.php [L]
 
-    # 7. Route public categories
-    RewriteRule ^prompts/([a-z0-9-]+)/?$ public_category.php?slug=$1 [L,QSA]
-
-    # 8. Route public tags
+    # 7. Route public tags (More specific rule first)
     RewriteRule ^prompts/tag/([a-z0-9-]+)/?$ public_tag.php?slug=$1 [L,QSA]
+
+    # 8. Route public categories
+    RewriteRule ^prompts/([a-z0-9-]+)/?$ public_category.php?slug=$1 [L,QSA]
 
     # 9. Route public collections
     RewriteRule ^collections/([a-z0-9-]+)/?$ public_collection.php?slug=$1 [L,QSA]
