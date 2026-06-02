@@ -358,6 +358,24 @@ function delete_prompt_image($image_id) {
     return false;
 }
 
+/**
+ * Get top authors based on public contributions and engagement.
+ */
+function get_top_authors($limit = 10) {
+    $sql = "SELECT u.id, u.username, u.slug, u.created_at,
+            COUNT(p.id) as public_prompt_count,
+            SUM(p.view_count) as total_views,
+            SUM(p.copy_count) as total_copies,
+            (SELECT COUNT(*) FROM user_saved_prompts usp JOIN prompts p2 ON usp.prompt_id = p2.id WHERE p2.user_id = u.id) as total_saves
+            FROM users u
+            JOIN prompts p ON u.id = p.user_id
+            WHERE p.is_public = 1
+            GROUP BY u.id
+            ORDER BY (SUM(p.view_count) + SUM(p.copy_count) * 5 + (SELECT COUNT(*) FROM user_saved_prompts usp JOIN prompts p2 ON usp.prompt_id = p2.id WHERE p2.user_id = u.id) * 10) DESC
+            LIMIT ?";
+    return query($sql, [$limit])->fetchAll();
+}
+
 function increment_prompt_view_count($id) {
     return query("UPDATE prompts SET view_count = view_count + 1 WHERE id = ?", [$id]);
 }
