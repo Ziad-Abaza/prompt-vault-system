@@ -24,9 +24,15 @@ if (isset($prompt)):
         <div class="p-4 flex-grow">
             <div class="flex justify-between items-start mb-2">
                 <div class="flex flex-wrap gap-1.5">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-50 text-primary-700 uppercase tracking-wider border border-primary-100">
-                        <?php echo esc($prompt['category_name'] ?? 'Uncategorized'); ?>
-                    </span>
+                    <?php if (isset($prompt['category_slug'])): ?>
+                        <a href="prompts/<?php echo esc($prompt['category_slug']); ?>" class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-50 text-primary-700 uppercase tracking-wider border border-primary-100 hover:bg-primary-100 transition-colors">
+                            <?php echo esc($prompt['category_name'] ?? 'Uncategorized'); ?>
+                        </a>
+                    <?php else: ?>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-50 text-primary-700 uppercase tracking-wider border border-primary-100">
+                            <?php echo esc($prompt['category_name'] ?? 'Uncategorized'); ?>
+                        </span>
+                    <?php endif; ?>
                     <?php if ($prompt['is_public']): ?>
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-50 text-green-700 uppercase tracking-wider border border-green-100">
                             Public

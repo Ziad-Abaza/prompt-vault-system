@@ -54,6 +54,7 @@ function init_database($pdo) {
     CREATE TABLE IF NOT EXISTS categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
+        slug TEXT UNIQUE,
         user_id INTEGER,
         UNIQUE(name, user_id),
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -62,6 +63,7 @@ function init_database($pdo) {
     CREATE TABLE IF NOT EXISTS tags (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
+        slug TEXT UNIQUE,
         user_id INTEGER,
         UNIQUE(name, user_id),
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -70,6 +72,7 @@ function init_database($pdo) {
     CREATE TABLE IF NOT EXISTS collections (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
+        slug TEXT UNIQUE,
         description TEXT,
         user_id INTEGER,
         UNIQUE(name, user_id),
@@ -79,7 +82,7 @@ function init_database($pdo) {
     CREATE TABLE IF NOT EXISTS prompts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
-        slug TEXT,
+        slug TEXT UNIQUE,
         content TEXT NOT NULL,
         category_id INTEGER,
         user_id INTEGER,
@@ -152,6 +155,81 @@ function migrate_database($pdo) {
         }
     }
 
+    // Add slug column to categories if missing
+    $cat_columns = $pdo->query("PRAGMA table_info(categories)")->fetchAll(PDO::FETCH_COLUMN, 1);
+    if (!in_array('slug', $cat_columns)) {
+        try {
+            $pdo->exec("ALTER TABLE categories ADD COLUMN slug TEXT;");
+            $pdo->exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_categories_slug_unique ON categories(slug);");
+            
+            // Backfill slugs
+            $items = $pdo->query("SELECT id, name FROM categories")->fetchAll();
+            foreach ($items as $item) {
+                $base_slug = slugify($item['name']);
+                $slug = $base_slug;
+                $count = 1;
+                while (true) {
+                    $stmt = $pdo->prepare("SELECT id FROM categories WHERE slug = ? AND id != ?");
+                    $stmt->execute([$slug, $item['id']]);
+                    if (!$stmt->fetch()) break;
+                    $count++;
+                    $slug = $base_slug . '-' . $count;
+                }
+                $pdo->prepare("UPDATE categories SET slug = ? WHERE id = ?")->execute([$slug, $item['id']]);
+            }
+        } catch (PDOException $e) {}
+    }
+
+    // Add slug column to tags if missing
+    $tag_columns = $pdo->query("PRAGMA table_info(tags)")->fetchAll(PDO::FETCH_COLUMN, 1);
+    if (!in_array('slug', $tag_columns)) {
+        try {
+            $pdo->exec("ALTER TABLE tags ADD COLUMN slug TEXT;");
+            $pdo->exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_tags_slug_unique ON tags(slug);");
+            
+            // Backfill slugs
+            $items = $pdo->query("SELECT id, name FROM tags")->fetchAll();
+            foreach ($items as $item) {
+                $base_slug = slugify($item['name']);
+                $slug = $base_slug;
+                $count = 1;
+                while (true) {
+                    $stmt = $pdo->prepare("SELECT id FROM tags WHERE slug = ? AND id != ?");
+                    $stmt->execute([$slug, $item['id']]);
+                    if (!$stmt->fetch()) break;
+                    $count++;
+                    $slug = $base_slug . '-' . $count;
+                }
+                $pdo->prepare("UPDATE tags SET slug = ? WHERE id = ?")->execute([$slug, $item['id']]);
+            }
+        } catch (PDOException $e) {}
+    }
+
+    // Add slug column to collections if missing
+    $coll_columns = $pdo->query("PRAGMA table_info(collections)")->fetchAll(PDO::FETCH_COLUMN, 1);
+    if (!in_array('slug', $coll_columns)) {
+        try {
+            $pdo->exec("ALTER TABLE collections ADD COLUMN slug TEXT;");
+            $pdo->exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_collections_slug_unique ON collections(slug);");
+            
+            // Backfill slugs
+            $items = $pdo->query("SELECT id, name FROM collections")->fetchAll();
+            foreach ($items as $item) {
+                $base_slug = slugify($item['name']);
+                $slug = $base_slug;
+                $count = 1;
+                while (true) {
+                    $stmt = $pdo->prepare("SELECT id FROM collections WHERE slug = ? AND id != ?");
+                    $stmt->execute([$slug, $item['id']]);
+                    if (!$stmt->fetch()) break;
+                    $count++;
+                    $slug = $base_slug . '-' . $count;
+                }
+                $pdo->prepare("UPDATE collections SET slug = ? WHERE id = ?")->execute([$slug, $item['id']]);
+            }
+        } catch (PDOException $e) {}
+    }
+
     // Add is_public column to prompts table if missing
     $columns = $pdo->query("PRAGMA table_info(prompts)")->fetchAll(PDO::FETCH_COLUMN, 1);
     if (!in_array('is_public', $columns)) {
@@ -163,7 +241,23 @@ function migrate_database($pdo) {
     if (!in_array('slug', $columns)) {
         try {
             $pdo->exec("ALTER TABLE prompts ADD COLUMN slug TEXT;");
-            $pdo->exec("CREATE INDEX IF NOT EXISTS idx_prompts_slug ON prompts(slug);");
+            $pdo->exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_prompts_slug_unique ON prompts(slug);");
+            
+            // Backfill slugs
+            $items = $pdo->query("SELECT id, title FROM prompts")->fetchAll();
+            foreach ($items as $item) {
+                $base_slug = slugify($item['title']);
+                $slug = $base_slug;
+                $count = 1;
+                while (true) {
+                    $stmt = $pdo->prepare("SELECT id FROM prompts WHERE slug = ? AND id != ?");
+                    $stmt->execute([$slug, $item['id']]);
+                    if (!$stmt->fetch()) break;
+                    $count++;
+                    $slug = $base_slug . '-' . $count;
+                }
+                $pdo->prepare("UPDATE prompts SET slug = ? WHERE id = ?")->execute([$slug, $item['id']]);
+            }
         } catch (PDOException $e) {}
     }
 

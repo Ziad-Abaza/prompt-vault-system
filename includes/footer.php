@@ -1,10 +1,17 @@
         </main>
 
-        <footer class="bg-white border-t border-slate-100 py-8">
-            <div class="max-w-6xl mx-auto px-4 md:px-8 text-center">
-                <p class="text-slate-400 text-xs font-medium uppercase tracking-widest">
-                    &copy; <?php echo date('Y'); ?> <?php echo APP_NAME; ?> &bull; Private & Secure
-                </p>
+        <footer class="bg-white border-t border-slate-100 py-10">
+            <div class="max-w-6xl mx-auto px-4 md:px-8">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center space-x-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                        <a href="about.php" class="hover:text-primary-600 transition-colors">About</a>
+                        <a href="privacy.php" class="hover:text-primary-600 transition-colors">Privacy</a>
+                        <a href="terms.php" class="hover:text-primary-600 transition-colors">Terms</a>
+                    </div>
+                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+                        &copy; <?php echo date('Y'); ?> <?php echo APP_NAME; ?> &bull; Part of the <a href="https://egyitech.com" class="hover:text-primary-600">EgyiTech</a> Ecosystem
+                    </p>
+                </div>
             </div>
         </footer>
     </div>

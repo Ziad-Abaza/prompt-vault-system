@@ -61,6 +61,15 @@ ServerSignature Off
 
     # 6. Route robots.txt to robots.php
     RewriteRule ^robots\.txt$ robots.php [L]
+
+    # 7. Route public categories
+    RewriteRule ^prompts/([a-z0-9-]+)/?$ public_category.php?slug=$1 [L,QSA]
+
+    # 8. Route public tags
+    RewriteRule ^prompts/tag/([a-z0-9-]+)/?$ public_tag.php?slug=$1 [L,QSA]
+
+    # 9. Route public collections
+    RewriteRule ^collections/([a-z0-9-]+)/?$ public_collection.php?slug=$1 [L,QSA]
 </IfModule>
 
 # ----------------------------------------------------------------------
@@ -81,7 +90,7 @@ ServerSignature Off
     Header set Referrer-Policy "strict-origin-when-cross-origin"
     
     # Enforce HTTPS (uncomment if SSL is enabled)
-    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header always set Strict-Transport-Security "max-age=86400; includeSubDomains; preload"
     
     # Content Security Policy (Basic restrictive policy)
     # Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self';"

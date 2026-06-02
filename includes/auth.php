@@ -111,7 +111,7 @@ function require_login() {
     }
 
     $current_page = basename($_SERVER['PHP_SELF']);
-    $public_pages = ['login.php', 'register.php', 'sitemap.php', 'robots.php'];
+    $public_pages = ['login.php', 'register.php', 'sitemap.php', 'robots.php', 'public_prompts.php', 'public_category.php', 'public_tag.php', 'public_collection.php', 'about.php', 'privacy.php', 'terms.php'];
     
     if (in_array($current_page, $public_pages)) {
         return;

@@ -19,8 +19,89 @@ if ($filters['sort'] === 'newest') $order_by = "p.created_at DESC";
 // Get categories for navigation
 $categories = query("SELECT DISTINCT c.* FROM categories c JOIN prompts p ON c.id = p.category_id WHERE p.is_public = 1 ORDER BY c.name ASC")->fetchAll();
 
+// Pagination and Query Setup
+$per_page = 24;
+$page = max(1, (int)($_GET['page'] ?? 1));
+$offset = ($page - 1) * $per_page;
+
+$sql = "SELECT p.*, c.name as category_name, c.slug as category_slug, u.username as author_name 
+        FROM prompts p 
+        LEFT JOIN categories c ON p.category_id = c.id
+        LEFT JOIN users u ON p.user_id = u.id
+        WHERE p.is_public = 1";
+$params = [];
+
+if (!empty($filters['category_id'])) {
+    $sql .= " AND p.category_id = ?";
+    $params[] = $filters['category_id'];
+}
+if (!empty($filters['search'])) {
+    $sql .= " AND (p.title LIKE ? OR p.content LIKE ?)";
+    $params[] = '%' . $filters['search'] . '%';
+    $params[] = '%' . $filters['search'] . '%';
+}
+
+$sql .= " ORDER BY $order_by LIMIT ? OFFSET ?";
+$params[] = $per_page;
+$params[] = $offset;
+
+$prompts = query($sql, $params)->fetchAll();
+
+// Count for pagination
+$count_sql = "SELECT COUNT(*) FROM prompts WHERE is_public = 1";
+$count_params = [];
+if (!empty($filters['category_id'])) {
+    $count_sql .= " AND category_id = ?";
+    $count_params[] = $filters['category_id'];
+}
+if (!empty($filters['search'])) {
+    $count_sql .= " AND (title LIKE ? OR content LIKE ?)";
+    $count_params[] = '%' . $filters['search'] . '%';
+    $count_params[] = '%' . $filters['search'] . '%';
+}
+$total_prompts = query($count_sql, $count_params)->fetchColumn();
+$total_pages = ceil($total_prompts / $per_page);
+
+// SEO Metadata
 $page_title = "Explore Prompts";
-$meta_description = "Discover high-quality AI prompts in a social-feed style gallery. Browse trending, most-copied, and recently shared prompts.";
+$meta_description = "Discover high-quality AI prompts in a social-feed style gallery. Browse trending, most-copied, and recently shared prompts for ChatGPT, Midjourney, and Claude.";
+
+if (!empty($filters['category_id'])) {
+    $selected_cat = array_filter($categories, fn($c) => $c['id'] == $filters['category_id']);
+    if ($selected_cat) {
+        $cat_name = reset($selected_cat)['name'];
+        $page_title = "{$cat_name} Prompts — Explore AI Hub";
+        $meta_description = "Browse the best {$cat_name} prompts for AI tools. Copy and use curated {$cat_name} templates for ChatGPT, Claude, and more.";
+    }
+}
+
+$canonical_url = rtrim(Env::get('APP_URL', ''), '/') . '/public_prompts.php';
+
+// Pagination URLs for rel="prev/next"
+$base_pagination_url = rtrim(Env::get('APP_URL', ''), '/') . '/public_prompts.php';
+$query_params = $_GET;
+unset($query_params['page']);
+
+$prev_page_url = ($page > 1) ? $base_pagination_url . '?' . http_build_query(array_merge($query_params, ['page' => $page - 1])) : null;
+$next_page_url = ($page < $total_pages) ? $base_pagination_url . '?' . http_build_query(array_merge($query_params, ['page' => $page + 1])) : null;
+
+// ItemList Structured Data
+$page_schema = [
+    "@type" => "ItemList",
+    "name" => $page_title,
+    "description" => $meta_description,
+    "url" => $canonical_url,
+    "itemListElement" => []
+];
+
+foreach ($prompts as $i => $p) {
+    $slug_part = !empty($p['slug']) ? '-' . $p['slug'] : '';
+    $page_schema['itemListElement'][] = [
+        "@type" => "ListItem",
+        "position" => $i + 1 + ($offset),
+        "url" => rtrim(Env::get('APP_URL', ''), '/') . '/prompt.php?id=' . $p['id'] . $slug_part
+    ];
+}
 
 include 'includes/header.php';
 ?>
@@ -67,35 +148,7 @@ include 'includes/header.php';
     </div>
 
     <!-- Main Feed Grid -->
-    <?php
-    $per_page = 24;
-    $page = max(1, (int)($_GET['page'] ?? 1));
-    $offset = ($page - 1) * $per_page;
-
-    $sql = "SELECT p.*, c.name as category_name, u.username as author_name 
-            FROM prompts p 
-            LEFT JOIN categories c ON p.category_id = c.id
-            LEFT JOIN users u ON p.user_id = u.id
-            WHERE p.is_public = 1";
-    $params = [];
-
-    if (!empty($filters['category_id'])) {
-        $sql .= " AND p.category_id = ?";
-        $params[] = $filters['category_id'];
-    }
-    if (!empty($filters['search'])) {
-        $sql .= " AND (p.title LIKE ? OR p.content LIKE ?)";
-        $params[] = '%' . $filters['search'] . '%';
-        $params[] = '%' . $filters['search'] . '%';
-    }
-
-    $sql .= " ORDER BY $order_by LIMIT ? OFFSET ?";
-    $params[] = $per_page;
-    $params[] = $offset;
-
-    $prompts = query($sql, $params)->fetchAll();
-
-    if (empty($prompts)): ?>
+    <?php if (empty($prompts)): ?>
         <div class="py-20 text-center">
             <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white border border-slate-100 shadow-sm mb-4">
                 <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H4a2 2 0 00-2 2v11a2 2 0 002 2h11M20 13l-4 4m4-4l4 4m-4-4v6m-6-6H7m1-4h.01M11 16h.01"></path></svg>
@@ -111,23 +164,8 @@ include 'includes/header.php';
             <?php endforeach; ?>
         </div>
 
-        <!-- Pagination (Simple Feed Style) -->
-        <?php
-        $count_sql = "SELECT COUNT(*) FROM prompts WHERE is_public = 1";
-        $count_params = [];
-        if (!empty($filters['category_id'])) {
-            $count_sql .= " AND category_id = ?";
-            $count_params[] = $filters['category_id'];
-        }
-        if (!empty($filters['search'])) {
-            $count_sql .= " AND (title LIKE ? OR content LIKE ?)";
-            $count_params[] = '%' . $filters['search'] . '%';
-            $count_params[] = '%' . $filters['search'] . '%';
-        }
-        $total_prompts = query($count_sql, $count_params)->fetchColumn();
-        $total_pages = ceil($total_prompts / $per_page);
-        
-        if ($total_pages > 1): ?>
+        <!-- Pagination -->
+        <?php if ($total_pages > 1): ?>
             <div class="mt-12 mb-8 flex justify-center">
                 <nav class="flex items-center space-x-2">
                     <?php if ($page > 1): ?>

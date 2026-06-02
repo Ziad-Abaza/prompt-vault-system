@@ -4,6 +4,31 @@
  * Scoped by current user_id for private vaults.
  */
 
+/**
+ * Generate a unique slug for a given table.
+ */
+function generate_unique_slug($table, $text, $exclude_id = null) {
+    $slug = slugify($text);
+    $original_slug = $slug;
+    $count = 1;
+
+    while (true) {
+        $sql = "SELECT id FROM $table WHERE slug = ?";
+        $params = [$slug];
+        if ($exclude_id) {
+            $sql .= " AND id != ?";
+            $params[] = $exclude_id;
+        }
+        $exists = query($sql, $params)->fetch();
+        if (!$exists) {
+            break;
+        }
+        $count++;
+        $slug = $original_slug . '-' . $count;
+    }
+    return $slug;
+}
+
 // --- Categories ---
 
 function get_categories() {
@@ -14,12 +39,18 @@ function get_category($id) {
     return query("SELECT * FROM categories WHERE id = ? AND user_id = ?", [$id, get_current_user_id()])->fetch();
 }
 
+function get_category_by_slug($slug) {
+    return query("SELECT * FROM categories WHERE slug = ?", [$slug])->fetch();
+}
+
 function create_category($name) {
-    return query("INSERT INTO categories (name, user_id) VALUES (?, ?)", [$name, get_current_user_id()]);
+    $slug = generate_unique_slug('categories', $name);
+    return query("INSERT INTO categories (name, slug, user_id) VALUES (?, ?, ?)", [$name, $slug, get_current_user_id()]);
 }
 
 function update_category($id, $name) {
-    return query("UPDATE categories SET name = ? WHERE id = ? AND user_id = ?", [$name, $id, get_current_user_id()]);
+    $slug = generate_unique_slug('categories', $name, $id);
+    return query("UPDATE categories SET name = ?, slug = ? WHERE id = ? AND user_id = ?", [$name, $slug, $id, get_current_user_id()]);
 }
 
 function delete_category($id) {
@@ -36,12 +67,18 @@ function get_tag($id) {
     return query("SELECT * FROM tags WHERE id = ? AND user_id = ?", [$id, get_current_user_id()])->fetch();
 }
 
+function get_tag_by_slug($slug) {
+    return query("SELECT * FROM tags WHERE slug = ?", [$slug])->fetch();
+}
+
 function create_tag($name) {
-    return query("INSERT INTO tags (name, user_id) VALUES (?, ?)", [$name, get_current_user_id()]);
+    $slug = generate_unique_slug('tags', $name);
+    return query("INSERT INTO tags (name, slug, user_id) VALUES (?, ?, ?)", [$name, $slug, get_current_user_id()]);
 }
 
 function update_tag($id, $name) {
-    return query("UPDATE tags SET name = ? WHERE id = ? AND user_id = ?", [$name, $id, get_current_user_id()]);
+    $slug = generate_unique_slug('tags', $name, $id);
+    return query("UPDATE tags SET name = ?, slug = ? WHERE id = ? AND user_id = ?", [$name, $slug, $id, get_current_user_id()]);
 }
 
 function delete_tag($id) {
@@ -63,7 +100,8 @@ function get_or_create_tags_by_names($names) {
         if ($tag) {
             $tag_ids[] = $tag['id'];
         } else {
-            query("INSERT INTO tags (name, user_id) VALUES (?, ?)", [$name, $user_id]);
+            $slug = generate_unique_slug('tags', $name);
+            query("INSERT INTO tags (name, slug, user_id) VALUES (?, ?, ?)", [$name, $slug, $user_id]);
             $tag_ids[] = get_db()->lastInsertId();
         }
     }
@@ -84,12 +122,18 @@ function get_collection($id) {
     return query("SELECT * FROM collections WHERE id = ? AND user_id = ?", [$id, get_current_user_id()])->fetch();
 }
 
+function get_collection_by_slug($slug) {
+    return query("SELECT * FROM collections WHERE slug = ?", [$slug])->fetch();
+}
+
 function create_collection($name, $description = '') {
-    return query("INSERT INTO collections (name, description, user_id) VALUES (?, ?, ?)", [$name, $description, get_current_user_id()]);
+    $slug = generate_unique_slug('collections', $name);
+    return query("INSERT INTO collections (name, slug, description, user_id) VALUES (?, ?, ?, ?)", [$name, $slug, $description, get_current_user_id()]);
 }
 
 function update_collection($id, $name, $description = '') {
-    return query("UPDATE collections SET name = ?, description = ? WHERE id = ? AND user_id = ?", [$name, $description, $id, get_current_user_id()]);
+    $slug = generate_unique_slug('collections', $name, $id);
+    return query("UPDATE collections SET name = ?, slug = ?, description = ? WHERE id = ? AND user_id = ?", [$name, $slug, $description, $id, get_current_user_id()]);
 }
 
 function delete_collection($id) {
@@ -120,7 +164,7 @@ function remove_prompt_from_collection($prompt_id, $collection_id) {
 
 function get_prompts($filters = []) {
     $user_id = get_current_user_id();
-    $sql = "SELECT p.*, c.name as category_name, u.username as author_name 
+    $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug, u.username as author_name 
             FROM prompts p 
             LEFT JOIN categories c ON p.category_id = c.id
             LEFT JOIN users u ON p.user_id = u.id
@@ -175,7 +219,7 @@ function get_prompts($filters = []) {
 
 function get_prompt($id) {
     $user_id = get_current_user_id();
-    $prompt = query("SELECT p.*, c.name as category_name, u.username as author_name 
+    $prompt = query("SELECT p.*, c.name as category_name, c.slug as category_slug, u.username as author_name 
                      FROM prompts p 
                      LEFT JOIN categories c ON p.category_id = c.id 
                      LEFT JOIN users u ON p.user_id = u.id
@@ -201,7 +245,7 @@ function create_prompt($data) {
     $db = get_db();
     $db->beginTransaction();
     $user_id = get_current_user_id();
-    $slug = slugify($data['title']);
+    $slug = generate_unique_slug('prompts', $data['title']);
 
     try {
         query("INSERT INTO prompts (title, slug, content, category_id, user_id, is_public) VALUES (?, ?, ?, ?, ?, ?)", [
@@ -238,7 +282,7 @@ function update_prompt($id, $data) {
     $db = get_db();
     $db->beginTransaction();
     $user_id = get_current_user_id();
-    $slug = slugify($data['title']);
+    $slug = generate_unique_slug('prompts', $data['title'], $id);
 
     try {
         // Ensure prompt belongs to user
@@ -340,7 +384,8 @@ function seed_user_onboarding($user_id) {
         'Image Generation', 'UI/UX Design', 'Education & Learning'
     ];
     foreach ($categories as $name) {
-        query("INSERT OR IGNORE INTO categories (name, user_id) VALUES (?, ?)", [$name, $user_id]);
+        $slug = generate_unique_slug('categories', $name);
+        query("INSERT OR IGNORE INTO categories (name, slug, user_id) VALUES (?, ?, ?)", [$name, $slug, $user_id]);
     }
 
     // 2. Tags
@@ -363,7 +408,8 @@ function seed_user_onboarding($user_id) {
         'beginner', 'advanced', 'production-ready', 'template', 'reusable'
     ];
     foreach ($tags as $name) {
-        query("INSERT OR IGNORE INTO tags (name, user_id) VALUES (?, ?)", [$name, $user_id]);
+        $slug = generate_unique_slug('tags', $name);
+        query("INSERT OR IGNORE INTO tags (name, slug, user_id) VALUES (?, ?, ?)", [$name, $slug, $user_id]);
     }
 
     // 3. Collections
@@ -397,7 +443,8 @@ function seed_user_onboarding($user_id) {
         ['name' => 'Personal Productivity AI', 'desc' => 'Tailored prompts for focus and habit tracking.']
     ];
     foreach ($collections as $c) {
-        query("INSERT OR IGNORE INTO collections (name, description, user_id) VALUES (?, ?, ?)", [$c['name'], $c['desc'], $user_id]);
+        $slug = generate_unique_slug('collections', $c['name']);
+        query("INSERT OR IGNORE INTO collections (name, slug, description, user_id) VALUES (?, ?, ?, ?)", [$c['name'], $slug, $c['desc'], $user_id]);
     }
 }
 
@@ -405,7 +452,8 @@ function seed_user_onboarding($user_id) {
  * Check if a prompt is public without needing user_id.
  */
 function is_prompt_public($id) {
-    $prompt = query("SELECT is_public FROM prompts WHERE id = ?", [$id])->fetch();
+    $clean_id = (int)explode('-', $id)[0];
+    $prompt = query("SELECT is_public FROM prompts WHERE id = ?", [$clean_id])->fetch();
     return $prompt && $prompt['is_public'];
 }
 
@@ -413,5 +461,5 @@ function is_prompt_public($id) {
  * Get all public prompts for sitemap.
  */
 function get_public_prompts() {
-    return query("SELECT id, updated_at FROM prompts WHERE is_public = 1 ORDER BY updated_at DESC")->fetchAll();
+    return query("SELECT id, slug, updated_at FROM prompts WHERE is_public = 1 ORDER BY updated_at DESC")->fetchAll();
 }

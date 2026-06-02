@@ -11,58 +11,84 @@
     $default_desc = "Atlas Library - The best tool to store, save, and manage AI prompts. A searchable database for ChatGPT prompts, prompt engineering, and LLM workflow management.";
     $final_desc = $meta_description ?? $default_desc;
     $keywords = "how to organize AI prompts, how to save and manage prompts for ChatGPT, best tool to store AI prompts, searchable database for AI prompts, create your own prompt library, organize prompts for ChatGPT and AI tools, AI prompt management system for developers, cloud based prompt storage system, share and reuse AI prompts easily, centralized AI prompt workspace, AI prompt library, prompt library, prompt database, AI prompts collection, save AI prompts, prompt management tool, prompt organizer, AI prompt manager, prompt storage system, searchable prompt library, Atlas AI prompt library, Atlas prompt manager, Atlas prompt database, Atlas AI workspace, Atlas prompt hub, prompt engineering tools, prompt engineering library, LLM prompt management, AI workflow prompt system, prompt versioning system, prompt engineering platform, structured prompt database, reusable AI prompts system, prompt API management, AI prompt optimization tool";
-    $canonical_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    
+    // Canonical URL Logic
+    if (!isset($canonical_url)) {
+        $app_url = rtrim(Env::get('APP_URL', ''), '/');
+        if (!empty($app_url)) {
+            $canonical_url = $app_url . $_SERVER['REQUEST_URI'];
+        } else {
+            $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");
+            $canonical_url = $protocol . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+        }
+    }
     ?>
 
     <title><?php echo esc($final_title); ?></title>
     <meta name="description" content="<?php echo esc($final_desc); ?>">
     <meta name="keywords" content="<?php echo esc($keywords); ?>">
     <link rel="canonical" href="<?php echo esc($canonical_url); ?>">
+    <?php if (isset($prev_page_url)): ?>
+        <link rel="prev" href="<?php echo esc($prev_page_url); ?>">
+    <?php endif; ?>
+    <?php if (isset($next_page_url)): ?>
+        <link rel="next" href="<?php echo esc($next_page_url); ?>">
+    <?php endif; ?>
     <link rel="manifest" href="site.webmanifest">
     <meta name="theme-color" content="#0e91e9">
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="<?php echo $og_type ?? 'website'; ?>">
     <meta property="og:url" content="<?php echo esc($canonical_url); ?>">
     <meta property="og:title" content="<?php echo esc($final_title); ?>">
     <meta property="og:description" content="<?php echo esc($final_desc); ?>">
-    <meta property="og:image" content="assets/logo.png">
+    <meta property="og:site_name" content="<?php echo APP_NAME; ?>">
+    <?php 
+    $og_image = $og_image ?? 'assets/logo.png';
+    // Ensure absolute URL for OG image
+    if (!str_starts_with($og_image, 'http')) {
+        $app_url = rtrim(Env::get('APP_URL', ''), '/');
+        if (!empty($app_url)) {
+            $og_image = $app_url . '/' . ltrim($og_image, '/');
+        }
+    }
+    ?>
+    <meta property="og:image" content="<?php echo esc($og_image); ?>">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="<?php echo esc($canonical_url); ?>">
     <meta property="twitter:title" content="<?php echo esc($final_title); ?>">
     <meta property="twitter:description" content="<?php echo esc($final_desc); ?>">
-    <meta property="twitter:image" content="assets/logo.png">
+    <meta property="twitter:image" content="<?php echo esc($og_image); ?>">
 
     <!-- Structured Data -->
     <script type="application/ld+json">
         <?php
+        $app_url_base = rtrim(Env::get('APP_URL', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]"), '/');
+        
         $schema = [
             "@context" => "https://schema.org",
             "@graph" => [
                 [
-                    "@type" => "WebApplication",
-                    "@id" => $canonical_url . "#website",
+                    "@type" => "WebSite",
+                    "@id" => $app_url_base . "/#website",
                     "name" => APP_NAME,
-                    "url" => $canonical_url,
-                    "operatingSystem" => "Web",
-                    "applicationCategory" => "DeveloperApplication",
-                    "description" => "A centralized AI prompt workspace and prompt engineering platform for organizing, managing, and discovering AI prompts.",
-                    "keywords" => $keywords,
-                    "offers" => [
-                        "@type" => "Offer",
-                        "price" => "0",
-                        "priceCurrency" => "USD"
+                    "url" => $app_url_base . "/",
+                    "potentialAction" => [
+                        "@type" => "SearchAction",
+                        "target" => $app_url_base . "/public_prompts.php?search={search_term_string}",
+                        "query-input" => "required name=search_term_string"
                     ]
                 ],
                 [
                     "@type" => "Organization",
+                    "@id" => $app_url_base . "/#organization",
                     "name" => APP_NAME,
-                    "url" => $canonical_url,
+                    "url" => $app_url_base . "/",
                     "logo" => [
                         "@type" => "ImageObject",
-                        "url" => "assets/logo.png"
+                        "url" => $app_url_base . "/assets/logo.png"
                     ]
                 ]
             ]
@@ -74,19 +100,25 @@
                 "itemListElement" => []
             ];
 
-            $current_base = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
-            $current_path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\') . '/';
-            $full_base = $current_base . $current_path;
-
             foreach ($breadcrumbs as $i => $bc) {
+                $item_url = $bc['url'];
+                if (!str_starts_with($item_url, 'http')) {
+                    $item_url = $app_url_base . '/' . ltrim($item_url, '/');
+                }
+                
                 $breadcrumbList['itemListElement'][] = [
                     "@type" => "ListItem",
                     "position" => $i + 1,
                     "name" => $bc['name'],
-                    "item" => $full_base . $bc['url']
+                    "item" => $item_url
                 ];
             }
             $schema['@graph'][] = $breadcrumbList;
+        }
+
+        // Add page-specific schema if defined
+        if (isset($page_schema) && is_array($page_schema)) {
+            $schema['@graph'][] = $page_schema;
         }
 
         echo json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);

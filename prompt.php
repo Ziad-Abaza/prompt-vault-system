@@ -20,13 +20,31 @@ increment_prompt_view_count($id);
 $is_owner = is_logged_in() && $prompt['user_id'] === get_current_user_id();
 
 $page_title = $prompt['title'];
-$meta_description = substr(strip_tags($prompt['content']), 0, 160);
-$canonical_url = rtrim(Env::get('APP_URL', ''), '/') . '/prompt.php?id=' . $id . '-' . $prompt['slug'];
+$meta_description = substr(strip_tags($prompt['content']), 0, 155) . '...';
+$canonical_url = rtrim(Env::get('APP_URL', ''), '/') . '/prompt.php?id=' . $prompt['id'] . '-' . $prompt['slug'];
+$og_type = 'article';
+$og_image = !empty($prompt['images']) ? $prompt['images'][0]['image_path'] : 'assets/logo.png';
+
+$page_schema = [
+    "@type" => "CreativeWork",
+    "name" => $prompt['title'],
+    "description" => substr(strip_tags($prompt['content']), 0, 200),
+    "text" => $prompt['content'],
+    "dateCreated" => date('c', strtotime($prompt['created_at'])),
+    "dateModified" => date('c', strtotime($prompt['updated_at'])),
+    "author" => [
+        "@type" => "Person",
+        "name" => $prompt['author_name'] ?? 'Atlas User'
+    ],
+    "keywords" => !empty($prompt['tags']) ? implode(', ', array_column($prompt['tags'], 'name')) : '',
+    "genre" => $prompt['category_name'] ?? 'Uncategorized',
+    "url" => $canonical_url
+];
 
 $breadcrumbs = [
     ['name' => 'Library', 'url' => 'index.php'],
     ['name' => $prompt['category_name'] ?? 'Uncategorized', 'url' => 'index.php?category_id=' . ($prompt['category_id'] ?? '')],
-    ['name' => $prompt['title'], 'url' => 'prompt.php?id=' . $id . '-' . $prompt['slug']]
+    ['name' => $prompt['title'], 'url' => 'prompt.php?id=' . $prompt['id'] . '-' . $prompt['slug']]
 ];
 
 include 'includes/header.php';
@@ -55,9 +73,15 @@ include 'includes/header.php';
                 <?php echo esc($prompt['title']); ?>
             </h1>
             <div class="flex flex-wrap items-center gap-3">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-50 text-primary-700 uppercase tracking-wider border border-primary-100">
-                    <?php echo esc($prompt['category_name'] ?? 'Uncategorized'); ?>
-                </span>
+                <?php if (isset($prompt['category_slug'])): ?>
+                    <a href="prompts/<?php echo esc($prompt['category_slug']); ?>" class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-50 text-primary-700 uppercase tracking-wider border border-primary-100 hover:bg-primary-100 transition-colors">
+                        <?php echo esc($prompt['category_name'] ?? 'Uncategorized'); ?>
+                    </a>
+                <?php else: ?>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-50 text-primary-700 uppercase tracking-wider border border-primary-100">
+                        <?php echo esc($prompt['category_name'] ?? 'Uncategorized'); ?>
+                    </span>
+                <?php endif; ?>
                 <span class="inline-flex items-center text-slate-400 text-[10px] font-bold uppercase tracking-widest">
                     <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                     By <?php echo esc($prompt['author_name'] ?? 'Unknown'); ?>
@@ -104,7 +128,7 @@ include 'includes/header.php';
                         <?php if (!empty($prompt['tags'])): ?>
                             <div class="flex flex-wrap gap-1.5">
                                 <?php foreach ($prompt['tags'] as $tag): ?>
-                                    <a href="index.php?tag_id=<?php echo $tag['id']; ?>" class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-white border border-slate-200 text-slate-500 hover:border-primary-300 hover:text-primary-700 transition-colors">
+                                    <a href="prompts/tag/<?php echo esc($tag['slug']); ?>" class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-white border border-slate-200 text-slate-500 hover:border-primary-300 hover:text-primary-700 transition-colors">
                                         #<?php echo esc($tag['name']); ?>
                                     </a>
                                 <?php endforeach; ?>
@@ -114,7 +138,7 @@ include 'includes/header.php';
                         <?php if (!empty($prompt['collections'])): ?>
                             <div class="flex flex-wrap gap-1.5">
                                 <?php foreach ($prompt['collections'] as $coll): ?>
-                                    <a href="index.php?collection_id=<?php echo $coll['id']; ?>" class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors">
+                                    <a href="collections/<?php echo esc($coll['slug']); ?>" class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors">
                                         <svg class="w-3 h-3 mr-1.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                                         </svg>
