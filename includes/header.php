@@ -249,26 +249,25 @@
         </button>
     </header>
 
-    <!-- Sidebar Navigation -->
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-56 bg-white border-r border-slate-200 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out md:sticky md:top-0 h-screen overflow-y-auto">
         <div class="p-4">
-            <a href="index.php" class="text-xl font-bold text-primary-600 tracking-tight block mb-6 px-2"><?php echo APP_NAME; ?></a>
+            <a href="<?php echo $app_url_base; ?>/index.php" class="text-xl font-bold text-primary-600 tracking-tight block mb-6 px-2"><?php echo APP_NAME; ?></a>
 
             <nav class="space-y-0.5">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 px-2">Discovery</p>
-                <a href="index.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                <a href="<?php echo $app_url_base; ?>/index.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                     <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V10"></path>
                     </svg>
                     Home
                 </a>
-                <a href="public_prompts.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'public_prompts.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                <a href="<?php echo $app_url_base; ?>/public_prompts.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'public_prompts.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                     <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
                     </svg>
                     Explore Hub
                 </a>
-                <a href="search.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'search.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                <a href="<?php echo $app_url_base; ?>/search.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'search.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                     <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
@@ -277,25 +276,25 @@
 
                 <?php if (is_logged_in()): ?>
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-6 mb-1 px-2">Private Vault</p>
-                    <a href="dashboard.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <a href="<?php echo $app_url_base; ?>/dashboard.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                         <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                         </svg>
                         My Prompts
                     </a>
-                    <a href="favorites.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'favorites.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <a href="<?php echo $app_url_base; ?>/favorites.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'favorites.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                         <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                         Favorites
                     </a>
-                    <a href="categories.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'categories.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <a href="<?php echo $app_url_base; ?>/categories.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'categories.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                         <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
                         </svg>
                         Categories
                     </a>
-                    <a href="collections.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'collections.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <a href="<?php echo $app_url_base; ?>/collections.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'collections.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                         <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                         </svg>
@@ -303,13 +302,13 @@
                     </a>
 
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-6 mb-1 px-2">Data</p>
-                    <a href="export.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900">
+                    <a href="<?php echo $app_url_base; ?>/export.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900">
                         <svg class="w-4 h-4 mr-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                         </svg>
                         Export
                     </a>
-                    <a href="import.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900">
+                    <a href="<?php echo $app_url_base; ?>/import.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900">
                         <svg class="w-4 h-4 mr-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                         </svg>
@@ -329,7 +328,7 @@
                         <p class="text-xs font-bold text-slate-900 truncate"><?php echo esc(get_current_username()); ?></p>
                     </div>
                 </div>
-                <a href="logout.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-red-600 rounded-lg hover:bg-red-50">
+                <a href="<?php echo $app_url_base; ?>/logout.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-red-600 rounded-lg hover:bg-red-50">
                     <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                     </svg>
@@ -337,10 +336,10 @@
                 </a>
             <?php else: ?>
                 <div class="flex flex-col gap-1 px-2">
-                    <a href="login.php" class="flex items-center py-1.5 text-xs font-bold text-primary-600 hover:text-primary-700">
+                    <a href="<?php echo $app_url_base; ?>/login.php" class="flex items-center py-1.5 text-xs font-bold text-primary-600 hover:text-primary-700">
                         Sign In
                     </a>
-                    <a href="register.php" class="flex items-center py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900">
+                    <a href="<?php echo $app_url_base; ?>/register.php" class="flex items-center py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900">
                         Create Account
                     </a>
                 </div>

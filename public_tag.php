@@ -125,13 +125,13 @@ include 'includes/header.php';
             <div class="mt-12 mb-8 flex justify-center">
                 <nav class="flex items-center space-x-2">
                     <?php if ($page > 1): ?>
-                        <a href="prompts/tag/<?php echo $tag['slug']; ?>?page=<?php echo $page - 1; ?>" class="px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold text-[10px] uppercase tracking-wider hover:bg-slate-50 transition-all">Previous</a>
+                        <a href="<?php echo $app_url_base; ?>/prompts/tag/<?php echo $tag['slug']; ?>?page=<?php echo $page - 1; ?>" class="px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold text-[10px] uppercase tracking-wider hover:bg-slate-50 transition-all">Previous</a>
                     <?php endif; ?>
                     
                     <span class="px-4 py-2 text-slate-400 font-bold text-[10px] uppercase tracking-wider">Page <?php echo $page; ?> of <?php echo $total_pages; ?></span>
 
                     <?php if ($page < $total_pages): ?>
-                        <a href="prompts/tag/<?php echo $tag['slug']; ?>?page=<?php echo $page + 1; ?>" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-[10px] uppercase tracking-wider hover:bg-primary-600 transition-all shadow-lg shadow-slate-900/20">Next Page</a>
+                        <a href="<?php echo $app_url_base; ?>/prompts/tag/<?php echo $tag['slug']; ?>?page=<?php echo $page + 1; ?>" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-[10px] uppercase tracking-wider hover:bg-primary-600 transition-all shadow-lg shadow-slate-900/20">Next Page</a>
                     <?php endif; ?>
                 </nav>
             </div>
