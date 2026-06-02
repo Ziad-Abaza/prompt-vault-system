@@ -96,6 +96,15 @@ include 'includes/header.php';
             </div>
         </div>
         <div class="flex items-center gap-2 shrink-0">
+            <button onclick="toggleSave(<?php echo $prompt['id']; ?>, this)" 
+                class="inline-flex items-center px-4 py-2 rounded-lg border border-slate-200 transition-all <?php echo is_prompt_saved($prompt['id']) ? 'text-red-500 bg-red-50 border-red-100' : 'text-slate-400 hover:text-red-500 hover:bg-red-50 hover:border-red-100'; ?>" 
+                title="<?php echo is_prompt_saved($prompt['id']) ? 'Unsave Prompt' : 'Save to My Library'; ?>">
+                <svg class="w-4 h-4 mr-2" fill="<?php echo is_prompt_saved($prompt['id']) ? 'currentColor' : 'none'; ?>" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                <span class="text-xs font-bold"><?php echo is_prompt_saved($prompt['id']) ? 'Saved' : 'Save'; ?></span>
+            </button>
+
             <button onclick="copyToClipboard(<?php echo esc(json_encode($prompt['content'])); ?>, this, <?php echo $prompt['id']; ?>)" class="inline-flex items-center px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-colors shadow-lg shadow-slate-900/10">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
