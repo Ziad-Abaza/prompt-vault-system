@@ -61,7 +61,13 @@ include 'includes/header.php';
         <div class="flex items-center gap-4">
             <div class="bg-white px-6 py-3 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center">
                 <span class="text-2xl font-black text-slate-900"><?php echo count($categories); ?></span>
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Categories</span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Total<br>Categories</span>
+            </div>
+            <div class="bg-white px-6 py-3 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center">
+                <span class="text-2xl font-black text-primary-600">
+                    <?php echo array_sum(array_column($categories, 'prompt_count')); ?>
+                </span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Total<br>Prompts</span>
             </div>
         </div>
     </div>
@@ -120,11 +126,11 @@ include 'includes/header.php';
 
         <!-- List Section -->
         <div class="lg:col-span-8 space-y-6">
-            <!-- Search & Filter Bar -->
-            <div class="bg-white rounded-3xl border border-slate-200 p-4 shadow-sm flex items-center gap-4">
+            <!-- Search & Filter Bar (Sticky) -->
+            <div class="sticky top-8 z-20 bg-white/80 backdrop-blur-xl rounded-3xl border border-slate-200 p-4 shadow-xl shadow-slate-200/40 flex items-center gap-4 mb-6">
                 <div class="relative flex-grow">
-                    <input type="text" id="categorySearch" placeholder="Search categories..." 
-                        class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium focus:ring-4 focus:ring-primary-500/5 focus:border-primary-400 transition-all">
+                    <input type="text" id="categorySearch" placeholder="Search categories... (Press / to focus)" 
+                        class="w-full pl-10 pr-4 py-3 bg-slate-50/50 border border-slate-100 rounded-2xl text-sm font-medium focus:ring-4 focus:ring-primary-500/5 focus:border-primary-400 transition-all">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
@@ -134,7 +140,7 @@ include 'includes/header.php';
             <!-- Categories Grid -->
             <div id="categoryGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <?php foreach ($categories as $cat): ?>
-                    <div class="category-card group bg-white rounded-3xl border border-slate-200 p-6 hover:border-primary-300 hover:shadow-xl hover:shadow-primary-900/5 transition-all" data-name="<?php echo strtolower(esc($cat['name'])); ?>">
+                    <div class="category-card group bg-white rounded-3xl border border-slate-200 p-6 hover:border-primary-300 hover:shadow-xl hover:shadow-primary-900/5 transition-all duration-300" data-name="<?php echo strtolower(esc($cat['name'])); ?>">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center min-w-0">
                                 <div class="w-12 h-12 shrink-0 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center mr-4 group-hover:bg-primary-600 group-hover:text-white transition-colors duration-300">
@@ -142,10 +148,15 @@ include 'includes/header.php';
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-bold text-slate-900 truncate"><?php echo esc($cat['name']); ?></h3>
+                                <div class="min-w-0">
+                                    <h3 class="text-lg font-bold text-slate-900 truncate"><?php echo esc($cat['name']); ?></h3>
+                                    <span class="inline-flex items-center text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                                        <?php echo $cat['prompt_count']; ?> <?php echo $cat['prompt_count'] == 1 ? 'Prompt' : 'Prompts'; ?>
+                                    </span>
+                                </div>
                             </div>
                             
-                            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                                 <a href="index.php?category_id=<?php echo $cat['id']; ?>" class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all" title="View Prompts">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                                 </a>
@@ -190,6 +201,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const cards = document.querySelectorAll('.category-card');
     const noResults = document.getElementById('noResults');
     const grid = document.getElementById('categoryGrid');
+
+    // Shortcut '/' to focus search
+    document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            searchInput.focus();
+        }
+    });
 
     if (searchInput) {
         searchInput.addEventListener('input', function() {

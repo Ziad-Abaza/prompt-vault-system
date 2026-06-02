@@ -16,8 +16,43 @@
         </footer>
     </div>
 
-    <!-- Vanilla JS for global functionality -->
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-24 right-8 z-[60] flex flex-col gap-3 pointer-events-none"></div>
+
     <script>
+        /**
+         * Global Toast System
+         */
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-slate-900' : 'bg-red-600';
+            const icon = type === 'success' 
+                ? '<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>'
+                : '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>';
+
+            toast.className = `flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl text-white text-sm font-bold transform translate-y-10 opacity-0 transition-all duration-500 pointer-events-auto ${bgColor}`;
+            toast.innerHTML = `
+                <div class="shrink-0">${icon}</div>
+                <div class="whitespace-nowrap">${message}</div>
+            `;
+
+            container.appendChild(toast);
+
+            // Animate In
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+            });
+
+            // Auto Remove
+            setTimeout(() => {
+                toast.classList.add('translate-y-[-20px]', 'opacity-0');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
         // Mobile Menu Toggle
         const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
         const sidebar = document.getElementById('sidebar');
@@ -61,12 +96,14 @@
                         svg.setAttribute('fill', 'currentColor');
                         btnElement.title = 'Unsave Prompt';
                         if (span) span.innerText = 'Saved';
+                        showToast('Saved to your favorites');
                     } else {
                         btnElement.classList.remove('text-red-500', 'bg-red-50', 'border-red-100');
                         btnElement.classList.add('text-slate-400');
                         svg.setAttribute('fill', 'none');
                         btnElement.title = 'Save to My Library';
                         if (span) span.innerText = 'Save';
+                        showToast('Removed from favorites');
                     }
                 } else if (data.error === 'auth_required') {
                     window.location.href = 'login.php';
@@ -83,6 +120,8 @@
                     fetch('track_copy.php?id=' + promptId);
                 }
                 
+                showToast('Prompt copied to clipboard');
+
                 const originalHtml = btnElement ? btnElement.innerHTML : null;
                 if (btnElement) {
                     btnElement.innerHTML = '<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
@@ -91,9 +130,38 @@
                     }, 2000);
                 }
             }).catch(err => {
+                showToast('Failed to copy', 'error');
                 console.error('Failed to copy: ', err);
             });
         }
+    </script>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="fixed bottom-8 right-8 z-50 p-4 bg-slate-900 text-white rounded-2xl shadow-2xl opacity-0 translate-y-10 invisible transition-all duration-500 hover:bg-primary-600 focus:outline-none group">
+        <svg class="w-6 h-6 transform group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+        </svg>
+    </button>
+
+    <script>
+        const backToTopBtn = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                backToTopBtn.classList.remove('opacity-0', 'translate-y-10', 'invisible');
+                backToTopBtn.classList.add('opacity-100', 'translate-y-0', 'visible');
+            } else {
+                backToTopBtn.classList.add('opacity-0', 'translate-y-10', 'invisible');
+                backToTopBtn.classList.remove('opacity-100', 'translate-y-0', 'visible');
+            }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
     </script>
 </body>
 </html>

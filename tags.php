@@ -61,7 +61,13 @@ include 'includes/header.php';
         <div class="flex items-center gap-4">
             <div class="bg-white px-6 py-3 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center">
                 <span class="text-2xl font-black text-slate-900"><?php echo count($tags); ?></span>
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Tags</span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Total<br>Tags</span>
+            </div>
+            <div class="bg-white px-6 py-3 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center">
+                <span class="text-2xl font-black text-indigo-600">
+                    <?php echo array_sum(array_column($tags, 'prompt_count')); ?>
+                </span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Tagged<br>Items</span>
             </div>
         </div>
     </div>
@@ -120,11 +126,11 @@ include 'includes/header.php';
 
         <!-- List Section -->
         <div class="lg:col-span-8 space-y-6">
-            <!-- Search Bar -->
-            <div class="bg-white rounded-3xl border border-slate-200 p-4 shadow-sm flex items-center gap-4">
+            <!-- Search Bar (Sticky) -->
+            <div class="sticky top-8 z-20 bg-white/80 backdrop-blur-xl rounded-3xl border border-slate-200 p-4 shadow-xl shadow-slate-200/40 flex items-center gap-4 mb-6">
                 <div class="relative flex-grow">
-                    <input type="text" id="tagSearch" placeholder="Search tags..." 
-                        class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium focus:ring-4 focus:ring-primary-500/5 focus:border-primary-400 transition-all">
+                    <input type="text" id="tagSearch" placeholder="Search tags... (Press / to focus)" 
+                        class="w-full pl-10 pr-4 py-3 bg-slate-50/50 border border-slate-100 rounded-2xl text-sm font-medium focus:ring-4 focus:ring-primary-500/5 focus:border-primary-400 transition-all">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
@@ -135,10 +141,13 @@ include 'includes/header.php';
             <div id="tagGrid" class="bg-white rounded-[2.5rem] border border-slate-200 p-8 min-h-[400px]">
                 <div class="flex flex-wrap gap-3">
                     <?php foreach ($tags as $tag): ?>
-                        <div class="tag-card group relative flex items-center bg-slate-50 border border-slate-100 rounded-2xl px-5 py-3 hover:border-primary-400 hover:bg-white hover:shadow-xl hover:shadow-primary-900/5 transition-all" data-name="<?php echo strtolower(esc($tag['name'])); ?>">
-                            <a href="index.php?tag_id=<?php echo $tag['id']; ?>" class="text-slate-800 font-bold text-sm mr-10 transition-colors group-hover:text-primary-600">#<?php echo esc($tag['name']); ?></a>
+                        <div class="tag-card group relative flex items-center bg-slate-50 border border-slate-100 rounded-2xl px-5 py-3 hover:border-primary-400 hover:bg-white hover:shadow-xl hover:shadow-primary-900/5 transition-all duration-300" data-name="<?php echo strtolower(esc($tag['name'])); ?>">
+                            <div class="flex flex-col min-w-0 mr-12">
+                                <a href="index.php?tag_id=<?php echo $tag['id']; ?>" class="text-slate-800 font-bold text-sm transition-colors group-hover:text-primary-600 truncate">#<?php echo esc($tag['name']); ?></a>
+                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-tighter mt-0.5"><?php echo $tag['prompt_count']; ?> items</span>
+                            </div>
                             
-                            <div class="absolute right-2 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="absolute right-2 flex items-center space-x-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                                 <a href="tags.php?edit=<?php echo $tag['id']; ?>" class="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all" title="Edit">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                 </a>
@@ -179,7 +188,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('tagSearch');
     const cards = document.querySelectorAll('.tag-card');
     const noResults = document.getElementById('noResults');
-    const tagGrid = document.querySelector('#tagGrid .flex-wrap');
+    const tagGridContent = document.querySelector('#tagGrid .flex-wrap');
+
+    // Shortcut '/' to focus search
+    document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            searchInput.focus();
+        }
+    });
 
     if (searchInput) {
         searchInput.addEventListener('input', function() {
@@ -198,10 +215,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (visibleCount === 0 && query !== '') {
                 noResults.classList.remove('hidden');
-                tagGrid.classList.add('hidden');
+                tagGridContent.classList.add('hidden');
             } else {
                 noResults.classList.add('hidden');
-                tagGrid.classList.remove('hidden');
+                tagGridContent.classList.remove('hidden');
             }
         });
     }

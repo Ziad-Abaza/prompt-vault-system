@@ -32,7 +32,11 @@ function generate_unique_slug($table, $text, $exclude_id = null) {
 // --- Categories ---
 
 function get_categories() {
-    return query("SELECT * FROM categories WHERE user_id = ? ORDER BY name ASC", [get_current_user_id()])->fetchAll();
+    $user_id = get_current_user_id();
+    return query("SELECT c.*, (SELECT COUNT(*) FROM prompts p WHERE p.category_id = c.id AND p.user_id = ?) as prompt_count 
+                 FROM categories c 
+                 WHERE c.user_id = ? 
+                 ORDER BY c.name ASC", [$user_id, $user_id])->fetchAll();
 }
 
 function get_category($id) {
@@ -60,7 +64,11 @@ function delete_category($id) {
 // --- Tags ---
 
 function get_tags() {
-    return query("SELECT * FROM tags WHERE user_id = ? ORDER BY name ASC", [get_current_user_id()])->fetchAll();
+    $user_id = get_current_user_id();
+    return query("SELECT t.*, (SELECT COUNT(*) FROM prompt_tags pt JOIN prompts p ON pt.prompt_id = p.id WHERE pt.tag_id = t.id AND p.user_id = ?) as prompt_count 
+                 FROM tags t 
+                 WHERE t.user_id = ? 
+                 ORDER BY t.name ASC", [$user_id, $user_id])->fetchAll();
 }
 
 function get_tag($id) {
