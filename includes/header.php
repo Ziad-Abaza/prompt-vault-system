@@ -14,13 +14,7 @@
     
     // Canonical URL Logic
     if (!isset($canonical_url)) {
-        $app_url = rtrim(Env::get('APP_URL', ''), '/');
-        if (!empty($app_url)) {
-            $canonical_url = $app_url . $_SERVER['REQUEST_URI'];
-        } else {
-            $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");
-            $canonical_url = $protocol . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-        }
+        $canonical_url = APP_URL_BASE . $_SERVER['REQUEST_URI'];
     }
     ?>
 
@@ -34,7 +28,7 @@
     <?php if (isset($next_page_url)): ?>
         <link rel="next" href="<?php echo esc($next_page_url); ?>">
     <?php endif; ?>
-    <link rel="manifest" href="site.webmanifest">
+    <link rel="manifest" href="<?php echo APP_URL_BASE; ?>/site.webmanifest">
     <meta name="theme-color" content="#0e91e9">
     <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
 
@@ -48,10 +42,7 @@
     $og_image = $og_image ?? 'assets/logo.png';
     // Ensure absolute URL for OG image
     if (!str_starts_with($og_image, 'http')) {
-        $app_url = rtrim(Env::get('APP_URL', ''), '/');
-        if (!empty($app_url)) {
-            $og_image = $app_url . '/' . ltrim($og_image, '/');
-        }
+        $og_image = APP_URL_BASE . '/' . ltrim($og_image, '/');
     }
     ?>
     <meta property="og:image" content="<?php echo esc($og_image); ?>">
@@ -66,30 +57,28 @@
     <!-- Structured Data -->
     <script type="application/ld+json">
         <?php
-        $app_url_base = rtrim(Env::get('APP_URL', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]"), '/');
-        
         $schema = [
             "@context" => "https://schema.org",
             "@graph" => [
                 [
                     "@type" => "WebSite",
-                    "@id" => $app_url_base . "/#website",
+                    "@id" => APP_URL_BASE . "/#website",
                     "name" => APP_NAME,
-                    "url" => $app_url_base . "/",
+                    "url" => APP_URL_BASE . "/",
                     "potentialAction" => [
                         "@type" => "SearchAction",
-                        "target" => $app_url_base . "/public_prompts.php?search={search_term_string}",
+                        "target" => APP_URL_BASE . "/public_prompts.php?search={search_term_string}",
                         "query-input" => "required name=search_term_string"
                     ]
                 ],
                 [
                     "@type" => "Organization",
-                    "@id" => $app_url_base . "/#organization",
+                    "@id" => APP_URL_BASE . "/#organization",
                     "name" => APP_NAME,
-                    "url" => $app_url_base . "/",
+                    "url" => APP_URL_BASE . "/",
                     "logo" => [
                         "@type" => "ImageObject",
-                        "url" => $app_url_base . "/assets/logo.png"
+                        "url" => APP_URL_BASE . "/assets/logo.png"
                     ]
                 ]
             ]
@@ -104,7 +93,7 @@
             foreach ($breadcrumbs as $i => $bc) {
                 $item_url = $bc['url'];
                 if (!str_starts_with($item_url, 'http')) {
-                    $item_url = $app_url_base . '/' . ltrim($item_url, '/');
+                    $item_url = APP_URL_BASE . '/' . ltrim($item_url, '/');
                 }
                 
                 $breadcrumbList['itemListElement'][] = [
@@ -251,23 +240,23 @@
 
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-56 bg-white border-r border-slate-200 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out md:sticky md:top-0 h-screen overflow-y-auto">
         <div class="p-4">
-            <a href="<?php echo $app_url_base; ?>/index.php" class="text-xl font-bold text-primary-600 tracking-tight block mb-6 px-2"><?php echo APP_NAME; ?></a>
+            <a href="<?php echo APP_URL_BASE; ?>/index.php" class="text-xl font-bold text-primary-600 tracking-tight block mb-6 px-2"><?php echo APP_NAME; ?></a>
 
             <nav class="space-y-0.5">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 px-2">Discovery</p>
-                <a href="<?php echo $app_url_base; ?>/index.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                <a href="<?php echo APP_URL_BASE; ?>/index.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                     <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V10"></path>
                     </svg>
                     Home
                 </a>
-                <a href="<?php echo $app_url_base; ?>/public_prompts.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'public_prompts.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'public_prompts.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                     <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
                     </svg>
                     Explore Hub
                 </a>
-                <a href="<?php echo $app_url_base; ?>/search.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'search.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                <a href="<?php echo APP_URL_BASE; ?>/search.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'search.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                     <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
@@ -276,45 +265,58 @@
 
                 <?php if (is_logged_in()): ?>
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-6 mb-1 px-2">Private Vault</p>
-                    <a href="<?php echo $app_url_base; ?>/dashboard.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <a href="<?php echo APP_URL_BASE; ?>/dashboard.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                         <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                         </svg>
                         My Prompts
                     </a>
-                    <a href="<?php echo $app_url_base; ?>/favorites.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'favorites.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <a href="<?php echo APP_URL_BASE; ?>/favorites.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'favorites.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                         <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                         Favorites
                     </a>
-                    <a href="<?php echo $app_url_base; ?>/categories.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'categories.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <a href="<?php echo APP_URL_BASE; ?>/following.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'following.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                        <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        Following
+                    </a>
+                    <a href="<?php echo APP_URL_BASE; ?>/categories.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'categories.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                         <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
                         </svg>
                         Categories
                     </a>
-                    <a href="<?php echo $app_url_base; ?>/tags.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'tags.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <a href="<?php echo APP_URL_BASE; ?>/tags.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'tags.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                         <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                         </svg>
                         Tags
                     </a>
-                    <a href="<?php echo $app_url_base; ?>/collections.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'collections.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                    <a href="<?php echo APP_URL_BASE; ?>/collections.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'collections.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
                         <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                         </svg>
                         Collections
                     </a>
+                    <a href="<?php echo APP_URL_BASE; ?>/settings.php" class="flex items-center px-2 py-1.5 text-xs font-bold rounded-lg <?php echo basename($_SERVER['PHP_SELF']) == 'settings.php' ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'; ?>">
+                        <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        Settings
+                    </a>
 
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-6 mb-1 px-2">Data</p>
-                    <a href="<?php echo $app_url_base; ?>/export.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900">
+                    <a href="<?php echo APP_URL_BASE; ?>/export.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900">
                         <svg class="w-4 h-4 mr-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                         </svg>
                         Export
                     </a>
-                    <a href="<?php echo $app_url_base; ?>/import.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900">
+                    <a href="<?php echo APP_URL_BASE; ?>/import.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-slate-600 rounded-lg hover:bg-slate-50 hover:text-slate-900">
                         <svg class="w-4 h-4 mr-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                         </svg>
@@ -334,7 +336,7 @@
                         <p class="text-xs font-bold text-slate-900 truncate"><?php echo esc(get_current_username()); ?></p>
                     </div>
                 </div>
-                <a href="<?php echo $app_url_base; ?>/logout.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-red-600 rounded-lg hover:bg-red-50">
+                <a href="<?php echo APP_URL_BASE; ?>/logout.php" class="flex items-center px-2 py-1.5 text-xs font-bold text-red-600 rounded-lg hover:bg-red-50">
                     <svg class="w-4 h-4 mr-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                     </svg>
@@ -342,10 +344,10 @@
                 </a>
             <?php else: ?>
                 <div class="flex flex-col gap-1 px-2">
-                    <a href="<?php echo $app_url_base; ?>/login.php" class="flex items-center py-1.5 text-xs font-bold text-primary-600 hover:text-primary-700">
+                    <a href="<?php echo APP_URL_BASE; ?>/login.php" class="flex items-center py-1.5 text-xs font-bold text-primary-600 hover:text-primary-700">
                         Sign In
                     </a>
-                    <a href="<?php echo $app_url_base; ?>/register.php" class="flex items-center py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900">
+                    <a href="<?php echo APP_URL_BASE; ?>/register.php" class="flex items-center py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900">
                         Create Account
                     </a>
                 </div>

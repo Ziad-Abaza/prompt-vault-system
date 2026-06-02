@@ -10,6 +10,9 @@ Env::load(__DIR__ . '/.env');
 // Define global application name
 define('APP_NAME', Env::get('APP_NAME', 'Atlas Library'));
 
+// Define global base URL for absolute paths
+define('APP_URL_BASE', rtrim(Env::get('APP_URL', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]"), '/'));
+
 // Error reporting configuration
 $debug = Env::get('APP_DEBUG', false);
 if ($debug) {

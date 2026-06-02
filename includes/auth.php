@@ -112,7 +112,7 @@ function require_login() {
     }
 
     $current_page = basename($_SERVER['PHP_SELF']);
-    $public_pages = ['login.php', 'register.php', 'sitemap.php', 'robots.php', 'public_prompts.php', 'public_category.php', 'public_tag.php', 'public_collection.php', 'about.php', 'privacy.php', 'terms.php', 'index.php', 'public_profile.php', 'search.php', 'ajax_save_prompt.php'];
+    $public_pages = ['login.php', 'register.php', 'sitemap.php', 'robots.php', 'public_prompts.php', 'public_category.php', 'public_tag.php', 'public_collection.php', 'about.php', 'privacy.php', 'terms.php', 'index.php', 'public_profile.php', 'search.php', 'ajax_save_prompt.php', 'public_collections.php', 'public_categories.php', 'leaderboards.php', 'ajax_toggle_follow.php'];
     
     if (in_array($current_page, $public_pages)) {
         return;

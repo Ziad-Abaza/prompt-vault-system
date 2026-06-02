@@ -31,10 +31,10 @@ $total_pages = ceil($total_prompts / $per_page);
 
 $page_title = "{$category['name']} Prompts — Free AI Prompts Library";
 $meta_description = "Browse {$total_prompts} free {$category['name']} prompts for AI tools. Copy and use the best curated {$category['name']} templates for ChatGPT, Claude, and Midjourney.";
-$canonical_url = rtrim(Env::get('APP_URL', ''), '/') . '/prompts/' . $category['slug'];
+$canonical_url = APP_URL_BASE . '/prompts/' . $category['slug'];
 
 // Pagination URLs for rel="prev/next"
-$base_pagination_url = rtrim(Env::get('APP_URL', ''), '/') . '/prompts/' . $category['slug'];
+$base_pagination_url = APP_URL_BASE . '/prompts/' . $category['slug'];
 $prev_page_url = ($page > 1) ? $base_pagination_url . '?page=' . ($page - 1) : null;
 $next_page_url = ($page < $total_pages) ? $base_pagination_url . '?page=' . ($page + 1) : null;
 
@@ -52,15 +52,15 @@ foreach ($prompts as $i => $p) {
     $page_schema['itemListElement'][] = [
         "@type" => "ListItem",
         "position" => $i + 1 + ($offset),
-        "url" => rtrim(Env::get('APP_URL', ''), '/') . '/prompt.php?id=' . $p['id'] . $slug_part
+        "url" => APP_URL_BASE . '/prompt.php?id=' . $p['id'] . $slug_part
     ];
 }
 
 // Breadcrumbs
 $breadcrumbs = [
-    ['name' => 'Home', 'url' => 'public_prompts.php'],
-    ['name' => 'Prompts', 'url' => 'public_prompts.php'],
-    ['name' => $category['name'], 'url' => "prompts/{$category['slug']}"]
+    ['name' => 'Home', 'url' => APP_URL_BASE . '/public_prompts.php'],
+    ['name' => 'Prompts', 'url' => APP_URL_BASE . '/public_prompts.php'],
+    ['name' => $category['name'], 'url' => APP_URL_BASE . "/prompts/{$category['slug']}"]
 ];
 
 include 'includes/header.php';
@@ -71,7 +71,7 @@ include 'includes/header.php';
     <nav class="flex mb-8" aria-label="Breadcrumb">
         <ol class="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest">
             <li>
-                <a href="public_prompts.php" class="text-slate-400 hover:text-primary-600 transition-colors">Home</a>
+                <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php" class="text-slate-400 hover:text-primary-600 transition-colors">Home</a>
             </li>
             <li>
                 <svg class="h-3 w-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,7 +79,7 @@ include 'includes/header.php';
                 </svg>
             </li>
             <li>
-                <a href="public_prompts.php" class="text-slate-400 hover:text-primary-600 transition-colors">Prompts</a>
+                <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php" class="text-slate-400 hover:text-primary-600 transition-colors">Prompts</a>
             </li>
             <li>
                 <svg class="h-3 w-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,7 +109,7 @@ include 'includes/header.php';
             </div>
             <h3 class="text-xl font-bold text-slate-900 mb-1">No prompts found in this category</h3>
             <p class="text-slate-500 text-sm font-medium max-w-xs mx-auto mb-6">We're still growing our collection. Check back soon for new additions!</p>
-            <a href="public_prompts.php" class="px-5 py-2.5 bg-primary-600 text-white text-sm font-bold rounded-lg hover:bg-primary-700 transition-colors">Explore All Prompts</a>
+            <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php" class="px-5 py-2.5 bg-primary-600 text-white text-sm font-bold rounded-lg hover:bg-primary-700 transition-colors">Explore All Prompts</a>
         </div>
     <?php else: ?>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -123,13 +123,13 @@ include 'includes/header.php';
             <div class="mt-12 mb-8 flex justify-center">
                 <nav class="flex items-center space-x-2">
                     <?php if ($page > 1): ?>
-                        <a href="<?php echo $app_url_base; ?>/prompts/<?php echo $category['slug']; ?>?page=<?php echo $page - 1; ?>" class="px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold text-[10px] uppercase tracking-wider hover:bg-slate-50 transition-all">Previous</a>
+                        <a href="<?php echo APP_URL_BASE; ?>/prompts/<?php echo $category['slug']; ?>?page=<?php echo $page - 1; ?>" class="px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold text-[10px] uppercase tracking-wider hover:bg-slate-50 transition-all">Previous</a>
                     <?php endif; ?>
                     
                     <span class="px-4 py-2 text-slate-400 font-bold text-[10px] uppercase tracking-wider">Page <?php echo $page; ?> of <?php echo $total_pages; ?></span>
 
                     <?php if ($page < $total_pages): ?>
-                        <a href="<?php echo $app_url_base; ?>/prompts/<?php echo $category['slug']; ?>?page=<?php echo $page + 1; ?>" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-[10px] uppercase tracking-wider hover:bg-primary-600 transition-all shadow-lg shadow-slate-900/20">Next Page</a>
+                        <a href="<?php echo APP_URL_BASE; ?>/prompts/<?php echo $category['slug']; ?>?page=<?php echo $page + 1; ?>" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-[10px] uppercase tracking-wider hover:bg-primary-600 transition-all shadow-lg shadow-slate-900/20">Next Page</a>
                     <?php endif; ?>
                 </nav>
             </div>

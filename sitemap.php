@@ -37,7 +37,11 @@ if ($app_url) {
 
 // 1. Static Public Pages
 $static_pages = [
-    ['url' => 'public_prompts.php', 'priority' => '1.0', 'changefreq' => 'daily'],
+    ['url' => 'index.php', 'priority' => '1.0', 'changefreq' => 'daily'],
+    ['url' => 'public_prompts.php', 'priority' => '0.9', 'changefreq' => 'daily'],
+    ['url' => 'public_collections.php', 'priority' => '0.9', 'changefreq' => 'daily'],
+    ['url' => 'public_categories.php', 'priority' => '0.8', 'changefreq' => 'weekly'],
+    ['url' => 'leaderboards.php', 'priority' => '0.8', 'changefreq' => 'daily'],
     ['url' => 'about.php', 'priority' => '0.8', 'changefreq' => 'monthly'],
     ['url' => 'privacy.php', 'priority' => '0.3', 'changefreq' => 'yearly'],
     ['url' => 'terms.php', 'priority' => '0.3', 'changefreq' => 'yearly'],
@@ -88,6 +92,16 @@ foreach ($collections as $coll) {
     echo '    <loc>' . htmlspecialchars($base_url . 'collections/' . $coll['slug']) . '</loc>' . PHP_EOL;
     echo '    <changefreq>weekly</changefreq>' . PHP_EOL;
     echo '    <priority>0.7</priority>' . PHP_EOL;
+    echo '  </url>' . PHP_EOL;
+}
+
+// 6. Public Author Profiles
+$authors = query("SELECT DISTINCT u.* FROM users u JOIN prompts p ON u.id = p.user_id WHERE p.is_public = 1")->fetchAll();
+foreach ($authors as $author) {
+    echo '  <url>' . PHP_EOL;
+    echo '    <loc>' . htmlspecialchars($base_url . 'u/' . $author['slug']) . '</loc>' . PHP_EOL;
+    echo '    <changefreq>weekly</changefreq>' . PHP_EOL;
+    echo '    <priority>0.5</priority>' . PHP_EOL;
     echo '  </url>' . PHP_EOL;
 }
 

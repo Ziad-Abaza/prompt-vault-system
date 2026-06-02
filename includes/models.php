@@ -5,6 +5,53 @@
  */
 
 /**
+ * Toggle follow status for a user.
+ */
+function toggle_user_follow($following_id) {
+    $follower_id = get_current_user_id();
+    if (!$follower_id || $follower_id === $following_id) return false;
+
+    $existing = query("SELECT * FROM user_follows WHERE follower_id = ? AND following_id = ?", [$follower_id, $following_id])->fetch();
+    if ($existing) {
+        query("DELETE FROM user_follows WHERE follower_id = ? AND following_id = ?", [$follower_id, $following_id]);
+        return 'unfollowed';
+    } else {
+        query("INSERT INTO user_follows (follower_id, following_id) VALUES (?, ?)", [$follower_id, $following_id]);
+        return 'followed';
+    }
+}
+
+/**
+ * Check if the current user is following another user.
+ */
+function is_following($following_id) {
+    $follower_id = get_current_user_id();
+    if (!$follower_id) return false;
+    $exists = query("SELECT 1 FROM user_follows WHERE follower_id = ? AND following_id = ?", [$follower_id, $following_id])->fetch();
+    return (bool)$exists;
+}
+
+/**
+ * Get follower count for a user.
+ */
+function get_followers_count($user_id) {
+    return query("SELECT COUNT(*) FROM user_follows WHERE following_id = ?", [$user_id])->fetchColumn();
+}
+
+/**
+ * Get list of authors the current user follows.
+ */
+function get_followed_authors() {
+    $user_id = get_current_user_id();
+    if (!$user_id) return [];
+    
+    return query("SELECT u.* FROM users u 
+                  JOIN user_follows uf ON u.id = uf.following_id 
+                  WHERE uf.follower_id = ? 
+                  ORDER BY u.username ASC", [$user_id])->fetchAll();
+}
+
+/**
  * Generate a unique slug for a given table.
  */
 function generate_unique_slug($table, $text, $exclude_id = null) {
@@ -91,6 +138,45 @@ function update_tag($id, $name) {
 
 function delete_tag($id) {
     return query("DELETE FROM tags WHERE id = ? AND user_id = ?", [$id, get_current_user_id()]);
+}
+
+/**
+ * Get latest public activity (new prompts and saves).
+ */
+function get_latest_activity($limit = 20) {
+    // 1. Get latest public prompts
+    $prompts = query("SELECT 'prompt' as type, p.id, p.title as label, p.slug, p.created_at, u.username as author_name, u.slug as author_slug
+                      FROM prompts p
+                      JOIN users u ON p.user_id = u.id
+                      WHERE p.is_public = 1
+                      ORDER BY p.created_at DESC LIMIT ?", [$limit])->fetchAll();
+
+    // 2. Get latest public saves (joined with prompt data to ensure privacy check)
+    $saves = query("SELECT 'save' as type, usp.prompt_id as id, p.title as label, p.slug, usp.created_at, u_saved.username as author_name, u_saved.slug as author_slug
+                    FROM user_saved_prompts usp
+                    JOIN prompts p ON usp.prompt_id = p.id
+                    JOIN users u_saved ON usp.user_id = u_saved.id
+                    WHERE p.is_public = 1
+                    ORDER BY usp.created_at DESC LIMIT ?", [$limit])->fetchAll();
+
+    // Merge and sort by date
+    $activity = array_merge($prompts, $saves);
+    usort($activity, fn($a, $b) => strtotime($b['created_at']) <=> strtotime($a['created_at']));
+    
+    return array_slice($activity, 0, $limit);
+}
+
+/**
+ * Update user profile information.
+ */
+function update_user_profile($user_id, $data) {
+    return query("UPDATE users SET bio = ?, twitter_handle = ?, github_handle = ?, website_url = ? WHERE id = ?", [
+        $data['bio'] ?? null,
+        $data['twitter_handle'] ?? null,
+        $data['github_handle'] ?? null,
+        $data['website_url'] ?? null,
+        $user_id
+    ]);
 }
 
 /**
@@ -227,7 +313,9 @@ function get_prompts($filters = []) {
 
 function get_prompt($id) {
     $user_id = get_current_user_id();
-    $prompt = query("SELECT p.*, c.name as category_name, c.slug as category_slug, u.username as author_name 
+    $prompt = query("SELECT p.*, c.name as category_name, c.slug as category_slug, 
+                            u.username as author_name, u.slug as author_slug, u.bio as author_bio, 
+                            u.twitter_handle, u.github_handle, u.website_url as author_website
                      FROM prompts p 
                      LEFT JOIN categories c ON p.category_id = c.id 
                      LEFT JOIN users u ON p.user_id = u.id

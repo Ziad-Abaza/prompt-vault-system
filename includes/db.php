@@ -53,6 +53,15 @@ function init_database($pdo) {
         FOREIGN KEY (prompt_id) REFERENCES prompts(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS user_follows (
+        follower_id INTEGER,
+        following_id INTEGER,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (follower_id, following_id),
+        FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (following_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
     CREATE INDEX IF NOT EXISTS idx_prompts_title ON prompts(title);
     CREATE INDEX IF NOT EXISTS idx_prompts_category ON prompts(category_id);
     CREATE INDEX IF NOT EXISTS idx_prompts_user ON prompts(user_id);
@@ -77,6 +86,7 @@ function migrate_database($pdo) {
 
     // Add slug column to users if missing
     $user_columns = $pdo->query("PRAGMA table_info(users)")->fetchAll(PDO::FETCH_COLUMN, 1);
+    
     if (!in_array('slug', $user_columns)) {
         try {
             $pdo->exec("ALTER TABLE users ADD COLUMN slug TEXT;");
@@ -90,13 +100,35 @@ function migrate_database($pdo) {
                 $count = 1;
                 while (true) {
                     $stmt = $pdo->prepare("SELECT id FROM users WHERE slug = ? AND id != ?");
-                    $stmt->execute([$slug, $item['id']]);
+                    $stmt->execute([slugify($slug), $item['id']]);
                     if (!$stmt->fetch()) break;
                     $count++;
                     $slug = $base_slug . '-' . $count;
                 }
                 $pdo->prepare("UPDATE users SET slug = ? WHERE id = ?")->execute([$slug, $item['id']]);
             }
+        } catch (PDOException $e) {}
+    }
+
+    // Add profile columns to users
+    if (!in_array('bio', $user_columns)) {
+        try {
+            $pdo->exec("ALTER TABLE users ADD COLUMN bio TEXT;");
+        } catch (PDOException $e) {}
+    }
+    if (!in_array('twitter_handle', $user_columns)) {
+        try {
+            $pdo->exec("ALTER TABLE users ADD COLUMN twitter_handle TEXT;");
+        } catch (PDOException $e) {}
+    }
+    if (!in_array('github_handle', $user_columns)) {
+        try {
+            $pdo->exec("ALTER TABLE users ADD COLUMN github_handle TEXT;");
+        } catch (PDOException $e) {}
+    }
+    if (!in_array('website_url', $user_columns)) {
+        try {
+            $pdo->exec("ALTER TABLE users ADD COLUMN website_url TEXT;");
         } catch (PDOException $e) {}
     }
 

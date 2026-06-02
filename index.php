@@ -32,9 +32,14 @@ $featured_collections = query("SELECT c.*, (SELECT COUNT(*) FROM prompt_collecti
 // 4. Top Contributors
 $top_authors = get_top_authors(5);
 
+// Global Stats
+$total_public_prompts = query("SELECT COUNT(*) FROM prompts WHERE is_public = 1")->fetchColumn();
+$total_users = query("SELECT COUNT(*) FROM users")->fetchColumn();
+$total_copies = query("SELECT SUM(copy_count) FROM prompts WHERE is_public = 1")->fetchColumn();
+
 $page_title = "Master Your Prompt Engineering";
 $meta_description = "Atlas Library is the professional workspace to organize, discover, and share AI prompts. Build your private vault or explore our community hub.";
-$canonical_url = rtrim(Env::get('APP_URL', ''), '/') . '/';
+$canonical_url = APP_URL_BASE . '/';
 
 include 'includes/header.php';
 ?>
@@ -53,10 +58,10 @@ include 'includes/header.php';
             
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <?php if (is_logged_in()): ?>
-                    <a href="dashboard.php" class="btn-primary px-12 py-5 text-lg">Go to My Dashboard</a>
+                    <a href="<?php echo APP_URL_BASE; ?>/dashboard.php" class="btn-primary px-12 py-5 text-lg">Go to My Dashboard</a>
                 <?php else: ?>
-                    <a href="register.php" class="btn-primary px-12 py-5 text-lg">Start Your Private Vault</a>
-                    <a href="public_prompts.php" class="btn-secondary px-12 py-5 text-lg">Explore Community Hub</a>
+                    <a href="<?php echo APP_URL_BASE; ?>/register.php" class="btn-primary px-12 py-5 text-lg">Start Your Private Vault</a>
+                    <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php" class="btn-secondary px-12 py-5 text-lg">Explore Community Hub</a>
                 <?php endif; ?>
             </div>
         </div>
@@ -97,7 +102,7 @@ include 'includes/header.php';
                 <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Trending <span class="text-primary-600">Now</span></h2>
                 <p class="text-slate-500 font-medium">The most effective prompts being used by the community today.</p>
             </div>
-            <a href="public_prompts.php?sort=trending" class="text-sm font-bold text-primary-600 hover:text-primary-700 uppercase tracking-widest flex items-center transition-all group">
+            <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php?sort=trending" class="text-sm font-bold text-primary-600 hover:text-primary-700 uppercase tracking-widest flex items-center transition-all group">
                 View Trending
                 <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             </a>
@@ -116,7 +121,7 @@ include 'includes/header.php';
                 <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Most <span class="text-primary-600">Popular</span></h2>
                 <p class="text-slate-500 font-medium">The all-time community favorites with the highest copy counts.</p>
             </div>
-            <a href="public_prompts.php?sort=popular" class="text-sm font-bold text-primary-600 hover:text-primary-700 uppercase tracking-widest flex items-center transition-all group">
+            <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php?sort=popular" class="text-sm font-bold text-primary-600 hover:text-primary-700 uppercase tracking-widest flex items-center transition-all group">
                 View Popular
                 <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             </a>
@@ -140,7 +145,7 @@ include 'includes/header.php';
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <?php foreach ($featured_collections as $coll): ?>
-                <a href="collections/<?php echo $coll['slug']; ?>" class="group block bg-white p-8 rounded-[2.5rem] border border-slate-200 hover:border-primary-400 hover:shadow-2xl hover:shadow-primary-900/5 transition-all">
+                <a href="<?php echo APP_URL_BASE; ?>/collections/<?php echo $coll['slug']; ?>" class="group block bg-white p-8 rounded-[2.5rem] border border-slate-200 hover:border-primary-400 hover:shadow-2xl hover:shadow-primary-900/5 transition-all">
                     <div class="flex justify-between items-start mb-6">
                         <div class="w-12 h-12 bg-slate-50 text-slate-400 group-hover:bg-primary-600 group-hover:text-white rounded-2xl flex items-center justify-center transition-colors duration-300">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
@@ -163,7 +168,7 @@ include 'includes/header.php';
                 <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Top <span class="text-primary-600">Contributors</span></h2>
                 <p class="text-slate-500 font-medium">The engineers driving the community forward with high-impact prompts.</p>
             </div>
-            <a href="leaderboards.php" class="text-sm font-bold text-primary-600 hover:text-primary-700 uppercase tracking-widest flex items-center transition-all group">
+            <a href="<?php echo APP_URL_BASE; ?>/leaderboards.php" class="text-sm font-bold text-primary-600 hover:text-primary-700 uppercase tracking-widest flex items-center transition-all group">
                 View Leaderboards
                 <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             </a>
@@ -171,7 +176,7 @@ include 'includes/header.php';
         
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             <?php foreach ($top_authors as $index => $author): ?>
-                <a href="u/<?php echo $author['slug']; ?>" class="group bg-white p-6 rounded-[2rem] border border-slate-200 hover:border-primary-400 hover:shadow-xl hover:shadow-primary-900/5 transition-all duration-300 text-center relative overflow-hidden">
+                <a href="<?php echo APP_URL_BASE; ?>/u/<?php echo $author['slug']; ?>" class="group bg-white p-6 rounded-[2rem] border border-slate-200 hover:border-primary-400 hover:shadow-xl hover:shadow-primary-900/5 transition-all duration-300 text-center relative overflow-hidden">
                     <!-- Rank Badge -->
                     <div class="absolute top-4 left-4 w-6 h-6 rounded-lg bg-slate-50 text-slate-400 group-hover:bg-primary-600 group-hover:text-white flex items-center justify-center text-[10px] font-black transition-colors">
                         #<?php echo $index + 1; ?>
@@ -199,6 +204,24 @@ include 'includes/header.php';
         </div>
     </div>
 
+    <!-- Community Impact Stats -->
+    <div class="mb-32">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm text-center">
+                <span class="block text-4xl font-black text-slate-900 mb-2"><?php echo number_format($total_public_prompts); ?>+</span>
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Public Prompts</span>
+            </div>
+            <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm text-center">
+                <span class="block text-4xl font-black text-primary-600 mb-2"><?php echo number_format($total_users); ?>+</span>
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Active Engineers</span>
+            </div>
+            <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm text-center">
+                <span class="block text-4xl font-black text-slate-900 mb-2"><?php echo number_format($total_copies); ?>+</span>
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Global Utility</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Final CTA -->
     <div class="bg-slate-900 rounded-[3rem] p-12 md:p-20 text-center text-white relative overflow-hidden mb-20">
         <div class="relative z-10">
@@ -207,8 +230,8 @@ include 'includes/header.php';
                 Join thousands of prompt engineers who are organizing their workflow with Atlas Library.
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="register.php" class="btn-primary border-none px-12 py-5 text-lg">Create Free Account</a>
-                <a href="login.php" class="px-12 py-5 text-lg font-bold text-white hover:text-primary-400 transition-colors">Sign In to Vault</a>
+                <a href="<?php echo APP_URL_BASE; ?>/register.php" class="btn-primary border-none px-12 py-5 text-lg">Create Free Account</a>
+                <a href="<?php echo APP_URL_BASE; ?>/login.php" class="px-12 py-5 text-lg font-bold text-white hover:text-primary-400 transition-colors">Sign In to Vault</a>
             </div>
         </div>
         <div class="absolute -bottom-20 -right-20 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl"></div>

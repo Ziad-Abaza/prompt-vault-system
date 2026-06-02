@@ -75,10 +75,10 @@ if (!empty($filters['category_id'])) {
     }
 }
 
-$canonical_url = rtrim(Env::get('APP_URL', ''), '/') . '/public_prompts.php';
+$canonical_url = APP_URL_BASE . '/public_prompts.php';
 
 // Pagination URLs for rel="prev/next"
-$base_pagination_url = rtrim(Env::get('APP_URL', ''), '/') . '/public_prompts.php';
+$base_pagination_url = APP_URL_BASE . '/public_prompts.php';
 $query_params = $_GET;
 unset($query_params['page']);
 
@@ -99,7 +99,7 @@ foreach ($prompts as $i => $p) {
     $page_schema['itemListElement'][] = [
         "@type" => "ListItem",
         "position" => $i + 1 + ($offset),
-        "url" => rtrim(Env::get('APP_URL', ''), '/') . '/prompt.php?id=' . $p['id'] . $slug_part
+        "url" => APP_URL_BASE . '/prompt.php?id=' . $p['id'] . $slug_part
     ];
 }
 
@@ -126,9 +126,9 @@ include 'includes/header.php';
             </form>
             
             <div class="flex items-center bg-white rounded-xl border border-slate-200 p-1">
-                <a href="public_prompts.php?sort=trending" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all <?php echo $filters['sort'] === 'trending' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'; ?>">Trending</a>
-                <a href="public_prompts.php?sort=newest" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all <?php echo $filters['sort'] === 'newest' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'; ?>">New</a>
-                <a href="public_prompts.php?sort=popular" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all <?php echo $filters['sort'] === 'popular' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'; ?>">Popular</a>
+                <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php?sort=trending" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all <?php echo $filters['sort'] === 'trending' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'; ?>">Trending</a>
+                <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php?sort=newest" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all <?php echo $filters['sort'] === 'newest' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'; ?>">New</a>
+                <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php?sort=popular" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all <?php echo $filters['sort'] === 'popular' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'; ?>">Popular</a>
             </div>
         </div>
     </div>
@@ -136,11 +136,11 @@ include 'includes/header.php';
     <!-- Horizontal Category Navigation -->
     <div class="relative mb-8">
         <div class="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
-            <a href="public_prompts.php" class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all <?php echo empty($filters['category_id']) ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20' : 'bg-white border border-slate-200 text-slate-500 hover:border-primary-400 hover:text-primary-600'; ?>">
+            <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php" class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all <?php echo empty($filters['category_id']) ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20' : 'bg-white border border-slate-200 text-slate-500 hover:border-primary-400 hover:text-primary-600'; ?>">
                 All
             </a>
             <?php foreach ($categories as $cat): ?>
-                <a href="public_prompts.php?category_id=<?php echo $cat['id']; ?>" class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all <?php echo $filters['category_id'] == $cat['id'] ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20' : 'bg-white border border-slate-200 text-slate-500 hover:border-primary-400 hover:text-primary-600'; ?>">
+                <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php?category_id=<?php echo $cat['id']; ?>" class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all <?php echo $filters['category_id'] == $cat['id'] ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20' : 'bg-white border border-slate-200 text-slate-500 hover:border-primary-400 hover:text-primary-600'; ?>">
                     <?php echo esc($cat['name']); ?>
                 </a>
             <?php endforeach; ?>
@@ -155,7 +155,7 @@ include 'includes/header.php';
             </div>
             <h3 class="text-xl font-bold text-slate-900 mb-1">No results found</h3>
             <p class="text-slate-500 text-sm font-medium max-w-xs mx-auto mb-6">Try exploring other categories or search terms.</p>
-            <a href="public_prompts.php" class="px-5 py-2.5 bg-primary-600 text-white text-sm font-bold rounded-lg hover:bg-primary-700 transition-colors">Return to Feed</a>
+            <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php" class="px-5 py-2.5 bg-primary-600 text-white text-sm font-bold rounded-lg hover:bg-primary-700 transition-colors">Return to Feed</a>
         </div>
     <?php else: ?>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
@@ -169,13 +169,13 @@ include 'includes/header.php';
             <div class="mt-12 mb-8 flex justify-center">
                 <nav class="flex items-center space-x-2">
                     <?php if ($page > 1): ?>
-                        <a href="<?php echo $app_url_base; ?>/public_prompts.php?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>" class="px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold text-[10px] uppercase tracking-wider hover:bg-slate-50 transition-all">Previous</a>
+                        <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>" class="px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold text-[10px] uppercase tracking-wider hover:bg-slate-50 transition-all">Previous</a>
                     <?php endif; ?>
                     
                     <span class="px-4 py-2 text-slate-400 font-bold text-[10px] uppercase tracking-wider">Page <?php echo $page; ?> of <?php echo $total_pages; ?></span>
 
                     <?php if ($page < $total_pages): ?>
-                        <a href="<?php echo $app_url_base; ?>/public_prompts.php?<?php echo http_build_query(array_merge($_GET, ['page' => $page + 1])); ?>" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-[10px] uppercase tracking-wider hover:bg-primary-600 transition-all shadow-lg shadow-slate-900/20">Next Feed</a>
+                        <a href="<?php echo APP_URL_BASE; ?>/public_prompts.php?<?php echo http_build_query(array_merge($_GET, ['page' => $page + 1])); ?>" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-[10px] uppercase tracking-wider hover:bg-primary-600 transition-all shadow-lg shadow-slate-900/20">Next Feed</a>
                     <?php endif; ?>
                 </nav>
             </div>
